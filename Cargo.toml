@@ -1,0 +1,15 @@
+[package]
+name = "bpxe"
+version = "0.1.0"
+authors = ["Yurii Rashkovskii <yrashk@gmail.com>"]
+edition = "2018"
+
+
+[dependencies]
+# Used to parse BPMN to a typed schema
+strong-xml = "0.6.0"
+# Used to 'normalize' BPMN XML before parsing
+# due to deficiencies of strong-xml
+sxd-document = "0.3.2"
+thiserror = "1.0"
+num-bigint = "0.3.1"
