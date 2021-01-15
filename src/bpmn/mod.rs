@@ -19,26 +19,17 @@ use thiserror::Error;
 pub enum ParseError {
     #[error("xml parsing error: {error:?}")]
     ParsingError { error: strong_xml::XmlError },
+    #[error("xml normalization error: {error:?}")]
+    NormalizationError {
+        #[from]
+        error: NormalizationError,
+    },
 }
 
-/// Parse a normalized BPMN XML document.
-///
-/// ## Note
-///
-/// It is important to note that due to deficiencies in some of the underlying
-/// components, it's important to make sure [`normalize`] is invoked on the incoming
-/// XML document prior to parsing.
-///
-/// Normalization is not included in parsing due to lifetime requirements imposed on the
-/// document's source.
-// If you're really interested what these "deficiencies" are:
-//
-// It mostly comes to the fact that xmlparser/strong-xml don't support namespaces so the prefix is
-// hard-coded in element definitions. So in [`normalize`] we have to ensure the document looks
-// exactly the way we need it to be.
-//
+/// Parse BPMN XML document.
 pub fn parse(string: &str) -> Result<Definitions, ParseError> {
-    Definitions::from_str(string).map_err(|err| ParseError::ParsingError { error: err })
+    let normalized = normalize(string)?;
+    Definitions::from_str(&normalized).map_err(|err| ParseError::ParsingError { error: err })
 }
 
 use sxd_document as sxd;
@@ -54,15 +45,17 @@ pub enum NormalizationError {
 
 const BPMN_NS: &str = "http://www.omg.org/spec/BPMN/20100524/MODEL";
 
-/// Normalize a BPMN XML document.
-///
-/// It will do the following:
-///
-/// * Resolve BPMN's namespace (http://www.omg.org/spec/BPMN/20100524/MODEL) and
-///   ensure that `bpmn` is used as a declared prefix for it.
 // This function uses a different XML package (sxd-document) for processing XML
 // documents. Hopefully there's no need for this package elsewhere.
-pub fn normalize(string: &str) -> Result<String, NormalizationError> {
+// It mostly comes to the fact that xmlparser/strong-xml don't support namespaces so the prefix is
+// hard-coded in element definitions. So in [`normalize`] we have to ensure the document looks
+// exactly the way we need it to be.
+//
+// It will do the following:
+//
+// * Resolve BPMN's namespace (http://www.omg.org/spec/BPMN/20100524/MODEL) and
+//   ensure that `bpmn` is used as a declared prefix for it.
+fn normalize(string: &str) -> Result<String, NormalizationError> {
     let package = sxd::parser::parse(string)
         .map_err(|err| NormalizationError::ParsingError { error: err })?;
     let doc = package.as_document();

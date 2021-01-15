@@ -10,7 +10,6 @@ fn parse_sample() {
 #[test]
 fn normalization() {
     let sample = include_str!("fixtures/sample_ns.bpmn");
-    let normalized = bpxe::bpmn::normalize(sample).unwrap();
-    let definitions = bpxe::bpmn::parse(&normalized).unwrap();
+    let definitions = bpxe::bpmn::parse(&sample).unwrap();
     assert!(definitions.root_elements.len() > 0);
 }

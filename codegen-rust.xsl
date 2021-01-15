@@ -54,12 +54,12 @@
         </xsl:if>
         <xsl:choose>
             <xsl:when test="$node/@type = 'xsd:ID'">Id</xsl:when>
-            <xsl:when test="$node/@type = 'xsd:string'">Cow&lt;'a, str&gt;</xsl:when>
+            <xsl:when test="$node/@type = 'xsd:string'">String</xsl:when>
             <xsl:when test="$node/@type = 'xsd:anyURI'">URI</xsl:when>
             <xsl:when test="$node/@type = 'xsd:boolean'">bool</xsl:when>
             <xsl:when test="$node/@type = 'xsd:integer'">Integer</xsl:when>
             <xsl:when test="$node/@type = 'xsd:int'">Int</xsl:when>
-            <xsl:otherwise>Cow&lt;'a, str&gt;</xsl:otherwise>
+            <xsl:otherwise>String</xsl:otherwise>
         </xsl:choose>
         <xsl:if test="$node/@use = 'optional' or not($node/@use)">
             <xsl:text>&gt;</xsl:text>
@@ -72,7 +72,6 @@
         
         <xsl:text>
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
-            use std::borrow::Cow;
             use strong_xml::XmlRead;
         </xsl:text>
         
@@ -102,7 +101,7 @@
                 <xsl:text>#[derive(Default, XmlRead, PartialEq, Debug)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
-                <xsl:text xml:space="preserve">&lt;'a&gt; {</xsl:text>
+                <xsl:text xml:space="preserve"> {</xsl:text>
                 <xsl:text>#[xml(text, cdata)]</xsl:text>
                 <xsl:text>pub content:</xsl:text><xsl:value-of select="local:attributeType($elementType)"/>
                 <xsl:text xml:space="preserve">}</xsl:text>
@@ -117,13 +116,13 @@
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub enum </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
-                <xsl:text>&lt;'a&gt;{</xsl:text>
+                <xsl:text>{</xsl:text>
                 <xsl:for-each select="$elements[@substitutionGroup = $name]">
                     <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="./@name"/><xsl:text>")]</xsl:text>
                     <xsl:value-of select="local:struct-case(./@name)"/>
                     <xsl:text>(</xsl:text>
                     <xsl:value-of select="local:struct-case(./@name)"/>
-                    <xsl:text>&lt;'a&gt;</xsl:text>
+                    <xsl:text></xsl:text>
                     <xsl:text>),</xsl:text>
                 </xsl:for-each>
                 
@@ -140,7 +139,7 @@
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
-                <xsl:text>&lt;'a&gt; {</xsl:text>
+                <xsl:text> {</xsl:text>
                 
                 
                 
@@ -212,7 +211,7 @@
             </xsl:choose>
             
             <xsl:value-of select="local:struct-case($name)"/>
-            <xsl:text>&lt;'a&gt;</xsl:text>
+            <xsl:text></xsl:text>
             
             
             <xsl:choose>
@@ -229,7 +228,7 @@
         <xsl:if test="$type//xs:any">
             <xsl:text>
                 #[xml(text, cdata)]
-                content: Cow&lt;'a, str&gt;,</xsl:text>
+                content: String,</xsl:text>
         </xsl:if>
         
     </xsl:template>
