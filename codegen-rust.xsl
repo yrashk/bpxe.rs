@@ -135,7 +135,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text>#[derive(Default, Clone, XmlRead, PartialEq, Debug)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                <xsl:text>#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
                 <xsl:text xml:space="preserve"> {</xsl:text>
@@ -170,7 +170,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(XmlRead, Clone, PartialEq, Debug)]</xsl:text>
+                <xsl:text >#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub enum </xsl:text>
                 <xsl:value-of select="local:struct-case($typeName)"/>
@@ -217,7 +217,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
+                <xsl:text >#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($typeName)"/>

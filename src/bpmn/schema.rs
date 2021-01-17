@@ -193,7 +193,7 @@ pub enum Element {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:definitions")]
 pub struct Definitions {
     #[xml(attr = "id")]
@@ -276,7 +276,7 @@ pub trait DefinitionsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:import")]
 pub struct Import {
     #[xml(attr = "namespace")]
@@ -304,7 +304,7 @@ pub trait ImportType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:activity")]
 pub enum Activity {}
 impl DocumentElementContainer for Activity {
@@ -319,7 +319,7 @@ pub trait ActivityType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:adHocSubProcess")]
 pub struct AdHocSubProcess {
     #[xml(attr = "id")]
@@ -444,7 +444,7 @@ pub trait AdHocSubProcessType: SubProcessType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:artifact")]
 pub enum Artifact {
     #[xml(tag = "bpmn:association")]
@@ -470,7 +470,7 @@ pub trait ArtifactType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:assignment")]
 pub struct Assignment {
     #[xml(attr = "id")]
@@ -513,7 +513,7 @@ pub trait AssignmentType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:association")]
 pub struct Association {
     #[xml(attr = "id")]
@@ -554,7 +554,7 @@ pub trait AssociationType: ArtifactType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:auditing")]
 pub struct Auditing {
     #[xml(attr = "id")]
@@ -588,7 +588,7 @@ pub trait AuditingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:baseElement")]
 pub enum BaseElement {}
 impl DocumentElementContainer for BaseElement {
@@ -603,7 +603,7 @@ pub trait BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:baseElementWithMixedContent")]
 pub enum BaseElementWithMixedContent {}
 impl DocumentElementContainer for BaseElementWithMixedContent {
@@ -618,7 +618,7 @@ pub trait BaseElementWithMixedContentType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:boundaryEvent")]
 pub struct BoundaryEvent {
     #[xml(attr = "id")]
@@ -697,7 +697,7 @@ pub trait BoundaryEventType: CatchEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:businessRuleTask")]
 pub struct BusinessRuleTask {
     #[xml(attr = "id")]
@@ -772,7 +772,7 @@ pub trait BusinessRuleTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callableElement")]
 pub struct CallableElement {
     #[xml(attr = "id")]
@@ -823,7 +823,7 @@ pub trait CallableElementType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callActivity")]
 pub struct CallActivity {
     #[xml(attr = "id")]
@@ -897,7 +897,7 @@ pub trait CallActivityType: ActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callChoreography")]
 pub struct CallChoreography {
     #[xml(attr = "id")]
@@ -960,7 +960,7 @@ pub trait CallChoreographyType: ChoreographyActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callConversation")]
 pub struct CallConversation {
     #[xml(attr = "id")]
@@ -1009,7 +1009,7 @@ pub trait CallConversationType: ConversationNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:cancelEventDefinition")]
 pub struct CancelEventDefinition {
     #[xml(attr = "id")]
@@ -1045,7 +1045,7 @@ pub trait CancelEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:catchEvent")]
 pub enum CatchEvent {}
 impl DocumentElementContainer for CatchEvent {
@@ -1060,7 +1060,7 @@ pub trait CatchEventType: EventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:category")]
 pub struct Category {
     #[xml(attr = "id")]
@@ -1101,7 +1101,7 @@ pub trait CategoryType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:categoryValue")]
 pub struct CategoryValue {
     #[xml(attr = "id")]
@@ -1137,7 +1137,7 @@ pub trait CategoryValueType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreography")]
 pub struct Choreography {
     #[xml(attr = "id")]
@@ -1241,7 +1241,7 @@ pub trait ChoreographyType: CollaborationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyActivity")]
 pub enum ChoreographyActivity {}
 impl DocumentElementContainer for ChoreographyActivity {
@@ -1256,7 +1256,7 @@ pub trait ChoreographyActivityType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyTask")]
 pub struct ChoreographyTask {
     #[xml(attr = "id")]
@@ -1317,7 +1317,7 @@ pub trait ChoreographyTaskType: ChoreographyActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:collaboration")]
 pub struct Collaboration {
     #[xml(attr = "id")]
@@ -1413,7 +1413,7 @@ pub trait CollaborationType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:compensateEventDefinition")]
 pub struct CompensateEventDefinition {
     #[xml(attr = "id")]
@@ -1453,7 +1453,7 @@ pub trait CompensateEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:complexBehaviorDefinition")]
 pub struct ComplexBehaviorDefinition {
     #[xml(attr = "id")]
@@ -1496,7 +1496,7 @@ pub trait ComplexBehaviorDefinitionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:complexGateway")]
 pub struct ComplexGateway {
     #[xml(attr = "id")]
@@ -1553,7 +1553,7 @@ pub trait ComplexGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conditionalEventDefinition")]
 pub struct ConditionalEventDefinition {
     #[xml(attr = "id")]
@@ -1593,7 +1593,7 @@ pub trait ConditionalEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversation")]
 pub struct Conversation {
     #[xml(attr = "id")]
@@ -1636,7 +1636,7 @@ pub trait ConversationType: ConversationNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversationAssociation")]
 pub struct ConversationAssociation {
     #[xml(attr = "id")]
@@ -1674,7 +1674,7 @@ pub trait ConversationAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversationLink")]
 pub struct ConversationLink {
     #[xml(attr = "id")]
@@ -1714,7 +1714,7 @@ pub trait ConversationLinkType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversationNode")]
 pub enum ConversationNode {
     #[xml(tag = "bpmn:callConversation")]
@@ -1740,7 +1740,7 @@ pub trait ConversationNodeType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationKey")]
 pub struct CorrelationKey {
     #[xml(attr = "id")]
@@ -1780,7 +1780,7 @@ pub trait CorrelationKeyType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationProperty")]
 pub struct CorrelationProperty {
     #[xml(attr = "id")]
@@ -1826,7 +1826,7 @@ pub trait CorrelationPropertyType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationPropertyBinding")]
 pub struct CorrelationPropertyBinding {
     #[xml(attr = "id")]
@@ -1866,7 +1866,7 @@ pub trait CorrelationPropertyBindingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationPropertyRetrievalExpression")]
 pub struct CorrelationPropertyRetrievalExpression {
     #[xml(attr = "id")]
@@ -1906,7 +1906,7 @@ pub trait CorrelationPropertyRetrievalExpressionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationSubscription")]
 pub struct CorrelationSubscription {
     #[xml(attr = "id")]
@@ -1946,7 +1946,7 @@ pub trait CorrelationSubscriptionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataAssociation")]
 pub struct DataAssociation {
     #[xml(attr = "id")]
@@ -1999,7 +1999,7 @@ pub trait DataAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataInput")]
 pub struct DataInput {
     #[xml(attr = "id")]
@@ -2043,7 +2043,7 @@ pub trait DataInputType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataInputAssociation")]
 pub struct DataInputAssociation {
     #[xml(attr = "id")]
@@ -2086,7 +2086,7 @@ pub trait DataInputAssociationType: DataAssociationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataObject")]
 pub struct DataObject {
     #[xml(attr = "id")]
@@ -2137,7 +2137,7 @@ pub trait DataObjectType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataObjectReference")]
 pub struct DataObjectReference {
     #[xml(attr = "id")]
@@ -2188,7 +2188,7 @@ pub trait DataObjectReferenceType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataOutput")]
 pub struct DataOutput {
     #[xml(attr = "id")]
@@ -2232,7 +2232,7 @@ pub trait DataOutputType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataOutputAssociation")]
 pub struct DataOutputAssociation {
     #[xml(attr = "id")]
@@ -2275,7 +2275,7 @@ pub trait DataOutputAssociationType: DataAssociationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataState")]
 pub struct DataState {
     #[xml(attr = "id")]
@@ -2311,7 +2311,7 @@ pub trait DataStateType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataStore")]
 pub struct DataStore {
     #[xml(attr = "id")]
@@ -2358,7 +2358,7 @@ pub trait DataStoreType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataStoreReference")]
 pub struct DataStoreReference {
     #[xml(attr = "id")]
@@ -2409,7 +2409,7 @@ pub trait DataStoreReferenceType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:documentation")]
 pub struct Documentation {
     #[xml(attr = "id")]
@@ -2443,7 +2443,7 @@ pub trait DocumentationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:endEvent")]
 pub struct EndEvent {
     #[xml(attr = "id")]
@@ -2516,7 +2516,7 @@ pub trait EndEventType: ThrowEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:endPoint")]
 pub struct EndPoint {
     #[xml(attr = "id")]
@@ -2551,7 +2551,7 @@ pub trait EndPointType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:error")]
 pub struct Error {
     #[xml(attr = "id")]
@@ -2592,7 +2592,7 @@ pub trait ErrorType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:errorEventDefinition")]
 pub struct ErrorEventDefinition {
     #[xml(attr = "id")]
@@ -2630,7 +2630,7 @@ pub trait ErrorEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:escalation")]
 pub struct Escalation {
     #[xml(attr = "id")]
@@ -2671,7 +2671,7 @@ pub trait EscalationType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:escalationEventDefinition")]
 pub struct EscalationEventDefinition {
     #[xml(attr = "id")]
@@ -2709,7 +2709,7 @@ pub trait EscalationEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:event")]
 pub enum Event {}
 impl DocumentElementContainer for Event {
@@ -2724,7 +2724,7 @@ pub trait EventType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:eventBasedGateway")]
 pub struct EventBasedGateway {
     #[xml(attr = "id")]
@@ -2779,7 +2779,7 @@ pub trait EventBasedGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:eventDefinition")]
 pub enum EventDefinition {
     #[xml(tag = "bpmn:cancelEventDefinition")]
@@ -2826,7 +2826,7 @@ pub trait EventDefinitionType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:exclusiveGateway")]
 pub struct ExclusiveGateway {
     #[xml(attr = "id")]
@@ -2879,7 +2879,7 @@ pub trait ExclusiveGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:expression")]
 pub struct Expression {
     #[xml(attr = "id")]
@@ -2913,7 +2913,7 @@ pub trait ExpressionType: BaseElementWithMixedContentType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:extension")]
 pub struct Extension {
     #[xml(attr = "definition")]
@@ -2944,7 +2944,7 @@ pub trait ExtensionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:extensionElements")]
 pub struct ExtensionElements {
     #[xml(text, cdata)]
@@ -2968,7 +2968,7 @@ pub trait ExtensionElementsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:flowElement")]
 pub enum FlowElement {
     #[xml(tag = "bpmn:adHocSubProcess")]
@@ -3078,7 +3078,7 @@ pub trait FlowElementType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:flowNode")]
 pub enum FlowNode {}
 impl DocumentElementContainer for FlowNode {
@@ -3093,7 +3093,7 @@ pub trait FlowNodeType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:formalExpression")]
 pub struct FormalExpression {
     #[xml(attr = "id")]
@@ -3132,7 +3132,7 @@ pub trait FormalExpressionType: ExpressionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:gateway")]
 pub struct Gateway {
     #[xml(attr = "id")]
@@ -3182,7 +3182,7 @@ pub trait GatewayType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalBusinessRuleTask")]
 pub struct GlobalBusinessRuleTask {
     #[xml(attr = "id")]
@@ -3231,7 +3231,7 @@ pub trait GlobalBusinessRuleTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalChoreographyTask")]
 pub struct GlobalChoreographyTask {
     #[xml(attr = "id")]
@@ -3336,7 +3336,7 @@ pub trait GlobalChoreographyTaskType: ChoreographyType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalConversation")]
 pub struct GlobalConversation {
     #[xml(attr = "id")]
@@ -3404,7 +3404,7 @@ pub trait GlobalConversationType: CollaborationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalManualTask")]
 pub struct GlobalManualTask {
     #[xml(attr = "id")]
@@ -3451,7 +3451,7 @@ pub trait GlobalManualTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalScriptTask")]
 pub struct GlobalScriptTask {
     #[xml(attr = "id")]
@@ -3504,7 +3504,7 @@ pub trait GlobalScriptTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalTask")]
 pub struct GlobalTask {
     #[xml(attr = "id")]
@@ -3552,7 +3552,7 @@ pub trait GlobalTaskType: CallableElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalUserTask")]
 pub struct GlobalUserTask {
     #[xml(attr = "id")]
@@ -3605,7 +3605,7 @@ pub trait GlobalUserTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:group")]
 pub struct Group {
     #[xml(attr = "id")]
@@ -3642,7 +3642,7 @@ pub trait GroupType: ArtifactType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:humanPerformer")]
 pub struct HumanPerformer {
     #[xml(attr = "id")]
@@ -3686,7 +3686,7 @@ pub trait HumanPerformerType: PerformerType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:implicitThrowEvent")]
 pub struct ImplicitThrowEvent {
     #[xml(attr = "id")]
@@ -3759,7 +3759,7 @@ pub trait ImplicitThrowEventType: ThrowEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inclusiveGateway")]
 pub struct InclusiveGateway {
     #[xml(attr = "id")]
@@ -3812,7 +3812,7 @@ pub trait InclusiveGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inputSet")]
 pub struct InputSet {
     #[xml(attr = "id")]
@@ -3867,7 +3867,7 @@ pub trait InputSetType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:interface")]
 pub struct Interface {
     #[xml(attr = "id")]
@@ -3910,7 +3910,7 @@ pub trait InterfaceType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:intermediateCatchEvent")]
 pub struct IntermediateCatchEvent {
     #[xml(attr = "id")]
@@ -3985,7 +3985,7 @@ pub trait IntermediateCatchEventType: CatchEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:intermediateThrowEvent")]
 pub struct IntermediateThrowEvent {
     #[xml(attr = "id")]
@@ -4058,7 +4058,7 @@ pub trait IntermediateThrowEventType: ThrowEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:ioBinding")]
 pub struct InputOutputBinding {
     #[xml(attr = "id")]
@@ -4098,7 +4098,7 @@ pub trait IoBindingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:ioSpecification")]
 pub struct InputOutputSpecification {
     #[xml(attr = "id")]
@@ -4151,7 +4151,7 @@ pub trait IoSpecificationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:itemDefinition")]
 pub struct ItemDefinition {
     #[xml(attr = "id")]
@@ -4192,7 +4192,7 @@ pub trait ItemDefinitionType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:lane")]
 pub struct Lane {
     #[xml(attr = "id")]
@@ -4244,7 +4244,7 @@ pub trait LaneType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:laneSet")]
 pub struct LaneSet {
     #[xml(attr = "id")]
@@ -4284,7 +4284,7 @@ pub trait LaneSetType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:linkEventDefinition")]
 pub struct LinkEventDefinition {
     #[xml(attr = "id")]
@@ -4331,7 +4331,7 @@ pub trait LinkEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:loopCharacteristics")]
 pub enum LoopCharacteristics {
     #[xml(tag = "bpmn:multiInstanceLoopCharacteristics")]
@@ -4354,7 +4354,7 @@ pub trait LoopCharacteristicsType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:manualTask")]
 pub struct ManualTask {
     #[xml(attr = "id")]
@@ -4427,7 +4427,7 @@ pub trait ManualTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:message")]
 pub struct Message {
     #[xml(attr = "id")]
@@ -4466,7 +4466,7 @@ pub trait MessageType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageEventDefinition")]
 pub struct MessageEventDefinition {
     #[xml(attr = "id")]
@@ -4508,7 +4508,7 @@ pub trait MessageEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageFlow")]
 pub struct MessageFlow {
     #[xml(attr = "id")]
@@ -4550,7 +4550,7 @@ pub trait MessageFlowType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageFlowAssociation")]
 pub struct MessageFlowAssociation {
     #[xml(attr = "id")]
@@ -4588,7 +4588,7 @@ pub trait MessageFlowAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:monitoring")]
 pub struct Monitoring {
     #[xml(attr = "id")]
@@ -4622,7 +4622,7 @@ pub trait MonitoringType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:multiInstanceLoopCharacteristics")]
 pub struct MultiInstanceLoopCharacteristics {
     #[xml(attr = "id")]
@@ -4699,7 +4699,7 @@ pub trait MultiInstanceLoopCharacteristicsType: LoopCharacteristicsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:operation")]
 pub struct Operation {
     #[xml(attr = "id")]
@@ -4751,7 +4751,7 @@ pub trait OperationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outputSet")]
 pub struct OutputSet {
     #[xml(attr = "id")]
@@ -4806,7 +4806,7 @@ pub trait OutputSetType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:parallelGateway")]
 pub struct ParallelGateway {
     #[xml(attr = "id")]
@@ -4857,7 +4857,7 @@ pub trait ParallelGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participant")]
 pub struct Participant {
     #[xml(attr = "id")]
@@ -4909,7 +4909,7 @@ pub trait ParticipantType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participantAssociation")]
 pub struct ParticipantAssociation {
     #[xml(attr = "id")]
@@ -4952,7 +4952,7 @@ pub trait ParticipantAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participantMultiplicity")]
 pub struct ParticipantMultiplicity {
     #[xml(attr = "id")]
@@ -4990,7 +4990,7 @@ pub trait ParticipantMultiplicityType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:partnerEntity")]
 pub struct PartnerEntity {
     #[xml(attr = "id")]
@@ -5031,7 +5031,7 @@ pub trait PartnerEntityType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:partnerRole")]
 pub struct PartnerRole {
     #[xml(attr = "id")]
@@ -5072,7 +5072,7 @@ pub trait PartnerRoleType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:performer")]
 pub struct Performer {
     #[xml(attr = "id")]
@@ -5115,7 +5115,7 @@ pub trait PerformerType: ResourceRoleType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:potentialOwner")]
 pub struct PotentialOwner {
     #[xml(attr = "id")]
@@ -5160,7 +5160,7 @@ pub trait PotentialOwnerType: HumanPerformerType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:process")]
 pub struct Process {
     #[xml(attr = "id")]
@@ -5292,7 +5292,7 @@ pub trait ProcessType: CallableElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:property")]
 pub struct Property {
     #[xml(attr = "id")]
@@ -5334,7 +5334,7 @@ pub trait PropertyType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:receiveTask")]
 pub struct ReceiveTask {
     #[xml(attr = "id")]
@@ -5415,7 +5415,7 @@ pub trait ReceiveTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:relationship")]
 pub struct Relationship {
     #[xml(attr = "id")]
@@ -5462,7 +5462,7 @@ pub trait RelationshipType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:rendering")]
 pub struct Rendering {
     #[xml(attr = "id")]
@@ -5496,7 +5496,7 @@ pub trait RenderingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resource")]
 pub struct Resource {
     #[xml(attr = "id")]
@@ -5537,7 +5537,7 @@ pub trait ResourceType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceAssignmentExpression")]
 pub struct ResourceAssignmentExpression {
     #[xml(attr = "id")]
@@ -5575,7 +5575,7 @@ pub trait ResourceAssignmentExpressionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceParameter")]
 pub struct ResourceParameter {
     #[xml(attr = "id")]
@@ -5615,7 +5615,7 @@ pub trait ResourceParameterType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceParameterBinding")]
 pub struct ResourceParameterBinding {
     #[xml(attr = "id")]
@@ -5655,7 +5655,7 @@ pub trait ResourceParameterBindingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceRole")]
 pub struct ResourceRole {
     #[xml(attr = "id")]
@@ -5705,7 +5705,7 @@ pub trait ResourceRoleType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:rootElement")]
 pub enum RootElement {
     #[xml(tag = "bpmn:category")]
@@ -5785,7 +5785,7 @@ pub trait RootElementType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:scriptTask")]
 pub struct ScriptTask {
     #[xml(attr = "id")]
@@ -5864,7 +5864,7 @@ pub trait ScriptTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:script")]
 pub struct Script {
     #[xml(text, cdata)]
@@ -5888,7 +5888,7 @@ pub trait ScriptType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:sendTask")]
 pub struct SendTask {
     #[xml(attr = "id")]
@@ -5967,7 +5967,7 @@ pub trait SendTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:sequenceFlow")]
 pub struct SequenceFlow {
     #[xml(attr = "id")]
@@ -6020,7 +6020,7 @@ pub trait SequenceFlowType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:serviceTask")]
 pub struct ServiceTask {
     #[xml(attr = "id")]
@@ -6097,7 +6097,7 @@ pub trait ServiceTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:signal")]
 pub struct Signal {
     #[xml(attr = "id")]
@@ -6136,7 +6136,7 @@ pub trait SignalType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:signalEventDefinition")]
 pub struct SignalEventDefinition {
     #[xml(attr = "id")]
@@ -6174,7 +6174,7 @@ pub trait SignalEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:standardLoopCharacteristics")]
 pub struct StandardLoopCharacteristics {
     #[xml(attr = "id")]
@@ -6217,7 +6217,7 @@ pub trait StandardLoopCharacteristicsType: LoopCharacteristicsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:startEvent")]
 pub struct StartEvent {
     #[xml(attr = "id")]
@@ -6294,7 +6294,7 @@ pub trait StartEventType: CatchEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:subChoreography")]
 pub struct SubChoreography {
     #[xml(attr = "id")]
@@ -6396,7 +6396,7 @@ pub trait SubChoreographyType: ChoreographyActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:subConversation")]
 pub struct SubConversation {
     #[xml(attr = "id")]
@@ -6447,7 +6447,7 @@ pub trait SubConversationType: ConversationNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:subProcess")]
 pub struct SubProcess {
     #[xml(attr = "id")]
@@ -6571,7 +6571,7 @@ pub trait SubProcessType: ActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:task")]
 pub struct Task {
     #[xml(attr = "id")]
@@ -6643,7 +6643,7 @@ pub trait TaskType: ActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:terminateEventDefinition")]
 pub struct TerminateEventDefinition {
     #[xml(attr = "id")]
@@ -6679,7 +6679,7 @@ pub trait TerminateEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:textAnnotation")]
 pub struct TextAnnotation {
     #[xml(attr = "id")]
@@ -6720,7 +6720,7 @@ pub trait TextAnnotationType: ArtifactType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:text")]
 pub struct Text {
     #[xml(text, cdata)]
@@ -6744,7 +6744,7 @@ pub trait TextType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:throwEvent")]
 pub enum ThrowEvent {}
 impl DocumentElementContainer for ThrowEvent {
@@ -6759,7 +6759,7 @@ pub trait ThrowEventType: EventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:timerEventDefinition")]
 pub struct TimerEventDefinition {
     #[xml(attr = "id")]
@@ -6809,7 +6809,7 @@ pub trait TimerEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:transaction")]
 pub struct Transaction {
     #[xml(attr = "id")]
@@ -6928,7 +6928,7 @@ pub trait TransactionType: SubProcessType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:userTask")]
 pub struct UserTask {
     #[xml(attr = "id")]
@@ -7007,7 +7007,7 @@ pub trait UserTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:supportedInterfaceRef")]
 pub struct SupportedInterfaceRef {
     #[xml(text, cdata)]
@@ -7027,7 +7027,7 @@ impl DocumentElementContainer for SupportedInterfaceRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:eventDefinitionRef")]
 pub struct EventDefinitionRef {
     #[xml(text, cdata)]
@@ -7047,7 +7047,7 @@ impl DocumentElementContainer for EventDefinitionRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participantRef")]
 pub struct ParticipantRef {
     #[xml(text, cdata)]
@@ -7067,7 +7067,7 @@ impl DocumentElementContainer for ParticipantRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageFlowRef")]
 pub struct MessageFlowRef {
     #[xml(text, cdata)]
@@ -7087,7 +7087,7 @@ impl DocumentElementContainer for MessageFlowRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyRef")]
 pub struct ChoreographyRef {
     #[xml(text, cdata)]
@@ -7107,7 +7107,7 @@ impl DocumentElementContainer for ChoreographyRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationPropertyRef")]
 pub struct CorrelationPropertyRef {
     #[xml(text, cdata)]
@@ -7127,7 +7127,7 @@ impl DocumentElementContainer for CorrelationPropertyRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:sourceRef")]
 pub struct SourceRef {
     #[xml(text, cdata)]
@@ -7147,7 +7147,7 @@ impl DocumentElementContainer for SourceRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:targetRef")]
 pub struct TargetRef {
     #[xml(text, cdata)]
@@ -7167,7 +7167,7 @@ impl DocumentElementContainer for TargetRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:categoryValueRef")]
 pub struct CategoryValueRef {
     #[xml(text, cdata)]
@@ -7187,7 +7187,7 @@ impl DocumentElementContainer for CategoryValueRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:incoming")]
 pub struct Incoming {
     #[xml(text, cdata)]
@@ -7207,7 +7207,7 @@ impl DocumentElementContainer for Incoming {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outgoing")]
 pub struct Outgoing {
     #[xml(text, cdata)]
@@ -7227,7 +7227,7 @@ impl DocumentElementContainer for Outgoing {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataInputRefs")]
 pub struct DataInputRefs {
     #[xml(text, cdata)]
@@ -7247,7 +7247,7 @@ impl DocumentElementContainer for DataInputRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:optionalInputRefs")]
 pub struct OptionalInputRefs {
     #[xml(text, cdata)]
@@ -7267,7 +7267,7 @@ impl DocumentElementContainer for OptionalInputRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:whileExecutingInputRefs")]
 pub struct WhileExecutingInputRefs {
     #[xml(text, cdata)]
@@ -7287,7 +7287,7 @@ impl DocumentElementContainer for WhileExecutingInputRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outputSetRefs")]
 pub struct OutputSetRefs {
     #[xml(text, cdata)]
@@ -7307,7 +7307,7 @@ impl DocumentElementContainer for OutputSetRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:flowNodeRef")]
 pub struct FlowNodeRef {
     #[xml(text, cdata)]
@@ -7327,7 +7327,7 @@ impl DocumentElementContainer for FlowNodeRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:source")]
 pub struct Source {
     #[xml(text, cdata)]
@@ -7347,7 +7347,7 @@ impl DocumentElementContainer for Source {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:target")]
 pub struct Target {
     #[xml(text, cdata)]
@@ -7367,7 +7367,7 @@ impl DocumentElementContainer for Target {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:operationRef")]
 pub struct OperationRef {
     #[xml(text, cdata)]
@@ -7387,7 +7387,7 @@ impl DocumentElementContainer for OperationRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:loopDataInputRef")]
 pub struct LoopDataInputRef {
     #[xml(text, cdata)]
@@ -7407,7 +7407,7 @@ impl DocumentElementContainer for LoopDataInputRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:loopDataOutputRef")]
 pub struct LoopDataOutputRef {
     #[xml(text, cdata)]
@@ -7427,7 +7427,7 @@ impl DocumentElementContainer for LoopDataOutputRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inMessageRef")]
 pub struct InMessageRef {
     #[xml(text, cdata)]
@@ -7447,7 +7447,7 @@ impl DocumentElementContainer for InMessageRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outMessageRef")]
 pub struct OutMessageRef {
     #[xml(text, cdata)]
@@ -7467,7 +7467,7 @@ impl DocumentElementContainer for OutMessageRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:errorRef")]
 pub struct ErrorRef {
     #[xml(text, cdata)]
@@ -7487,7 +7487,7 @@ impl DocumentElementContainer for ErrorRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataOutputRefs")]
 pub struct DataOutputRefs {
     #[xml(text, cdata)]
@@ -7507,7 +7507,7 @@ impl DocumentElementContainer for DataOutputRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:optionalOutputRefs")]
 pub struct OptionalOutputRefs {
     #[xml(text, cdata)]
@@ -7527,7 +7527,7 @@ impl DocumentElementContainer for OptionalOutputRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:whileExecutingOutputRefs")]
 pub struct WhileExecutingOutputRefs {
     #[xml(text, cdata)]
@@ -7547,7 +7547,7 @@ impl DocumentElementContainer for WhileExecutingOutputRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inputSetRefs")]
 pub struct InputSetRefs {
     #[xml(text, cdata)]
@@ -7567,7 +7567,7 @@ impl DocumentElementContainer for InputSetRefs {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:interfaceRef")]
 pub struct InterfaceRef {
     #[xml(text, cdata)]
@@ -7587,7 +7587,7 @@ impl DocumentElementContainer for InterfaceRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:endPointRef")]
 pub struct EndPointRef {
     #[xml(text, cdata)]
@@ -7607,7 +7607,7 @@ impl DocumentElementContainer for EndPointRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:innerParticipantRef")]
 pub struct InnerParticipantRef {
     #[xml(text, cdata)]
@@ -7627,7 +7627,7 @@ impl DocumentElementContainer for InnerParticipantRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outerParticipantRef")]
 pub struct OuterParticipantRef {
     #[xml(text, cdata)]
@@ -7647,7 +7647,7 @@ impl DocumentElementContainer for OuterParticipantRef {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:supports")]
 pub struct Supports {
     #[xml(text, cdata)]
@@ -7667,7 +7667,7 @@ impl DocumentElementContainer for Supports {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceRef")]
 pub struct ResourceRef {
     #[xml(text, cdata)]
