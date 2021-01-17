@@ -13,3 +13,5 @@ strong-xml = "0.6.0"
 sxd-document = "0.3.2"
 thiserror = "1.0"
 num-bigint = "0.3.1"
+# Used for schema traversals
+downcast-rs = "1.2"

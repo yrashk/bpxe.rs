@@ -66,6 +66,30 @@
         </xsl:if>
     </xsl:function>
     
+    <xsl:function name="local:elements">
+        <xsl:param name="type"/>
+        <xsl:variable name="subelements"
+            select="$type//xs:element[@ref and not(contains(@ref, ':'))] | $type//xs:element[@name]"/>
+        <xsl:for-each select="$subelements">
+            <xsl:sequence select="."/>
+        </xsl:for-each>
+    </xsl:function>
+    
+    <xsl:function name="local:hasId">
+        <xsl:param name="type"/>
+        <xsl:choose>
+            <xsl:when test="exists($type//xs:attribute[@name='id'])">
+                <xsl:value-of select="true()"/>
+            </xsl:when>
+            <xsl:otherwise>
+        <xsl:for-each select="$type//xs:extension">
+            <xsl:variable name="extTypeName" select="./@base"/>
+            <xsl:value-of select="local:hasId($schema/xs:complexType[@name = $extTypeName])"/>
+        </xsl:for-each>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
     <xsl:strip-space elements="*"/>
     
     <xsl:template match="/">
@@ -74,6 +98,14 @@
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
             use strong_xml::XmlRead;
         </xsl:text>
+        
+        <!-- Generate enum with all elements -->
+        <xsl:text>#[derive(Debug, Clone, PartialEq)] pub enum Element {</xsl:text>
+        <xsl:for-each-group select="$schema//xs:element[@name]" group-by="@name">
+            <xsl:value-of select="local:struct-case(./@name)"/>
+            <xsl:text>,</xsl:text>
+        </xsl:for-each-group>
+        <xsl:text>}</xsl:text>
         
         <xsl:for-each-group select="$schema//xs:element[@name]" group-by="@name">
             <xsl:call-template name="element">
@@ -94,9 +126,9 @@
         <xsl:choose>
             <xsl:when test="not($type) and local:attributeType($elementType)">
                 <xsl:text xml:space="preserve">
-                /// Auto-generated from BPNM schema
-                ///
-                /// (See codegen-rust.xsl)
+                    /// Auto-generated from BPNM schema
+                    ///
+                    /// (See codegen-rust.xsl)
                 </xsl:text>
                 <xsl:text>#[derive(Default, Clone, XmlRead, PartialEq, Debug)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
@@ -105,12 +137,19 @@
                 <xsl:text>#[xml(text, cdata)]</xsl:text>
                 <xsl:text>pub content:</xsl:text><xsl:value-of select="local:attributeType($elementType)"/>
                 <xsl:text xml:space="preserve">}</xsl:text>
+                
+                <xsl:call-template name="documentElementTrait">
+                    <xsl:with-param name="name" select="$name"></xsl:with-param>
+                    <xsl:with-param name="elements" select="()"></xsl:with-param>
+                    <xsl:with-param name="id" select="false()"></xsl:with-param>
+                </xsl:call-template>
+                
             </xsl:when>
             <xsl:when test="$type/@abstract and count($schema//xs:element[@substitutionGroup = $name]) > 0">
                 <xsl:text xml:space="preserve">
-                /// Auto-generated from BPNM schema
-                ///
-                /// (See codegen-rust.xsl)
+                    /// Auto-generated from BPNM schema
+                    ///
+                    /// (See codegen-rust.xsl)
                 </xsl:text>
                 <xsl:text >#[derive(XmlRead, Clone, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
@@ -128,12 +167,25 @@
                 
                 <xsl:text>}</xsl:text>
                 
+                <xsl:text xml:space="preserve">
+                    impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text> {
+                        fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
+                        match self {
+                    </xsl:text>
+                <xsl:for-each select="$elements[@substitutionGroup = $name]">
+                    <xsl:value-of select="local:struct-case($name)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>(e) => e.find_by_id(id),
+                </xsl:for-each>
+                <xsl:text>
+                    }
+                    }
+                    }</xsl:text>
+                
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text xml:space="preserve">
-                /// Auto-generated from BPNM schema
-                ///
-                /// (See codegen-rust.xsl)
+                    /// Auto-generated from BPNM schema
+                    ///
+                    /// (See codegen-rust.xsl)
                 </xsl:text>
                 <xsl:text >#[derive(Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
@@ -149,6 +201,12 @@
                 
                 
                 <xsl:text>}</xsl:text>
+                
+                <xsl:call-template name="documentElementTrait">
+                    <xsl:with-param name="name" select="$name"></xsl:with-param>
+                    <xsl:with-param name="elements" select="local:elements($type)"></xsl:with-param>
+                    <xsl:with-param name="id" select="local:hasId($type)"></xsl:with-param>
+                </xsl:call-template>
                 
             </xsl:otherwise>
         </xsl:choose>
@@ -231,6 +289,58 @@
                 content: String,</xsl:text>
         </xsl:if>
         
+    </xsl:template>
+    
+    <xsl:template name="documentElementTrait">
+        <xsl:param name="name" required="yes"/>
+        <xsl:param name="elements" required="yes"/>
+        <xsl:param name="id" required="yes"/>
+        <xsl:text xml:space="preserve">impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text> {
+            fn element(&amp;self) -> Element {
+            Element::</xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text>
+                }
+                }</xsl:text>
+        <xsl:call-template name="documentElementContainerTrait">
+            <xsl:with-param name="name" select="$name"></xsl:with-param>
+            <xsl:with-param name="elements" select="$elements"></xsl:with-param>
+            <xsl:with-param name="id" select="$id"></xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+    
+    <xsl:template name="documentElementContainerTrait">
+        <xsl:param name="name" required="yes"/>
+        <xsl:param name="elements" required="yes"/>
+        <xsl:param name="id" required="yes"/>
+        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text> {
+            fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
+        </xsl:text>
+        
+        <xsl:if test="$id = true()">
+            <xsl:text>
+                if let Some(ref id_) = self.id {
+                if id_ == id {
+                return Some(self);
+                }
+                }
+            </xsl:text>
+        </xsl:if>
+        
+        <xsl:for-each select="$elements">
+            <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
+            
+            <xsl:text> if let Some(e) = self.</xsl:text>
+            <xsl:choose> 
+                <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
+                <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
+            </xsl:choose>
+            <xsl:text>.find_by_id(id) {
+                return Some(e);
+                }</xsl:text>
+        </xsl:for-each>
+        <xsl:text>
+            return None;
+            }
+            }</xsl:text>
     </xsl:template>
     
 </xsl:stylesheet>
