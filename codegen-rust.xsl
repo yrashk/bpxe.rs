@@ -338,7 +338,7 @@
                 }</xsl:text>
         </xsl:for-each>
         <xsl:text>
-            return None;
+            None
             }
             }</xsl:text>
     </xsl:template>

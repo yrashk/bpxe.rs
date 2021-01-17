@@ -266,7 +266,7 @@ impl DocumentElementContainer for Definitions {
         if let Some(e) = self.relationships.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -290,7 +290,7 @@ impl DocumentElement for Import {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Import {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -372,7 +372,7 @@ impl DocumentElementContainer for Activity {
         if let Some(e) = self.loop_characteristics.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -489,7 +489,7 @@ impl DocumentElementContainer for AdHocSubProcess {
         if let Some(e) = self.completion_condition.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -519,7 +519,7 @@ impl DocumentElementContainer for CompletionCondition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -580,7 +580,7 @@ impl DocumentElementContainer for Assignment {
         if let Some(e) = self.to.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -610,7 +610,7 @@ impl DocumentElementContainer for From {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -640,7 +640,7 @@ impl DocumentElementContainer for To {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -676,7 +676,7 @@ impl DocumentElementContainer for Association {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -706,7 +706,7 @@ impl DocumentElementContainer for Auditing {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -741,7 +741,7 @@ impl DocumentElementContainer for BaseElement {
         if let Some(e) = self.extension_elements.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -776,7 +776,7 @@ impl DocumentElementContainer for BaseElementWithMixedContent {
         if let Some(e) = self.extension_elements.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -847,7 +847,7 @@ impl DocumentElementContainer for BoundaryEvent {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -914,7 +914,7 @@ impl DocumentElementContainer for BusinessRuleTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -960,7 +960,7 @@ impl DocumentElementContainer for CallableElement {
         if let Some(e) = self.io_bindings.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -980,7 +980,7 @@ impl DocumentElement for SupportedInterfaceRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for SupportedInterfaceRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1047,7 +1047,7 @@ impl DocumentElementContainer for CallActivity {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1103,7 +1103,7 @@ impl DocumentElementContainer for CallChoreography {
         if let Some(e) = self.participant_associations.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1147,7 +1147,7 @@ impl DocumentElementContainer for CallConversation {
         if let Some(e) = self.participant_associations.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1177,7 +1177,7 @@ impl DocumentElementContainer for CancelEventDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1258,7 +1258,7 @@ impl DocumentElementContainer for CatchEvent {
         if let Some(e) = self.event_definition_refs.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1278,7 +1278,7 @@ impl DocumentElement for EventDefinitionRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for EventDefinitionRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1314,7 +1314,7 @@ impl DocumentElementContainer for Category {
         if let Some(e) = self.category_values.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1346,7 +1346,7 @@ impl DocumentElementContainer for CategoryValue {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1444,7 +1444,7 @@ impl DocumentElementContainer for Choreography {
         if let Some(e) = self.flow_elements.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1499,7 +1499,7 @@ impl DocumentElementContainer for ChoreographyActivity {
         if let Some(e) = self.correlation_keys.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1519,7 +1519,7 @@ impl DocumentElement for ParticipantRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for ParticipantRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1573,7 +1573,7 @@ impl DocumentElementContainer for ChoreographyTask {
         if let Some(e) = self.message_flow_ref.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1593,7 +1593,7 @@ impl DocumentElement for MessageFlowRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for MessageFlowRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1684,7 +1684,7 @@ impl DocumentElementContainer for Collaboration {
         if let Some(e) = self.conversation_links.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1704,7 +1704,7 @@ impl DocumentElement for ChoreographyRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for ChoreographyRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1738,7 +1738,7 @@ impl DocumentElementContainer for CompensateEventDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1777,7 +1777,7 @@ impl DocumentElementContainer for ComplexBehaviorDefinition {
         if let Some(e) = self.event.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1811,7 +1811,7 @@ impl DocumentElementContainer for Condition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1876,7 +1876,7 @@ impl DocumentElementContainer for Event {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1926,7 +1926,7 @@ impl DocumentElementContainer for ComplexGateway {
         if let Some(e) = self.activation_condition.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1956,7 +1956,7 @@ impl DocumentElementContainer for ActivationCondition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -1990,7 +1990,7 @@ impl DocumentElementContainer for ConditionalEventDefinition {
         if let Some(e) = self.condition.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2028,7 +2028,7 @@ impl DocumentElementContainer for Conversation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2062,7 +2062,7 @@ impl DocumentElementContainer for ConversationAssociation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2098,7 +2098,7 @@ impl DocumentElementContainer for ConversationLink {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2156,7 +2156,7 @@ impl DocumentElementContainer for CorrelationKey {
         if let Some(e) = self.correlation_property_refs.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2176,7 +2176,7 @@ impl DocumentElement for CorrelationPropertyRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for CorrelationPropertyRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2217,7 +2217,7 @@ impl DocumentElementContainer for CorrelationProperty {
         {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2253,7 +2253,7 @@ impl DocumentElementContainer for CorrelationPropertyBinding {
         if let Some(e) = self.data_path.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2287,7 +2287,7 @@ impl DocumentElementContainer for DataPath {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2323,7 +2323,7 @@ impl DocumentElementContainer for CorrelationPropertyRetrievalExpression {
         if let Some(e) = self.message_path.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2357,7 +2357,7 @@ impl DocumentElementContainer for MessagePath {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2393,7 +2393,7 @@ impl DocumentElementContainer for CorrelationSubscription {
         if let Some(e) = self.correlation_property_bindings.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2442,7 +2442,7 @@ impl DocumentElementContainer for DataAssociation {
         if let Some(e) = self.assignments.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2462,7 +2462,7 @@ impl DocumentElement for SourceRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for SourceRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2482,7 +2482,7 @@ impl DocumentElement for TargetRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for TargetRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2516,7 +2516,7 @@ impl DocumentElementContainer for Transformation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2556,7 +2556,7 @@ impl DocumentElementContainer for DataInput {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2594,7 +2594,7 @@ impl DocumentElementContainer for DataInputAssociation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2640,7 +2640,7 @@ impl DocumentElementContainer for DataObject {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2686,7 +2686,7 @@ impl DocumentElementContainer for DataObjectReference {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2726,7 +2726,7 @@ impl DocumentElementContainer for DataOutput {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2764,7 +2764,7 @@ impl DocumentElementContainer for DataOutputAssociation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2796,7 +2796,7 @@ impl DocumentElementContainer for DataState {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2838,7 +2838,7 @@ impl DocumentElementContainer for DataStore {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2884,7 +2884,7 @@ impl DocumentElementContainer for DataStoreReference {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2914,7 +2914,7 @@ impl DocumentElementContainer for Documentation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -2979,7 +2979,7 @@ impl DocumentElementContainer for EndEvent {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3009,7 +3009,7 @@ impl DocumentElementContainer for EndPoint {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3045,7 +3045,7 @@ impl DocumentElementContainer for Error {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3077,7 +3077,7 @@ impl DocumentElementContainer for ErrorEventDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3113,7 +3113,7 @@ impl DocumentElementContainer for Escalation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3145,7 +3145,7 @@ impl DocumentElementContainer for EscalationEventDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3193,7 +3193,7 @@ impl DocumentElementContainer for EventBasedGateway {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3282,7 +3282,7 @@ impl DocumentElementContainer for ExclusiveGateway {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3312,7 +3312,7 @@ impl DocumentElementContainer for Expression {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3339,7 +3339,7 @@ impl DocumentElementContainer for Extension {
         if let Some(e) = self.documentations.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3359,7 +3359,7 @@ impl DocumentElement for ExtensionElements {
 #[allow(unused_variables)]
 impl DocumentElementContainer for ExtensionElements {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3485,7 +3485,7 @@ impl DocumentElement for CategoryValueRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for CategoryValueRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3532,7 +3532,7 @@ impl DocumentElementContainer for FlowNode {
         if let Some(e) = self.outgoings.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3552,7 +3552,7 @@ impl DocumentElement for Incoming {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Incoming {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3572,7 +3572,7 @@ impl DocumentElement for Outgoing {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Outgoing {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3606,7 +3606,7 @@ impl DocumentElementContainer for FormalExpression {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3650,7 +3650,7 @@ impl DocumentElementContainer for Gateway {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3692,7 +3692,7 @@ impl DocumentElementContainer for GlobalBusinessRuleTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3790,7 +3790,7 @@ impl DocumentElementContainer for GlobalChoreographyTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3852,7 +3852,7 @@ impl DocumentElementContainer for GlobalConversation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3892,7 +3892,7 @@ impl DocumentElementContainer for GlobalManualTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3938,7 +3938,7 @@ impl DocumentElementContainer for GlobalScriptTask {
         if let Some(e) = self.script.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -3980,7 +3980,7 @@ impl DocumentElementContainer for GlobalTask {
         if let Some(e) = self.resource_roles.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4026,7 +4026,7 @@ impl DocumentElementContainer for GlobalUserTask {
         if let Some(e) = self.renderings.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4058,7 +4058,7 @@ impl DocumentElementContainer for Group {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4096,7 +4096,7 @@ impl DocumentElementContainer for HumanPerformer {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4161,7 +4161,7 @@ impl DocumentElementContainer for ImplicitThrowEvent {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4207,7 +4207,7 @@ impl DocumentElementContainer for InclusiveGateway {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4258,7 +4258,7 @@ impl DocumentElementContainer for InputSet {
         if let Some(e) = self.output_set_refss.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4278,7 +4278,7 @@ impl DocumentElement for DataInputRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for DataInputRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4298,7 +4298,7 @@ impl DocumentElement for OptionalInputRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for OptionalInputRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4318,7 +4318,7 @@ impl DocumentElement for WhileExecutingInputRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for WhileExecutingInputRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4338,7 +4338,7 @@ impl DocumentElement for OutputSetRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for OutputSetRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4376,7 +4376,7 @@ impl DocumentElementContainer for Interface {
         if let Some(e) = self.operations.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4443,7 +4443,7 @@ impl DocumentElementContainer for IntermediateCatchEvent {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4508,7 +4508,7 @@ impl DocumentElementContainer for IntermediateThrowEvent {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4544,7 +4544,7 @@ impl DocumentElementContainer for IoBinding {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4593,7 +4593,7 @@ impl DocumentElementContainer for IoSpecification {
         if let Some(e) = self.output_sets.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4629,7 +4629,7 @@ impl DocumentElementContainer for ItemDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4677,7 +4677,7 @@ impl DocumentElementContainer for Lane {
         if let Some(e) = self.child_lane_set.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4712,7 +4712,7 @@ impl DocumentElementContainer for PartitionElement {
         if let Some(e) = self.extension_elements.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4732,7 +4732,7 @@ impl DocumentElement for FlowNodeRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for FlowNodeRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4768,7 +4768,7 @@ impl DocumentElementContainer for ChildLaneSet {
         if let Some(e) = self.lanes.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4804,7 +4804,7 @@ impl DocumentElementContainer for LaneSet {
         if let Some(e) = self.lanes.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4845,7 +4845,7 @@ impl DocumentElementContainer for LinkEventDefinition {
         if let Some(e) = self.target.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4865,7 +4865,7 @@ impl DocumentElement for Source {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Source {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4885,7 +4885,7 @@ impl DocumentElement for Target {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Target {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -4969,7 +4969,7 @@ impl DocumentElementContainer for ManualTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5003,7 +5003,7 @@ impl DocumentElementContainer for Message {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5039,7 +5039,7 @@ impl DocumentElementContainer for MessageEventDefinition {
         if let Some(e) = self.operation_ref.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5059,7 +5059,7 @@ impl DocumentElement for OperationRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for OperationRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5097,7 +5097,7 @@ impl DocumentElementContainer for MessageFlow {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5131,7 +5131,7 @@ impl DocumentElementContainer for MessageFlowAssociation {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5161,7 +5161,7 @@ impl DocumentElementContainer for Monitoring {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5233,7 +5233,7 @@ impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
         if let Some(e) = self.completion_condition.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5263,7 +5263,7 @@ impl DocumentElementContainer for LoopCardinality {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5283,7 +5283,7 @@ impl DocumentElement for LoopDataInputRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for LoopDataInputRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5303,7 +5303,7 @@ impl DocumentElement for LoopDataOutputRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for LoopDataOutputRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5343,7 +5343,7 @@ impl DocumentElementContainer for InputDataItem {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5383,7 +5383,7 @@ impl DocumentElementContainer for OutputDataItem {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5431,7 +5431,7 @@ impl DocumentElementContainer for Operation {
         if let Some(e) = self.error_refs.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5451,7 +5451,7 @@ impl DocumentElement for InMessageRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for InMessageRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5471,7 +5471,7 @@ impl DocumentElement for OutMessageRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for OutMessageRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5491,7 +5491,7 @@ impl DocumentElement for ErrorRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for ErrorRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5542,7 +5542,7 @@ impl DocumentElementContainer for OutputSet {
         if let Some(e) = self.input_set_refss.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5562,7 +5562,7 @@ impl DocumentElement for DataOutputRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for DataOutputRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5582,7 +5582,7 @@ impl DocumentElement for OptionalOutputRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for OptionalOutputRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5602,7 +5602,7 @@ impl DocumentElement for WhileExecutingOutputRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for WhileExecutingOutputRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5622,7 +5622,7 @@ impl DocumentElement for InputSetRefs {
 #[allow(unused_variables)]
 impl DocumentElementContainer for InputSetRefs {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5666,7 +5666,7 @@ impl DocumentElementContainer for ParallelGateway {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5714,7 +5714,7 @@ impl DocumentElementContainer for Participant {
         if let Some(e) = self.participant_multiplicity.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5734,7 +5734,7 @@ impl DocumentElement for InterfaceRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for InterfaceRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5754,7 +5754,7 @@ impl DocumentElement for EndPointRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for EndPointRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5793,7 +5793,7 @@ impl DocumentElementContainer for ParticipantAssociation {
         if let Some(e) = self.outer_participant_ref.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5813,7 +5813,7 @@ impl DocumentElement for InnerParticipantRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for InnerParticipantRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5833,7 +5833,7 @@ impl DocumentElement for OuterParticipantRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for OuterParticipantRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5867,7 +5867,7 @@ impl DocumentElementContainer for ParticipantMultiplicity {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5903,7 +5903,7 @@ impl DocumentElementContainer for PartnerEntity {
         if let Some(e) = self.participant_refs.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5939,7 +5939,7 @@ impl DocumentElementContainer for PartnerRole {
         if let Some(e) = self.participant_refs.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -5977,7 +5977,7 @@ impl DocumentElementContainer for Performer {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6015,7 +6015,7 @@ impl DocumentElementContainer for PotentialOwner {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6141,7 +6141,7 @@ impl DocumentElementContainer for Process {
         if let Some(e) = self.supportss.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6161,7 +6161,7 @@ impl DocumentElement for Supports {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Supports {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6199,7 +6199,7 @@ impl DocumentElementContainer for Property {
         if let Some(e) = self.data_state.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6272,7 +6272,7 @@ impl DocumentElementContainer for ReceiveTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6315,7 +6315,7 @@ impl DocumentElementContainer for Relationship {
         if let Some(e) = self.targets.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6345,7 +6345,7 @@ impl DocumentElementContainer for Rendering {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6381,7 +6381,7 @@ impl DocumentElementContainer for Resource {
         if let Some(e) = self.resource_parameters.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6415,7 +6415,7 @@ impl DocumentElementContainer for ResourceAssignmentExpression {
         if let Some(e) = self.expression.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6451,7 +6451,7 @@ impl DocumentElementContainer for ResourceParameter {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6487,7 +6487,7 @@ impl DocumentElementContainer for ResourceParameterBinding {
         if let Some(e) = self.expression.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6533,7 +6533,7 @@ impl DocumentElementContainer for ResourceRole {
         if let Some(e) = self.resource_assignment_expression.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6553,7 +6553,7 @@ impl DocumentElement for ResourceRef {
 #[allow(unused_variables)]
 impl DocumentElementContainer for ResourceRef {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6700,7 +6700,7 @@ impl DocumentElementContainer for ScriptTask {
         if let Some(e) = self.script.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6720,7 +6720,7 @@ impl DocumentElement for Script {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Script {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6791,7 +6791,7 @@ impl DocumentElementContainer for SendTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6839,7 +6839,7 @@ impl DocumentElementContainer for SequenceFlow {
         if let Some(e) = self.condition_expression.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6869,7 +6869,7 @@ impl DocumentElementContainer for ConditionExpression {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6938,7 +6938,7 @@ impl DocumentElementContainer for ServiceTask {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -6972,7 +6972,7 @@ impl DocumentElementContainer for Signal {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7004,7 +7004,7 @@ impl DocumentElementContainer for SignalEventDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7042,7 +7042,7 @@ impl DocumentElementContainer for StandardLoopCharacteristics {
         if let Some(e) = self.loop_condition.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7072,7 +7072,7 @@ impl DocumentElementContainer for LoopCondition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7141,7 +7141,7 @@ impl DocumentElementContainer for StartEvent {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7236,7 +7236,7 @@ impl DocumentElementContainer for SubChoreography {
         if let Some(e) = self.artifacts.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7282,7 +7282,7 @@ impl DocumentElementContainer for SubConversation {
         if let Some(e) = self.conversation_nodes.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7399,7 +7399,7 @@ impl DocumentElementContainer for SubProcess {
         if let Some(e) = self.artifacts.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7464,7 +7464,7 @@ impl DocumentElementContainer for Task {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7494,7 +7494,7 @@ impl DocumentElementContainer for TerminateEventDefinition {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7530,7 +7530,7 @@ impl DocumentElementContainer for TextAnnotation {
         if let Some(e) = self.text.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7550,7 +7550,7 @@ impl DocumentElement for Text {
 #[allow(unused_variables)]
 impl DocumentElementContainer for Text {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7629,7 +7629,7 @@ impl DocumentElementContainer for ThrowEvent {
         if let Some(e) = self.event_definition_refs.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7673,7 +7673,7 @@ impl DocumentElementContainer for TimerEventDefinition {
         if let Some(e) = self.time_cycle.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7703,7 +7703,7 @@ impl DocumentElementContainer for TimeDate {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7733,7 +7733,7 @@ impl DocumentElementContainer for TimeDuration {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7763,7 +7763,7 @@ impl DocumentElementContainer for TimeCycle {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7874,7 +7874,7 @@ impl DocumentElementContainer for Transaction {
             }
         }
 
-        return None;
+        None
     }
 }
 /// Auto-generated from BPNM schema
@@ -7945,6 +7945,6 @@ impl DocumentElementContainer for UserTask {
         if let Some(e) = self.renderings.find_by_id(id) {
             return Some(e);
         }
-        return None;
+        None
     }
 }
