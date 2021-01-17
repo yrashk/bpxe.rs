@@ -86,6 +86,50 @@
         </xsl:for-each>
     </xsl:function>
     
+    <xsl:function name="local:elementName">
+        <xsl:param name="element"/>
+        <xsl:value-of select="if ($element/@ref) then $element/@ref else $element/@name"/>
+    </xsl:function>
+    
+    <xsl:function name="local:elementUnderscoreName">
+        <xsl:param name="element"/>
+        <xsl:choose> 
+            <xsl:when test="xs:string($element/@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase(local:elementName($element)))"/></xsl:when>
+            <xsl:otherwise><xsl:value-of select="local:underscoreCase(local:elementName($element))"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="local:elementType">
+        <xsl:param name="element"/>
+        <xsl:variable name="name" select="local:elementName($element)"/>
+        <xsl:variable name="subType" select="$element/@type"/>
+        <xsl:variable name="subType" select="if (not($subType)) then $schema/xs:element[@name = $name]/@type else $subType"/>
+        <xsl:variable name="subType" select="if (exists($schema/xs:complexType[@name = $subType])) then 
+            local:struct-case($subType)
+            else
+            local:struct-case($name)
+            "/>
+        <xsl:variable name="subType" select="if ($subType = '') then local:type($subType) else $subType"/>
+        <xsl:choose>
+            <xsl:when test="$element/@minOccurs = 0 and (not($element/@maxOccurs) or $element/@maxOccurs = '1')"><xsl:text>Option&lt;</xsl:text></xsl:when>
+            <xsl:when test="$element/@maxOccurs = 'unbounded'"><xsl:text>Vec&lt;</xsl:text></xsl:when>
+        </xsl:choose>
+        
+        <xsl:value-of select="$subType"/>
+        
+        <xsl:choose>
+            <xsl:when test="$element/@minOccurs = 0 and (not($element/@maxOccurs) or $element/@maxOccurs = '1')"><xsl:text>&gt;</xsl:text></xsl:when>
+            <xsl:when test="$element/@maxOccurs = 'unbounded'"><xsl:text>&gt;</xsl:text></xsl:when>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="local:attributes">
+        <xsl:param name="type"/>
+        <xsl:for-each select="$type//xs:attribute[@name]">
+            <xsl:sequence select="."/>
+        </xsl:for-each>
+    </xsl:function>
+    
     <xsl:function name="local:hasId">
         <xsl:param name="type"/>
         <xsl:choose>
@@ -109,6 +153,9 @@
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
             use strong_xml::XmlRead;
             use derive_more::AsRef;
+            use std::fmt::Debug;
+            use dyn_clone::DynClone;
+            use tia::Tia;
         </xsl:text>
         
         <!-- Generate enum with all elements -->
@@ -201,15 +248,22 @@
                     }
                     }</xsl:text>
                 
-                <xsl:text xml:space="preserve">pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                <xsl:text xml:space="preserve">
+                     /// Schema for `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
-                    <xsl:text>:</xsl:text>
                     <xsl:value-of select="local:struct-case($extTypeName)"/>
-                    <xsl:text>Type</xsl:text>
+                    <xsl:text>Type + </xsl:text>
                 </xsl:if>
-                <xsl:text>{}</xsl:text>
-                
+                <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
+                  <xsl:call-template name="traitFns">
+                      <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                <xsl:text>}</xsl:text>
+                <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
+                <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text xml:space="preserve">
@@ -217,7 +271,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
+                <xsl:text >#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($typeName)"/>
@@ -254,14 +308,23 @@
                 </xsl:text>
                 
                 
-                <xsl:text xml:space="preserve">pub trait </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                <xsl:text xml:space="preserve">
+                    /// Schema for `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
-                    <xsl:text>:</xsl:text>
                     <xsl:value-of select="local:struct-case($extTypeName)"/>
-                    <xsl:text>Type</xsl:text>
+                    <xsl:text>Type +</xsl:text>
                 </xsl:if>
-                <xsl:text>{}</xsl:text>                
+                <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
+                <xsl:call-template name="traitFns">
+                    <xsl:with-param name="type" select="$type"/>
+                </xsl:call-template>
+                <xsl:text>}</xsl:text>
+                <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
+                <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
+                
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -271,10 +334,14 @@
         <xsl:param name="typeName"></xsl:param>
         <xsl:if test="exists($type//xs:extension)">
             <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
-            <xsl:text xml:space="preserve">impl </xsl:text>
-            <xsl:value-of select="local:struct-case($extTypeName)"/>
-            <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
-            <xsl:text>{}</xsl:text>
+            <xsl:variable name="extType" select="$schema/xs:complexType[@name=$extTypeName]"/>
+            <xsl:if test="empty(local:attributes($extType)) and empty(local:elements($extType))">
+                <xsl:text xml:space="preserve">impl </xsl:text>
+                <xsl:value-of select="local:struct-case($extTypeName)"/>
+                <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text>{}</xsl:text>
+            </xsl:if>
+            
             <xsl:call-template name="traits">
                 <xsl:with-param name="type" select="$schema/xs:complexType[@name = $extTypeName]"></xsl:with-param>
                 <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
@@ -300,6 +367,8 @@
         <!-- Attributes -->
         <xsl:for-each select="$type//xs:attribute">
             <xsl:text>#[xml(attr = "</xsl:text><xsl:value-of select="@name"/><xsl:text>")]</xsl:text>
+            <xsl:text>#[tia("</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>Type",rg*="</xsl:text><xsl:value-of select="local:underscoreCase(@name)"/>
+            <xsl:text>")]</xsl:text>
             <xsl:text xml:space="preserve">pub </xsl:text>
             <xsl:value-of select="local:underscoreCase(@name)"/>
             <xsl:text>:</xsl:text>
@@ -312,16 +381,7 @@
         <xsl:variable name="subelements"
             select="$type//xs:element[@ref and not(contains(@ref, ':'))] | $type//xs:element[@name]"/>
         <xsl:for-each select="$subelements">
-            <xsl:variable name="tName" select="./@name"/>
-            <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
-            <xsl:variable name="subType" select="./@type"/>
-            <xsl:variable name="subType" select="if (not($subType)) then $schema/xs:element[@name = $name]/@type else $subType"/>
-            <xsl:variable name="subType" select="if (exists($schema/xs:complexType[@name = $subType])) then 
-                local:struct-case($subType)
-                else
-                local:struct-case($name)
-                "/>
-            <xsl:variable name="subType" select="if ($subType = '') then local:type($subType) else $subType"/>
+            <xsl:variable name="name" select="local:elementName(.)"/>
             <xsl:choose>
                 <xsl:when test="count($schema/xs:element[@substitutionGroup = $name]) > 1">
                     <xsl:text>#[xml(</xsl:text>
@@ -334,25 +394,12 @@
                     <xsl:text>#[xml(child = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:text xml:space="preserve">pub </xsl:text>
-            <xsl:choose> 
-                <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
-                <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
-            </xsl:choose>
+            <xsl:text>#[tia("</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>Type",rg*="</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/>
+            <xsl:text>")]</xsl:text>
+            <xsl:text xml:space="preserve">pub </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/>
             <xsl:text>:</xsl:text>
             
-            <xsl:choose>
-                <xsl:when test="./@minOccurs = 0 and (not(./@maxOccurs) or ./@maxOccurs = '1')">Option&lt;</xsl:when>
-                <xsl:when test="./@maxOccurs = 'unbounded'">Vec&lt;</xsl:when>
-            </xsl:choose>
-            
-            <xsl:value-of select="$subType"/>
-            
-            <xsl:choose>
-                <xsl:when test="./@minOccurs = 0 and (not(./@maxOccurs) or ./@maxOccurs = '1')">&gt;</xsl:when>
-                <xsl:when test="./@maxOccurs = 'unbounded'">&gt;</xsl:when>
-            </xsl:choose>
-            
+            <xsl:value-of select="local:elementType(.)"/>
             
             
             <xsl:text>,</xsl:text>
@@ -397,17 +444,17 @@
             <xsl:otherwise>
                 
                 <xsl:text> {
-            fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
-        </xsl:text>
+                    fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
+                </xsl:text>
                 
                 <xsl:if test="$id = true()">
                     <xsl:text>
-                if let Some(ref id_) = self.id {
-                if id_ == id {
-                return Some(self);
-                }
-                }
-            </xsl:text>
+                        if let Some(ref id_) = self.id {
+                        if id_ == id {
+                        return Some(self);
+                        }
+                        }
+                    </xsl:text>
                 </xsl:if>
                 
                 <xsl:for-each select="$elements">
@@ -419,16 +466,32 @@
                         <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
                     </xsl:choose>
                     <xsl:text>.find_by_id(id) {
-                return Some(e);
-                }</xsl:text>
+                        return Some(e);
+                        }</xsl:text>
                 </xsl:for-each>
                 <xsl:text>
-            None
-            }
-            }</xsl:text>
+                    None
+                    }
+                    }</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         
+    </xsl:template>
+    
+    <xsl:template name="traitFns">
+        <xsl:param name="type"/>
+        <xsl:for-each select="local:attributes($type)">
+            <xsl:text>/// Get value of attribute `</xsl:text><xsl:value-of select="./@name"/><xsl:text xml:space="preserve">`
+                      fn </xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
+            <xsl:value-of select="local:attributeType(.)"/><xsl:text>;</xsl:text>
+            
+        </xsl:for-each>
+        <xsl:for-each select="local:elements($type)">
+            <xsl:text>
+                      /// Get value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
+                      fn </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
+            <xsl:value-of select="local:elementType(.)"/><xsl:text>;</xsl:text>
+        </xsl:for-each>
     </xsl:template>
     
 </xsl:stylesheet>

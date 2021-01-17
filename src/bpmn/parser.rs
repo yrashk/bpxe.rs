@@ -1,4 +1,4 @@
-use super::*;
+use crate::bpmn::schema::Definitions;
 use strong_xml::XmlRead;
 use thiserror::Error;
 

@@ -1,6 +1,9 @@
 // This file is generated from BPMN 2.0 schema using `codegen.sh` script
 use derive_more::AsRef;
+use dyn_clone::DynClone;
+use std::fmt::Debug;
 use strong_xml::XmlRead;
+use tia::Tia;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Element {
     Definitions,
@@ -194,26 +197,35 @@ pub enum Element {
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:definitions")]
 pub struct Definitions {
     #[xml(attr = "id")]
+    #[tia("DefinitionsType",rg*="id")]
     pub id: Option<Id>,
     #[xml(attr = "name")]
+    #[tia("DefinitionsType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "targetNamespace")]
+    #[tia("DefinitionsType",rg*="target_namespace")]
     pub target_namespace: URI,
     #[xml(attr = "expressionLanguage")]
+    #[tia("DefinitionsType",rg*="expression_language")]
     pub expression_language: Option<URI>,
     #[xml(attr = "typeLanguage")]
+    #[tia("DefinitionsType",rg*="type_language")]
     pub type_language: Option<URI>,
     #[xml(attr = "exporter")]
+    #[tia("DefinitionsType",rg*="exporter")]
     pub exporter: Option<String>,
     #[xml(attr = "exporterVersion")]
+    #[tia("DefinitionsType",rg*="exporter_version")]
     pub exporter_version: Option<String>,
     #[xml(child = "bpmn:import")]
+    #[tia("DefinitionsType",rg*="imports")]
     pub imports: Vec<Import>,
     #[xml(child = "bpmn:extension")]
+    #[tia("DefinitionsType",rg*="extensions")]
     pub extensions: Vec<Extension>,
     #[xml(
         child = "bpmn:category",
@@ -238,8 +250,10 @@ pub struct Definitions {
         child = "bpmn:resource",
         child = "bpmn:signal"
     )]
+    #[tia("DefinitionsType",rg*="root_elements")]
     pub root_elements: Vec<RootElement>,
     #[xml(child = "bpmn:relationship")]
+    #[tia("DefinitionsType",rg*="relationships")]
     pub relationships: Vec<Relationship>,
 }
 impl DocumentElement for Definitions {
@@ -273,18 +287,48 @@ impl DocumentElementContainer for Definitions {
 // Traits
 
 //
-pub trait DefinitionsType {}
+
+/// Schema for `definitions`
+pub trait DefinitionsType: Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `id`
+    fn id(&self) -> &Option<Id>;
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `targetNamespace`
+    fn target_namespace(&self) -> &URI;
+    /// Get value of attribute `expressionLanguage`
+    fn expression_language(&self) -> &Option<URI>;
+    /// Get value of attribute `typeLanguage`
+    fn type_language(&self) -> &Option<URI>;
+    /// Get value of attribute `exporter`
+    fn exporter(&self) -> &Option<String>;
+    /// Get value of attribute `exporterVersion`
+    fn exporter_version(&self) -> &Option<String>;
+    /// Get value of `import` child
+    fn imports(&self) -> &Vec<Import>;
+    /// Get value of `extension` child
+    fn extensions(&self) -> &Vec<Extension>;
+    /// Get value of `rootElement` child
+    fn root_elements(&self) -> &Vec<RootElement>;
+    /// Get value of `relationship` child
+    fn relationships(&self) -> &Vec<Relationship>;
+}
+dyn_clone::clone_trait_object!(DefinitionsType);
+impl_downcast!(DefinitionsType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:import")]
 pub struct Import {
     #[xml(attr = "namespace")]
+    #[tia("ImportType",rg*="namespace")]
     pub namespace: URI,
     #[xml(attr = "location")]
+    #[tia("ImportType",rg*="location")]
     pub location: String,
     #[xml(attr = "importType")]
+    #[tia("ImportType",rg*="import_type")]
     pub import_type: URI,
 }
 impl DocumentElement for Import {
@@ -297,7 +341,18 @@ impl DocumentElementContainer for Import {}
 // Traits
 
 //
-pub trait ImportType {}
+
+/// Schema for `import`
+pub trait ImportType: Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `namespace`
+    fn namespace(&self) -> &URI;
+    /// Get value of attribute `location`
+    fn location(&self) -> &String;
+    /// Get value of attribute `importType`
+    fn import_type(&self) -> &URI;
+}
+dyn_clone::clone_trait_object!(ImportType);
+impl_downcast!(ImportType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -312,57 +367,102 @@ impl DocumentElementContainer for Activity {
         }
     }
 }
-pub trait ActivityType: FlowNodeType {}
+/// Schema for `activity`
+pub trait ActivityType: FlowNodeType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `isForCompensation`
+    fn is_for_compensation(&self) -> &Option<bool>;
+    /// Get value of attribute `startQuantity`
+    fn start_quantity(&self) -> &Option<Integer>;
+    /// Get value of attribute `completionQuantity`
+    fn completion_quantity(&self) -> &Option<Integer>;
+    /// Get value of attribute `default`
+    fn default(&self) -> &Option<String>;
+    /// Get value of `ioSpecification` child
+    fn io_specification(&self) -> &Option<InputOutputSpecification>;
+    /// Get value of `property` child
+    fn properies(&self) -> &Vec<Property>;
+    /// Get value of `dataInputAssociation` child
+    fn data_input_associations(&self) -> &Vec<DataInputAssociation>;
+    /// Get value of `dataOutputAssociation` child
+    fn data_output_associations(&self) -> &Vec<DataOutputAssociation>;
+    /// Get value of `resourceRole` child
+    fn resource_roles(&self) -> &Vec<ResourceRole>;
+    /// Get value of `loopCharacteristics` child
+    fn loop_characteristics(&self) -> &Option<LoopCharacteristics>;
+}
+dyn_clone::clone_trait_object!(ActivityType);
+impl_downcast!(ActivityType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:adHocSubProcess")]
 pub struct AdHocSubProcess {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "triggeredByEvent")]
+    #[tia("SubProcessType",rg*="triggered_byevent")]
     pub triggered_byevent: Option<bool>,
     #[xml(child = "bpmn:laneSet")]
+    #[tia("SubProcessType",rg*="lane_sets")]
     pub lane_sets: Vec<LaneSet>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -397,18 +497,23 @@ pub struct AdHocSubProcess {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("SubProcessType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("SubProcessType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(attr = "cancelRemainingInstances")]
+    #[tia("AdHocSubProcessType",rg*="cancel_remaining_instances")]
     pub cancel_remaining_instances: Option<bool>,
     #[xml(attr = "ordering")]
+    #[tia("AdHocSubProcessType",rg*="ordering")]
     pub ordering: Option<String>,
     #[xml(child = "bpmn:completionCondition")]
+    #[tia("AdHocSubProcessType",rg*="completion_condition")]
     pub completion_condition: Option<Expression>,
 }
 impl DocumentElement for AdHocSubProcess {
@@ -431,13 +536,20 @@ impl DocumentElementContainer for AdHocSubProcess {
     }
 }
 // Traits
-impl SubProcessType for AdHocSubProcess {}
-impl ActivityType for AdHocSubProcess {}
-impl FlowNodeType for AdHocSubProcess {}
-impl FlowElementType for AdHocSubProcess {}
-impl BaseElementType for AdHocSubProcess {}
+
 //
-pub trait AdHocSubProcessType: SubProcessType {}
+
+/// Schema for `adHocSubProcess`
+pub trait AdHocSubProcessType: SubProcessType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `cancelRemainingInstances`
+    fn cancel_remaining_instances(&self) -> &Option<bool>;
+    /// Get value of attribute `ordering`
+    fn ordering(&self) -> &Option<String>;
+    /// Get value of `completionCondition` child
+    fn completion_condition(&self) -> &Option<Expression>;
+}
+dyn_clone::clone_trait_object!(AdHocSubProcessType);
+impl_downcast!(AdHocSubProcessType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -463,22 +575,30 @@ impl DocumentElementContainer for Artifact {
         }
     }
 }
-pub trait ArtifactType: BaseElementType {}
+/// Schema for `artifact`
+pub trait ArtifactType: BaseElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ArtifactType);
+impl_downcast!(ArtifactType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:assignment")]
 pub struct Assignment {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:from")]
+    #[tia("AssignmentType",rg*="from")]
     pub from: Expression,
     #[xml(child = "bpmn:to")]
+    #[tia("AssignmentType",rg*="to")]
     pub to: Expression,
 }
 impl DocumentElement for Assignment {
@@ -504,26 +624,41 @@ impl DocumentElementContainer for Assignment {
     }
 }
 // Traits
-impl BaseElementType for Assignment {}
+
 //
-pub trait AssignmentType: BaseElementType {}
+
+/// Schema for `assignment`
+pub trait AssignmentType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of `from` child
+    fn from(&self) -> &Expression;
+    /// Get value of `to` child
+    fn to(&self) -> &Expression;
+}
+dyn_clone::clone_trait_object!(AssignmentType);
+impl_downcast!(AssignmentType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:association")]
 pub struct Association {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "sourceRef")]
+    #[tia("AssociationType",rg*="source_ref")]
     pub source_ref: String,
     #[xml(attr = "targetRef")]
+    #[tia("AssociationType",rg*="target_ref")]
     pub target_ref: String,
     #[xml(attr = "associationDirection")]
+    #[tia("AssociationType",rg*="association_direction")]
     pub association_direction: Option<String>,
 }
 impl DocumentElement for Association {
@@ -545,20 +680,33 @@ impl DocumentElementContainer for Association {
 }
 // Traits
 impl ArtifactType for Association {}
-impl BaseElementType for Association {}
 //
-pub trait AssociationType: ArtifactType {}
+
+/// Schema for `association`
+pub trait AssociationType: ArtifactType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `sourceRef`
+    fn source_ref(&self) -> &String;
+    /// Get value of attribute `targetRef`
+    fn target_ref(&self) -> &String;
+    /// Get value of attribute `associationDirection`
+    fn association_direction(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(AssociationType);
+impl_downcast!(AssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:auditing")]
 pub struct Auditing {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for Auditing {
@@ -579,9 +727,13 @@ impl DocumentElementContainer for Auditing {
     }
 }
 // Traits
-impl BaseElementType for Auditing {}
+
 //
-pub trait AuditingType: BaseElementType {}
+
+/// Schema for `auditing`
+pub trait AuditingType: BaseElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(AuditingType);
+impl_downcast!(AuditingType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -596,7 +748,17 @@ impl DocumentElementContainer for BaseElement {
         }
     }
 }
-pub trait BaseElementType {}
+/// Schema for `baseElement`
+pub trait BaseElementType: Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `id`
+    fn id(&self) -> &Option<Id>;
+    /// Get value of `documentation` child
+    fn documentations(&self) -> &Vec<Documentation>;
+    /// Get value of `extensionElements` child
+    fn extension_elements(&self) -> &Option<ExtensionElements>;
+}
+dyn_clone::clone_trait_object!(BaseElementType);
+impl_downcast!(BaseElementType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -611,40 +773,64 @@ impl DocumentElementContainer for BaseElementWithMixedContent {
         }
     }
 }
-pub trait BaseElementWithMixedContentType {}
+/// Schema for `baseElementWithMixedContent`
+pub trait BaseElementWithMixedContentType: Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `id`
+    fn id(&self) -> &Option<Id>;
+    /// Get value of `documentation` child
+    fn documentations(&self) -> &Vec<Documentation>;
+    /// Get value of `extensionElements` child
+    fn extension_elements(&self) -> &Option<ExtensionElements>;
+}
+dyn_clone::clone_trait_object!(BaseElementWithMixedContentType);
+impl_downcast!(BaseElementWithMixedContentType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:boundaryEvent")]
 pub struct BoundaryEvent {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(child = "bpmn:property")]
+    #[tia("EventType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(attr = "parallelMultiple")]
+    #[tia("CatchEventType",rg*="parallel_multiple")]
     pub parallel_multiple: Option<bool>,
     #[xml(child = "bpmn:dataOutput")]
+    #[tia("CatchEventType",rg*="data_outputs")]
     pub data_outputs: Vec<DataOutput>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("CatchEventType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:outputSet")]
+    #[tia("CatchEventType",rg*="output_set")]
     pub output_set: Option<OutputSet>,
     #[xml(
         child = "bpmn:cancelEventDefinition",
@@ -658,12 +844,16 @@ pub struct BoundaryEvent {
         child = "bpmn:terminateEventDefinition",
         child = "bpmn:timerEventDefinition"
     )]
+    #[tia("CatchEventType",rg*="event_definitions")]
     pub event_definitions: Vec<EventDefinition>,
     #[xml(child = "bpmn:eventDefinitionRef")]
+    #[tia("CatchEventType",rg*="event_definition_refs")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
     #[xml(attr = "cancelActivity")]
+    #[tia("BoundaryEventType",rg*="cancel_activity")]
     pub cancel_activity: Option<bool>,
     #[xml(attr = "attachedToRef")]
+    #[tia("BoundaryEventType",rg*="attached_toref")]
     pub attached_toref: String,
 }
 impl DocumentElement for BoundaryEvent {
@@ -684,61 +874,86 @@ impl DocumentElementContainer for BoundaryEvent {
     }
 }
 // Traits
-impl CatchEventType for BoundaryEvent {}
-impl EventType for BoundaryEvent {}
-impl FlowNodeType for BoundaryEvent {}
-impl FlowElementType for BoundaryEvent {}
-impl BaseElementType for BoundaryEvent {}
+
 //
-pub trait BoundaryEventType: CatchEventType {}
+
+/// Schema for `boundaryEvent`
+pub trait BoundaryEventType: CatchEventType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `cancelActivity`
+    fn cancel_activity(&self) -> &Option<bool>;
+    /// Get value of attribute `attachedToRef`
+    fn attached_toref(&self) -> &String;
+}
+dyn_clone::clone_trait_object!(BoundaryEventType);
+impl_downcast!(BoundaryEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:businessRuleTask")]
 pub struct BusinessRuleTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "implementation")]
+    #[tia("BusinessRuleTaskType",rg*="implementation")]
     pub implementation: Option<String>,
 }
 impl DocumentElement for BusinessRuleTask {
@@ -760,31 +975,41 @@ impl DocumentElementContainer for BusinessRuleTask {
 }
 // Traits
 impl TaskType for BusinessRuleTask {}
-impl ActivityType for BusinessRuleTask {}
-impl FlowNodeType for BusinessRuleTask {}
-impl FlowElementType for BusinessRuleTask {}
-impl BaseElementType for BusinessRuleTask {}
 //
-pub trait BusinessRuleTaskType: TaskType {}
+
+/// Schema for `businessRuleTask`
+pub trait BusinessRuleTaskType: TaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(BusinessRuleTaskType);
+impl_downcast!(BusinessRuleTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callableElement")]
 pub struct CallableElement {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
 }
 impl DocumentElement for CallableElement {
@@ -814,57 +1039,89 @@ impl DocumentElementContainer for CallableElement {
 }
 // Traits
 impl RootElementType for CallableElement {}
-impl BaseElementType for CallableElement {}
 //
-pub trait CallableElementType: RootElementType {}
+
+/// Schema for `callableElement`
+pub trait CallableElementType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `supportedInterfaceRef` child
+    fn supported_interface_refs(&self) -> &Vec<SupportedInterfaceRef>;
+    /// Get value of `ioSpecification` child
+    fn io_specification(&self) -> &Option<InputOutputSpecification>;
+    /// Get value of `ioBinding` child
+    fn io_bindings(&self) -> &Vec<InputOutputBinding>;
+}
+dyn_clone::clone_trait_object!(CallableElementType);
+impl_downcast!(CallableElementType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callActivity")]
 pub struct CallActivity {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "calledElement")]
+    #[tia("CallActivityType",rg*="called_element")]
     pub called_element: Option<String>,
 }
 impl DocumentElement for CallActivity {
@@ -885,47 +1142,66 @@ impl DocumentElementContainer for CallActivity {
     }
 }
 // Traits
-impl ActivityType for CallActivity {}
-impl FlowNodeType for CallActivity {}
-impl FlowElementType for CallActivity {}
-impl BaseElementType for CallActivity {}
+
 //
-pub trait CallActivityType: ActivityType {}
+
+/// Schema for `callActivity`
+pub trait CallActivityType: ActivityType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `calledElement`
+    fn called_element(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(CallActivityType);
+impl_downcast!(CallActivityType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callChoreography")]
 pub struct CallChoreography {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "initiatingParticipantRef")]
+    #[tia("ChoreographyActivityType",rg*="initiating_participant_ref")]
     pub initiating_participant_ref: String,
     #[xml(attr = "loopType")]
+    #[tia("ChoreographyActivityType",rg*="loop_type")]
     pub loop_type: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("ChoreographyActivityType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("ChoreographyActivityType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(attr = "calledChoreographyRef")]
+    #[tia("CallChoreographyType",rg*="called_choreography_ref")]
     pub called_choreography_ref: Option<String>,
     #[xml(child = "bpmn:participantAssociation")]
+    #[tia("CallChoreographyType",rg*="participant_associations")]
     pub participant_associations: Vec<ParticipantAssociation>,
 }
 impl DocumentElement for CallChoreography {
@@ -948,35 +1224,52 @@ impl DocumentElementContainer for CallChoreography {
     }
 }
 // Traits
-impl ChoreographyActivityType for CallChoreography {}
-impl FlowNodeType for CallChoreography {}
-impl FlowElementType for CallChoreography {}
-impl BaseElementType for CallChoreography {}
+
 //
-pub trait CallChoreographyType: ChoreographyActivityType {}
+
+/// Schema for `callChoreography`
+pub trait CallChoreographyType:
+    ChoreographyActivityType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `calledChoreographyRef`
+    fn called_choreography_ref(&self) -> &Option<String>;
+    /// Get value of `participantAssociation` child
+    fn participant_associations(&self) -> &Vec<ParticipantAssociation>;
+}
+dyn_clone::clone_trait_object!(CallChoreographyType);
+impl_downcast!(CallChoreographyType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:callConversation")]
 pub struct CallConversation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ConversationNodeType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("ConversationNodeType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
     #[xml(child = "bpmn:messageFlowRef")]
+    #[tia("ConversationNodeType",rg*="message_flow_refs")]
     pub message_flow_refs: Vec<MessageFlowRef>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("ConversationNodeType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(attr = "calledCollaborationRef")]
+    #[tia("CallConversationType",rg*="called_collaboration_ref")]
     pub called_collaboration_ref: Option<String>,
     #[xml(child = "bpmn:participantAssociation")]
+    #[tia("CallConversationType",rg*="participant_associations")]
     pub participant_associations: Vec<ParticipantAssociation>,
 }
 impl DocumentElement for CallConversation {
@@ -999,21 +1292,32 @@ impl DocumentElementContainer for CallConversation {
     }
 }
 // Traits
-impl ConversationNodeType for CallConversation {}
-impl BaseElementType for CallConversation {}
+
 //
-pub trait CallConversationType: ConversationNodeType {}
+
+/// Schema for `callConversation`
+pub trait CallConversationType: ConversationNodeType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `calledCollaborationRef`
+    fn called_collaboration_ref(&self) -> &Option<String>;
+    /// Get value of `participantAssociation` child
+    fn participant_associations(&self) -> &Vec<ParticipantAssociation>;
+}
+dyn_clone::clone_trait_object!(CallConversationType);
+impl_downcast!(CallConversationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:cancelEventDefinition")]
 pub struct CancelEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for CancelEventDefinition {
@@ -1036,9 +1340,15 @@ impl DocumentElementContainer for CancelEventDefinition {
 // Traits
 impl EventDefinitionType for CancelEventDefinition {}
 impl RootElementType for CancelEventDefinition {}
-impl BaseElementType for CancelEventDefinition {}
 //
-pub trait CancelEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `cancelEventDefinition`
+pub trait CancelEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+}
+dyn_clone::clone_trait_object!(CancelEventDefinitionType);
+impl_downcast!(CancelEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1053,22 +1363,43 @@ impl DocumentElementContainer for CatchEvent {
         }
     }
 }
-pub trait CatchEventType: EventType {}
+/// Schema for `catchEvent`
+pub trait CatchEventType: EventType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `parallelMultiple`
+    fn parallel_multiple(&self) -> &Option<bool>;
+    /// Get value of `dataOutput` child
+    fn data_outputs(&self) -> &Vec<DataOutput>;
+    /// Get value of `dataOutputAssociation` child
+    fn data_output_associations(&self) -> &Vec<DataOutputAssociation>;
+    /// Get value of `outputSet` child
+    fn output_set(&self) -> &Option<OutputSet>;
+    /// Get value of `eventDefinition` child
+    fn event_definitions(&self) -> &Vec<EventDefinition>;
+    /// Get value of `eventDefinitionRef` child
+    fn event_definition_refs(&self) -> &Vec<EventDefinitionRef>;
+}
+dyn_clone::clone_trait_object!(CatchEventType);
+impl_downcast!(CatchEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:category")]
 pub struct Category {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CategoryType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:categoryValue")]
+    #[tia("CategoryType",rg*="category_values")]
     pub category_values: Vec<CategoryValue>,
 }
 impl DocumentElement for Category {
@@ -1092,22 +1423,34 @@ impl DocumentElementContainer for Category {
 }
 // Traits
 impl RootElementType for Category {}
-impl BaseElementType for Category {}
 //
-pub trait CategoryType: RootElementType {}
+
+/// Schema for `category`
+pub trait CategoryType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `categoryValue` child
+    fn category_values(&self) -> &Vec<CategoryValue>;
+}
+dyn_clone::clone_trait_object!(CategoryType);
+impl_downcast!(CategoryType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:categoryValue")]
 pub struct CategoryValue {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "value")]
+    #[tia("CategoryValueType",rg*="value")]
     pub value: Option<String>,
 }
 impl DocumentElement for CategoryValue {
@@ -1128,52 +1471,74 @@ impl DocumentElementContainer for CategoryValue {
     }
 }
 // Traits
-impl BaseElementType for CategoryValue {}
+
 //
-pub trait CategoryValueType: BaseElementType {}
+
+/// Schema for `categoryValue`
+pub trait CategoryValueType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `value`
+    fn value(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(CategoryValueType);
+impl_downcast!(CategoryValueType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreography")]
 pub struct Choreography {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CollaborationType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "isClosed")]
+    #[tia("CollaborationType",rg*="is_closed")]
     pub is_closed: Option<bool>,
     #[xml(child = "bpmn:participant")]
+    #[tia("CollaborationType",rg*="participants")]
     pub participants: Vec<Participant>,
     #[xml(child = "bpmn:messageFlow")]
+    #[tia("CollaborationType",rg*="message_flows")]
     pub message_flows: Vec<MessageFlow>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("CollaborationType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(
         child = "bpmn:callConversation",
         child = "bpmn:conversation",
         child = "bpmn:subConversation"
     )]
+    #[tia("CollaborationType",rg*="conversation_nodes")]
     pub conversation_nodes: Vec<ConversationNode>,
     #[xml(child = "bpmn:conversationAssociation")]
+    #[tia("CollaborationType",rg*="conversation_associations")]
     pub conversation_associations: Vec<ConversationAssociation>,
     #[xml(child = "bpmn:participantAssociation")]
+    #[tia("CollaborationType",rg*="participant_associations")]
     pub participant_associations: Vec<ParticipantAssociation>,
     #[xml(child = "bpmn:messageFlowAssociation")]
+    #[tia("CollaborationType",rg*="message_flow_associations")]
     pub message_flow_associations: Vec<MessageFlowAssociation>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("CollaborationType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(child = "bpmn:choreographyRef")]
+    #[tia("CollaborationType",rg*="choreography_refs")]
     pub choreography_refs: Vec<ChoreographyRef>,
     #[xml(child = "bpmn:conversationLink")]
+    #[tia("CollaborationType",rg*="conversation_links")]
     pub conversation_links: Vec<ConversationLink>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -1208,6 +1573,7 @@ pub struct Choreography {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("ChoreographyType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
 }
 impl DocumentElement for Choreography {
@@ -1230,11 +1596,16 @@ impl DocumentElementContainer for Choreography {
     }
 }
 // Traits
-impl CollaborationType for Choreography {}
 impl RootElementType for Choreography {}
-impl BaseElementType for Choreography {}
 //
-pub trait ChoreographyType: CollaborationType {}
+
+/// Schema for `choreography`
+pub trait ChoreographyType: CollaborationType + Downcast + Debug + Send + DynClone {
+    /// Get value of `flowElement` child
+    fn flow_elements(&self) -> &Vec<FlowElement>;
+}
+dyn_clone::clone_trait_object!(ChoreographyType);
+impl_downcast!(ChoreographyType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1249,40 +1620,66 @@ impl DocumentElementContainer for ChoreographyActivity {
         }
     }
 }
-pub trait ChoreographyActivityType: FlowNodeType {}
+/// Schema for `choreographyActivity`
+pub trait ChoreographyActivityType: FlowNodeType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `initiatingParticipantRef`
+    fn initiating_participant_ref(&self) -> &String;
+    /// Get value of attribute `loopType`
+    fn loop_type(&self) -> &Option<String>;
+    /// Get value of `participantRef` child
+    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+    /// Get value of `correlationKey` child
+    fn correlation_keys(&self) -> &Vec<CorrelationKey>;
+}
+dyn_clone::clone_trait_object!(ChoreographyActivityType);
+impl_downcast!(ChoreographyActivityType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyTask")]
 pub struct ChoreographyTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "initiatingParticipantRef")]
+    #[tia("ChoreographyActivityType",rg*="initiating_participant_ref")]
     pub initiating_participant_ref: String,
     #[xml(attr = "loopType")]
+    #[tia("ChoreographyActivityType",rg*="loop_type")]
     pub loop_type: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("ChoreographyActivityType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("ChoreographyActivityType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(child = "bpmn:messageFlowRef")]
+    #[tia("ChoreographyTaskType",rg*="message_flow_ref")]
     pub message_flow_ref: MessageFlowRef,
 }
 impl DocumentElement for ChoreographyTask {
@@ -1305,55 +1702,76 @@ impl DocumentElementContainer for ChoreographyTask {
     }
 }
 // Traits
-impl ChoreographyActivityType for ChoreographyTask {}
-impl FlowNodeType for ChoreographyTask {}
-impl FlowElementType for ChoreographyTask {}
-impl BaseElementType for ChoreographyTask {}
+
 //
-pub trait ChoreographyTaskType: ChoreographyActivityType {}
+
+/// Schema for `choreographyTask`
+pub trait ChoreographyTaskType:
+    ChoreographyActivityType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `messageFlowRef` child
+    fn message_flow_ref(&self) -> &MessageFlowRef;
+}
+dyn_clone::clone_trait_object!(ChoreographyTaskType);
+impl_downcast!(ChoreographyTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:collaboration")]
 pub struct Collaboration {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CollaborationType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "isClosed")]
+    #[tia("CollaborationType",rg*="is_closed")]
     pub is_closed: Option<bool>,
     #[xml(child = "bpmn:participant")]
+    #[tia("CollaborationType",rg*="participants")]
     pub participants: Vec<Participant>,
     #[xml(child = "bpmn:messageFlow")]
+    #[tia("CollaborationType",rg*="message_flows")]
     pub message_flows: Vec<MessageFlow>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("CollaborationType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(
         child = "bpmn:callConversation",
         child = "bpmn:conversation",
         child = "bpmn:subConversation"
     )]
+    #[tia("CollaborationType",rg*="conversation_nodes")]
     pub conversation_nodes: Vec<ConversationNode>,
     #[xml(child = "bpmn:conversationAssociation")]
+    #[tia("CollaborationType",rg*="conversation_associations")]
     pub conversation_associations: Vec<ConversationAssociation>,
     #[xml(child = "bpmn:participantAssociation")]
+    #[tia("CollaborationType",rg*="participant_associations")]
     pub participant_associations: Vec<ParticipantAssociation>,
     #[xml(child = "bpmn:messageFlowAssociation")]
+    #[tia("CollaborationType",rg*="message_flow_associations")]
     pub message_flow_associations: Vec<MessageFlowAssociation>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("CollaborationType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(child = "bpmn:choreographyRef")]
+    #[tia("CollaborationType",rg*="choreography_refs")]
     pub choreography_refs: Vec<ChoreographyRef>,
     #[xml(child = "bpmn:conversationLink")]
+    #[tia("CollaborationType",rg*="conversation_links")]
     pub conversation_links: Vec<ConversationLink>,
 }
 impl DocumentElement for Collaboration {
@@ -1404,24 +1822,57 @@ impl DocumentElementContainer for Collaboration {
 }
 // Traits
 impl RootElementType for Collaboration {}
-impl BaseElementType for Collaboration {}
 //
-pub trait CollaborationType: RootElementType {}
+
+/// Schema for `collaboration`
+pub trait CollaborationType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `isClosed`
+    fn is_closed(&self) -> &Option<bool>;
+    /// Get value of `participant` child
+    fn participants(&self) -> &Vec<Participant>;
+    /// Get value of `messageFlow` child
+    fn message_flows(&self) -> &Vec<MessageFlow>;
+    /// Get value of `artifact` child
+    fn artifacts(&self) -> &Vec<Artifact>;
+    /// Get value of `conversationNode` child
+    fn conversation_nodes(&self) -> &Vec<ConversationNode>;
+    /// Get value of `conversationAssociation` child
+    fn conversation_associations(&self) -> &Vec<ConversationAssociation>;
+    /// Get value of `participantAssociation` child
+    fn participant_associations(&self) -> &Vec<ParticipantAssociation>;
+    /// Get value of `messageFlowAssociation` child
+    fn message_flow_associations(&self) -> &Vec<MessageFlowAssociation>;
+    /// Get value of `correlationKey` child
+    fn correlation_keys(&self) -> &Vec<CorrelationKey>;
+    /// Get value of `choreographyRef` child
+    fn choreography_refs(&self) -> &Vec<ChoreographyRef>;
+    /// Get value of `conversationLink` child
+    fn conversation_links(&self) -> &Vec<ConversationLink>;
+}
+dyn_clone::clone_trait_object!(CollaborationType);
+impl_downcast!(CollaborationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:compensateEventDefinition")]
 pub struct CompensateEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "waitForCompletion")]
+    #[tia("CompensateEventDefinitionType",rg*="wait_for_completion")]
     pub wait_for_completion: Option<bool>,
     #[xml(attr = "activityRef")]
+    #[tia("CompensateEventDefinitionType",rg*="activity_ref")]
     pub activity_ref: Option<String>,
 }
 impl DocumentElement for CompensateEventDefinition {
@@ -1444,24 +1895,39 @@ impl DocumentElementContainer for CompensateEventDefinition {
 // Traits
 impl EventDefinitionType for CompensateEventDefinition {}
 impl RootElementType for CompensateEventDefinition {}
-impl BaseElementType for CompensateEventDefinition {}
 //
-pub trait CompensateEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `compensateEventDefinition`
+pub trait CompensateEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `waitForCompletion`
+    fn wait_for_completion(&self) -> &Option<bool>;
+    /// Get value of attribute `activityRef`
+    fn activity_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(CompensateEventDefinitionType);
+impl_downcast!(CompensateEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:complexBehaviorDefinition")]
 pub struct ComplexBehaviorDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:condition")]
+    #[tia("ComplexBehaviorDefinitionType",rg*="condition")]
     pub condition: FormalExpression,
     #[xml(child = "bpmn:event")]
+    #[tia("ComplexBehaviorDefinitionType",rg*="event")]
     pub event: Option<ImplicitThrowEvent>,
 }
 impl DocumentElement for ComplexBehaviorDefinition {
@@ -1487,38 +1953,61 @@ impl DocumentElementContainer for ComplexBehaviorDefinition {
     }
 }
 // Traits
-impl BaseElementType for ComplexBehaviorDefinition {}
+
 //
-pub trait ComplexBehaviorDefinitionType: BaseElementType {}
+
+/// Schema for `complexBehaviorDefinition`
+pub trait ComplexBehaviorDefinitionType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `condition` child
+    fn condition(&self) -> &FormalExpression;
+    /// Get value of `event` child
+    fn event(&self) -> &Option<ImplicitThrowEvent>;
+}
+dyn_clone::clone_trait_object!(ComplexBehaviorDefinitionType);
+impl_downcast!(ComplexBehaviorDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:complexGateway")]
 pub struct ComplexGateway {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "gatewayDirection")]
+    #[tia("GatewayType",rg*="gateway_direction")]
     pub gateway_direction: Option<String>,
     #[xml(attr = "default")]
+    #[tia("ComplexGatewayType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:activationCondition")]
+    #[tia("ComplexGatewayType",rg*="activation_condition")]
     pub activation_condition: Option<Expression>,
 }
 impl DocumentElement for ComplexGateway {
@@ -1541,25 +2030,35 @@ impl DocumentElementContainer for ComplexGateway {
     }
 }
 // Traits
-impl GatewayType for ComplexGateway {}
-impl FlowNodeType for ComplexGateway {}
-impl FlowElementType for ComplexGateway {}
-impl BaseElementType for ComplexGateway {}
+
 //
-pub trait ComplexGatewayType: GatewayType {}
+
+/// Schema for `complexGateway`
+pub trait ComplexGatewayType: GatewayType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `default`
+    fn default(&self) -> &Option<String>;
+    /// Get value of `activationCondition` child
+    fn activation_condition(&self) -> &Option<Expression>;
+}
+dyn_clone::clone_trait_object!(ComplexGatewayType);
+impl_downcast!(ComplexGatewayType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conditionalEventDefinition")]
 pub struct ConditionalEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:condition")]
+    #[tia("ConditionalEventDefinitionType",rg*="condition")]
     pub condition: Expression,
 }
 impl DocumentElement for ConditionalEventDefinition {
@@ -1584,28 +2083,43 @@ impl DocumentElementContainer for ConditionalEventDefinition {
 // Traits
 impl EventDefinitionType for ConditionalEventDefinition {}
 impl RootElementType for ConditionalEventDefinition {}
-impl BaseElementType for ConditionalEventDefinition {}
 //
-pub trait ConditionalEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `conditionalEventDefinition`
+pub trait ConditionalEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `condition` child
+    fn condition(&self) -> &Expression;
+}
+dyn_clone::clone_trait_object!(ConditionalEventDefinitionType);
+impl_downcast!(ConditionalEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversation")]
 pub struct Conversation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ConversationNodeType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("ConversationNodeType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
     #[xml(child = "bpmn:messageFlowRef")]
+    #[tia("ConversationNodeType",rg*="message_flow_refs")]
     pub message_flow_refs: Vec<MessageFlowRef>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("ConversationNodeType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
 }
 impl DocumentElement for Conversation {
@@ -1626,25 +2140,33 @@ impl DocumentElementContainer for Conversation {
     }
 }
 // Traits
-impl ConversationNodeType for Conversation {}
-impl BaseElementType for Conversation {}
+
 //
-pub trait ConversationType: ConversationNodeType {}
+
+/// Schema for `conversation`
+pub trait ConversationType: ConversationNodeType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ConversationType);
+impl_downcast!(ConversationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversationAssociation")]
 pub struct ConversationAssociation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "innerConversationNodeRef")]
+    #[tia("ConversationAssociationType",rg*="inner_conversation_node_ref")]
     pub inner_conversation_node_ref: String,
     #[xml(attr = "outerConversationNodeRef")]
+    #[tia("ConversationAssociationType",rg*="outer_conversation_node_ref")]
     pub outer_conversation_node_ref: String,
 }
 impl DocumentElement for ConversationAssociation {
@@ -1665,26 +2187,43 @@ impl DocumentElementContainer for ConversationAssociation {
     }
 }
 // Traits
-impl BaseElementType for ConversationAssociation {}
+
 //
-pub trait ConversationAssociationType: BaseElementType {}
+
+/// Schema for `conversationAssociation`
+pub trait ConversationAssociationType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `innerConversationNodeRef`
+    fn inner_conversation_node_ref(&self) -> &String;
+    /// Get value of attribute `outerConversationNodeRef`
+    fn outer_conversation_node_ref(&self) -> &String;
+}
+dyn_clone::clone_trait_object!(ConversationAssociationType);
+impl_downcast!(ConversationAssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:conversationLink")]
 pub struct ConversationLink {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ConversationLinkType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "sourceRef")]
+    #[tia("ConversationLinkType",rg*="source_ref")]
     pub source_ref: String,
     #[xml(attr = "targetRef")]
+    #[tia("ConversationLinkType",rg*="target_ref")]
     pub target_ref: String,
 }
 impl DocumentElement for ConversationLink {
@@ -1705,9 +2244,20 @@ impl DocumentElementContainer for ConversationLink {
     }
 }
 // Traits
-impl BaseElementType for ConversationLink {}
+
 //
-pub trait ConversationLinkType: BaseElementType {}
+
+/// Schema for `conversationLink`
+pub trait ConversationLinkType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `sourceRef`
+    fn source_ref(&self) -> &String;
+    /// Get value of attribute `targetRef`
+    fn target_ref(&self) -> &String;
+}
+dyn_clone::clone_trait_object!(ConversationLinkType);
+impl_downcast!(ConversationLinkType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1733,22 +2283,39 @@ impl DocumentElementContainer for ConversationNode {
         }
     }
 }
-pub trait ConversationNodeType: BaseElementType {}
+/// Schema for `conversationNode`
+pub trait ConversationNodeType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `participantRef` child
+    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+    /// Get value of `messageFlowRef` child
+    fn message_flow_refs(&self) -> &Vec<MessageFlowRef>;
+    /// Get value of `correlationKey` child
+    fn correlation_keys(&self) -> &Vec<CorrelationKey>;
+}
+dyn_clone::clone_trait_object!(ConversationNodeType);
+impl_downcast!(ConversationNodeType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationKey")]
 pub struct CorrelationKey {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CorrelationKeyType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:correlationPropertyRef")]
+    #[tia("CorrelationKeyType",rg*="correlation_property_refs")]
     pub correlation_property_refs: Vec<CorrelationPropertyRef>,
 }
 impl DocumentElement for CorrelationKey {
@@ -1771,26 +2338,41 @@ impl DocumentElementContainer for CorrelationKey {
     }
 }
 // Traits
-impl BaseElementType for CorrelationKey {}
+
 //
-pub trait CorrelationKeyType: BaseElementType {}
+
+/// Schema for `correlationKey`
+pub trait CorrelationKeyType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `correlationPropertyRef` child
+    fn correlation_property_refs(&self) -> &Vec<CorrelationPropertyRef>;
+}
+dyn_clone::clone_trait_object!(CorrelationKeyType);
+impl_downcast!(CorrelationKeyType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationProperty")]
 pub struct CorrelationProperty {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CorrelationPropertyType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "type")]
+    #[tia("CorrelationPropertyType",rg*="typ")]
     pub typ: Option<String>,
     #[xml(child = "bpmn:correlationPropertyRetrievalExpression")]
+    #[tia("CorrelationPropertyType",rg*="correlation_property_retrieval_expressions")]
     pub correlation_property_retrieval_expressions: Vec<CorrelationPropertyRetrievalExpression>,
 }
 impl DocumentElement for CorrelationProperty {
@@ -1817,24 +2399,41 @@ impl DocumentElementContainer for CorrelationProperty {
 }
 // Traits
 impl RootElementType for CorrelationProperty {}
-impl BaseElementType for CorrelationProperty {}
 //
-pub trait CorrelationPropertyType: RootElementType {}
+
+/// Schema for `correlationProperty`
+pub trait CorrelationPropertyType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `type`
+    fn typ(&self) -> &Option<String>;
+    /// Get value of `correlationPropertyRetrievalExpression` child
+    fn correlation_property_retrieval_expressions(
+        &self,
+    ) -> &Vec<CorrelationPropertyRetrievalExpression>;
+}
+dyn_clone::clone_trait_object!(CorrelationPropertyType);
+impl_downcast!(CorrelationPropertyType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationPropertyBinding")]
 pub struct CorrelationPropertyBinding {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "correlationPropertyRef")]
+    #[tia("CorrelationPropertyBindingType",rg*="correlation_property_ref")]
     pub correlation_property_ref: String,
     #[xml(child = "bpmn:dataPath")]
+    #[tia("CorrelationPropertyBindingType",rg*="data_path")]
     pub data_path: FormalExpression,
 }
 impl DocumentElement for CorrelationPropertyBinding {
@@ -1857,24 +2456,40 @@ impl DocumentElementContainer for CorrelationPropertyBinding {
     }
 }
 // Traits
-impl BaseElementType for CorrelationPropertyBinding {}
+
 //
-pub trait CorrelationPropertyBindingType: BaseElementType {}
+
+/// Schema for `correlationPropertyBinding`
+pub trait CorrelationPropertyBindingType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `correlationPropertyRef`
+    fn correlation_property_ref(&self) -> &String;
+    /// Get value of `dataPath` child
+    fn data_path(&self) -> &FormalExpression;
+}
+dyn_clone::clone_trait_object!(CorrelationPropertyBindingType);
+impl_downcast!(CorrelationPropertyBindingType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationPropertyRetrievalExpression")]
 pub struct CorrelationPropertyRetrievalExpression {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "messageRef")]
+    #[tia("CorrelationPropertyRetrievalExpressionType",rg*="message_ref")]
     pub message_ref: String,
     #[xml(child = "bpmn:messagePath")]
+    #[tia("CorrelationPropertyRetrievalExpressionType",rg*="message_path")]
     pub message_path: FormalExpression,
 }
 impl DocumentElement for CorrelationPropertyRetrievalExpression {
@@ -1897,24 +2512,40 @@ impl DocumentElementContainer for CorrelationPropertyRetrievalExpression {
     }
 }
 // Traits
-impl BaseElementType for CorrelationPropertyRetrievalExpression {}
+
 //
-pub trait CorrelationPropertyRetrievalExpressionType: BaseElementType {}
+
+/// Schema for `correlationPropertyRetrievalExpression`
+pub trait CorrelationPropertyRetrievalExpressionType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `messageRef`
+    fn message_ref(&self) -> &String;
+    /// Get value of `messagePath` child
+    fn message_path(&self) -> &FormalExpression;
+}
+dyn_clone::clone_trait_object!(CorrelationPropertyRetrievalExpressionType);
+impl_downcast!(CorrelationPropertyRetrievalExpressionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationSubscription")]
 pub struct CorrelationSubscription {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "correlationKeyRef")]
+    #[tia("CorrelationSubscriptionType",rg*="correlation_key_ref")]
     pub correlation_key_ref: String,
     #[xml(child = "bpmn:correlationPropertyBinding")]
+    #[tia("CorrelationSubscriptionType",rg*="correlation_property_bindings")]
     pub correlation_property_bindings: Vec<CorrelationPropertyBinding>,
 }
 impl DocumentElement for CorrelationSubscription {
@@ -1937,28 +2568,46 @@ impl DocumentElementContainer for CorrelationSubscription {
     }
 }
 // Traits
-impl BaseElementType for CorrelationSubscription {}
+
 //
-pub trait CorrelationSubscriptionType: BaseElementType {}
+
+/// Schema for `correlationSubscription`
+pub trait CorrelationSubscriptionType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `correlationKeyRef`
+    fn correlation_key_ref(&self) -> &String;
+    /// Get value of `correlationPropertyBinding` child
+    fn correlation_property_bindings(&self) -> &Vec<CorrelationPropertyBinding>;
+}
+dyn_clone::clone_trait_object!(CorrelationSubscriptionType);
+impl_downcast!(CorrelationSubscriptionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataAssociation")]
 pub struct DataAssociation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:sourceRef")]
+    #[tia("DataAssociationType",rg*="source_refs")]
     pub source_refs: Vec<SourceRef>,
     #[xml(child = "bpmn:targetRef")]
+    #[tia("DataAssociationType",rg*="target_ref")]
     pub target_ref: TargetRef,
     #[xml(child = "bpmn:transformation")]
+    #[tia("DataAssociationType",rg*="transformation")]
     pub transformation: Option<FormalExpression>,
     #[xml(child = "bpmn:assignment")]
+    #[tia("DataAssociationType",rg*="assignments")]
     pub assignments: Vec<Assignment>,
 }
 impl DocumentElement for DataAssociation {
@@ -1990,28 +2639,48 @@ impl DocumentElementContainer for DataAssociation {
     }
 }
 // Traits
-impl BaseElementType for DataAssociation {}
+
 //
-pub trait DataAssociationType: BaseElementType {}
+
+/// Schema for `dataAssociation`
+pub trait DataAssociationType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of `sourceRef` child
+    fn source_refs(&self) -> &Vec<SourceRef>;
+    /// Get value of `targetRef` child
+    fn target_ref(&self) -> &TargetRef;
+    /// Get value of `transformation` child
+    fn transformation(&self) -> &Option<FormalExpression>;
+    /// Get value of `assignment` child
+    fn assignments(&self) -> &Vec<Assignment>;
+}
+dyn_clone::clone_trait_object!(DataAssociationType);
+impl_downcast!(DataAssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataInput")]
 pub struct DataInput {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("DataInputType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("DataInputType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(attr = "isCollection")]
+    #[tia("DataInputType",rg*="is_collection")]
     pub is_collection: Option<bool>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("DataInputType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for DataInput {
@@ -2034,28 +2703,48 @@ impl DocumentElementContainer for DataInput {
     }
 }
 // Traits
-impl BaseElementType for DataInput {}
+
 //
-pub trait DataInputType: BaseElementType {}
+
+/// Schema for `dataInput`
+pub trait DataInputType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of attribute `isCollection`
+    fn is_collection(&self) -> &Option<bool>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(DataInputType);
+impl_downcast!(DataInputType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataInputAssociation")]
 pub struct DataInputAssociation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:sourceRef")]
+    #[tia("DataAssociationType",rg*="source_refs")]
     pub source_refs: Vec<SourceRef>,
     #[xml(child = "bpmn:targetRef")]
+    #[tia("DataAssociationType",rg*="target_ref")]
     pub target_ref: TargetRef,
     #[xml(child = "bpmn:transformation")]
+    #[tia("DataAssociationType",rg*="transformation")]
     pub transformation: Option<FormalExpression>,
     #[xml(child = "bpmn:assignment")]
+    #[tia("DataAssociationType",rg*="assignments")]
     pub assignments: Vec<Assignment>,
 }
 impl DocumentElement for DataInputAssociation {
@@ -2076,35 +2765,51 @@ impl DocumentElementContainer for DataInputAssociation {
     }
 }
 // Traits
-impl DataAssociationType for DataInputAssociation {}
-impl BaseElementType for DataInputAssociation {}
+
 //
-pub trait DataInputAssociationType: DataAssociationType {}
+
+/// Schema for `dataInputAssociation`
+pub trait DataInputAssociationType:
+    DataAssociationType + Downcast + Debug + Send + DynClone
+{
+}
+dyn_clone::clone_trait_object!(DataInputAssociationType);
+impl_downcast!(DataInputAssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataObject")]
 pub struct DataObject {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("DataObjectType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(attr = "isCollection")]
+    #[tia("DataObjectType",rg*="is_collection")]
     pub is_collection: Option<bool>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("DataObjectType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for DataObject {
@@ -2127,35 +2832,55 @@ impl DocumentElementContainer for DataObject {
     }
 }
 // Traits
-impl FlowElementType for DataObject {}
-impl BaseElementType for DataObject {}
+
 //
-pub trait DataObjectType: FlowElementType {}
+
+/// Schema for `dataObject`
+pub trait DataObjectType: FlowElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of attribute `isCollection`
+    fn is_collection(&self) -> &Option<bool>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(DataObjectType);
+impl_downcast!(DataObjectType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataObjectReference")]
 pub struct DataObjectReference {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("DataObjectReferenceType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(attr = "dataObjectRef")]
+    #[tia("DataObjectReferenceType",rg*="data_object_ref")]
     pub data_object_ref: Option<String>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("DataObjectReferenceType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for DataObjectReference {
@@ -2178,29 +2903,46 @@ impl DocumentElementContainer for DataObjectReference {
     }
 }
 // Traits
-impl FlowElementType for DataObjectReference {}
-impl BaseElementType for DataObjectReference {}
+
 //
-pub trait DataObjectReferenceType: FlowElementType {}
+
+/// Schema for `dataObjectReference`
+pub trait DataObjectReferenceType: FlowElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of attribute `dataObjectRef`
+    fn data_object_ref(&self) -> &Option<String>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(DataObjectReferenceType);
+impl_downcast!(DataObjectReferenceType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataOutput")]
 pub struct DataOutput {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("DataOutputType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("DataOutputType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(attr = "isCollection")]
+    #[tia("DataOutputType",rg*="is_collection")]
     pub is_collection: Option<bool>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("DataOutputType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for DataOutput {
@@ -2223,28 +2965,48 @@ impl DocumentElementContainer for DataOutput {
     }
 }
 // Traits
-impl BaseElementType for DataOutput {}
+
 //
-pub trait DataOutputType: BaseElementType {}
+
+/// Schema for `dataOutput`
+pub trait DataOutputType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of attribute `isCollection`
+    fn is_collection(&self) -> &Option<bool>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(DataOutputType);
+impl_downcast!(DataOutputType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataOutputAssociation")]
 pub struct DataOutputAssociation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:sourceRef")]
+    #[tia("DataAssociationType",rg*="source_refs")]
     pub source_refs: Vec<SourceRef>,
     #[xml(child = "bpmn:targetRef")]
+    #[tia("DataAssociationType",rg*="target_ref")]
     pub target_ref: TargetRef,
     #[xml(child = "bpmn:transformation")]
+    #[tia("DataAssociationType",rg*="transformation")]
     pub transformation: Option<FormalExpression>,
     #[xml(child = "bpmn:assignment")]
+    #[tia("DataAssociationType",rg*="assignments")]
     pub assignments: Vec<Assignment>,
 }
 impl DocumentElement for DataOutputAssociation {
@@ -2265,23 +3027,33 @@ impl DocumentElementContainer for DataOutputAssociation {
     }
 }
 // Traits
-impl DataAssociationType for DataOutputAssociation {}
-impl BaseElementType for DataOutputAssociation {}
+
 //
-pub trait DataOutputAssociationType: DataAssociationType {}
+
+/// Schema for `dataOutputAssociation`
+pub trait DataOutputAssociationType:
+    DataAssociationType + Downcast + Debug + Send + DynClone
+{
+}
+dyn_clone::clone_trait_object!(DataOutputAssociationType);
+impl_downcast!(DataOutputAssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataState")]
 pub struct DataState {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("DataStateType",rg*="name")]
     pub name: Option<String>,
 }
 impl DocumentElement for DataState {
@@ -2302,30 +3074,45 @@ impl DocumentElementContainer for DataState {
     }
 }
 // Traits
-impl BaseElementType for DataState {}
+
 //
-pub trait DataStateType: BaseElementType {}
+
+/// Schema for `dataState`
+pub trait DataStateType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(DataStateType);
+impl_downcast!(DataStateType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataStore")]
 pub struct DataStore {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("DataStoreType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "capacity")]
+    #[tia("DataStoreType",rg*="capacity")]
     pub capacity: Option<Integer>,
     #[xml(attr = "isUnlimited")]
+    #[tia("DataStoreType",rg*="is_unlimited")]
     pub is_unlimited: Option<bool>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("DataStoreType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("DataStoreType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for DataStore {
@@ -2349,34 +3136,58 @@ impl DocumentElementContainer for DataStore {
 }
 // Traits
 impl RootElementType for DataStore {}
-impl BaseElementType for DataStore {}
 //
-pub trait DataStoreType: RootElementType {}
+
+/// Schema for `dataStore`
+pub trait DataStoreType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `capacity`
+    fn capacity(&self) -> &Option<Integer>;
+    /// Get value of attribute `isUnlimited`
+    fn is_unlimited(&self) -> &Option<bool>;
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(DataStoreType);
+impl_downcast!(DataStoreType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataStoreReference")]
 pub struct DataStoreReference {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("DataStoreReferenceType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(attr = "dataStoreRef")]
+    #[tia("DataStoreReferenceType",rg*="data_store_ref")]
     pub data_store_ref: Option<String>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("DataStoreReferenceType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for DataStoreReference {
@@ -2399,19 +3210,31 @@ impl DocumentElementContainer for DataStoreReference {
     }
 }
 // Traits
-impl FlowElementType for DataStoreReference {}
-impl BaseElementType for DataStoreReference {}
+
 //
-pub trait DataStoreReferenceType: FlowElementType {}
+
+/// Schema for `dataStoreReference`
+pub trait DataStoreReferenceType: FlowElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of attribute `dataStoreRef`
+    fn data_store_ref(&self) -> &Option<String>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(DataStoreReferenceType);
+impl_downcast!(DataStoreReferenceType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:documentation")]
 pub struct Documentation {
     #[xml(attr = "id")]
+    #[tia("DocumentationType",rg*="id")]
     pub id: Option<Id>,
     #[xml(attr = "textFormat")]
+    #[tia("DocumentationType",rg*="text_format")]
     pub text_format: Option<String>,
     #[xml(text, cdata)]
     content: String,
@@ -2436,38 +3259,60 @@ impl DocumentElementContainer for Documentation {
 // Traits
 
 //
-pub trait DocumentationType {}
+
+/// Schema for `documentation`
+pub trait DocumentationType: Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `id`
+    fn id(&self) -> &Option<Id>;
+    /// Get value of attribute `textFormat`
+    fn text_format(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(DocumentationType);
+impl_downcast!(DocumentationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:endEvent")]
 pub struct EndEvent {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(child = "bpmn:property")]
+    #[tia("EventType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInput")]
+    #[tia("ThrowEventType",rg*="data_inputs")]
     pub data_inputs: Vec<DataInput>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ThrowEventType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:inputSet")]
+    #[tia("ThrowEventType",rg*="input_set")]
     pub input_set: Option<InputSet>,
     #[xml(
         child = "bpmn:cancelEventDefinition",
@@ -2481,8 +3326,10 @@ pub struct EndEvent {
         child = "bpmn:terminateEventDefinition",
         child = "bpmn:timerEventDefinition"
     )]
+    #[tia("ThrowEventType",rg*="event_definitions")]
     pub event_definitions: Vec<EventDefinition>,
     #[xml(child = "bpmn:eventDefinitionRef")]
+    #[tia("ThrowEventType",rg*="event_definition_refs")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
 impl DocumentElement for EndEvent {
@@ -2503,24 +3350,27 @@ impl DocumentElementContainer for EndEvent {
     }
 }
 // Traits
-impl ThrowEventType for EndEvent {}
-impl EventType for EndEvent {}
-impl FlowNodeType for EndEvent {}
-impl FlowElementType for EndEvent {}
-impl BaseElementType for EndEvent {}
+
 //
-pub trait EndEventType: ThrowEventType {}
+
+/// Schema for `endEvent`
+pub trait EndEventType: ThrowEventType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(EndEventType);
+impl_downcast!(EndEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:endPoint")]
 pub struct EndPoint {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for EndPoint {
@@ -2542,26 +3392,35 @@ impl DocumentElementContainer for EndPoint {
 }
 // Traits
 impl RootElementType for EndPoint {}
-impl BaseElementType for EndPoint {}
 //
-pub trait EndPointType: RootElementType {}
+
+/// Schema for `endPoint`
+pub trait EndPointType: RootElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(EndPointType);
+impl_downcast!(EndPointType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:error")]
 pub struct Error {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ErrorType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "errorCode")]
+    #[tia("ErrorType",rg*="error_code")]
     pub error_code: Option<String>,
     #[xml(attr = "structureRef")]
+    #[tia("ErrorType",rg*="structure_ref")]
     pub structure_ref: Option<String>,
 }
 impl DocumentElement for Error {
@@ -2583,22 +3442,36 @@ impl DocumentElementContainer for Error {
 }
 // Traits
 impl RootElementType for Error {}
-impl BaseElementType for Error {}
 //
-pub trait ErrorType: RootElementType {}
+
+/// Schema for `error`
+pub trait ErrorType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `errorCode`
+    fn error_code(&self) -> &Option<String>;
+    /// Get value of attribute `structureRef`
+    fn structure_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(ErrorType);
+impl_downcast!(ErrorType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:errorEventDefinition")]
 pub struct ErrorEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "errorRef")]
+    #[tia("ErrorEventDefinitionType",rg*="error_ref")]
     pub error_ref: Option<String>,
 }
 impl DocumentElement for ErrorEventDefinition {
@@ -2621,26 +3494,40 @@ impl DocumentElementContainer for ErrorEventDefinition {
 // Traits
 impl EventDefinitionType for ErrorEventDefinition {}
 impl RootElementType for ErrorEventDefinition {}
-impl BaseElementType for ErrorEventDefinition {}
 //
-pub trait ErrorEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `errorEventDefinition`
+pub trait ErrorEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `errorRef`
+    fn error_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(ErrorEventDefinitionType);
+impl_downcast!(ErrorEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:escalation")]
 pub struct Escalation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("EscalationType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "escalationCode")]
+    #[tia("EscalationType",rg*="escalation_code")]
     pub escalation_code: Option<String>,
     #[xml(attr = "structureRef")]
+    #[tia("EscalationType",rg*="structure_ref")]
     pub structure_ref: Option<String>,
 }
 impl DocumentElement for Escalation {
@@ -2662,22 +3549,36 @@ impl DocumentElementContainer for Escalation {
 }
 // Traits
 impl RootElementType for Escalation {}
-impl BaseElementType for Escalation {}
 //
-pub trait EscalationType: RootElementType {}
+
+/// Schema for `escalation`
+pub trait EscalationType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `escalationCode`
+    fn escalation_code(&self) -> &Option<String>;
+    /// Get value of attribute `structureRef`
+    fn structure_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(EscalationType);
+impl_downcast!(EscalationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:escalationEventDefinition")]
 pub struct EscalationEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "escalationRef")]
+    #[tia("EscalationEventDefinitionType",rg*="escalation_ref")]
     pub escalation_ref: Option<String>,
 }
 impl DocumentElement for EscalationEventDefinition {
@@ -2700,9 +3601,17 @@ impl DocumentElementContainer for EscalationEventDefinition {
 // Traits
 impl EventDefinitionType for EscalationEventDefinition {}
 impl RootElementType for EscalationEventDefinition {}
-impl BaseElementType for EscalationEventDefinition {}
 //
-pub trait EscalationEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `escalationEventDefinition`
+pub trait EscalationEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `escalationRef`
+    fn escalation_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(EscalationEventDefinitionType);
+impl_downcast!(EscalationEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2717,36 +3626,54 @@ impl DocumentElementContainer for Event {
         }
     }
 }
-pub trait EventType: FlowNodeType {}
+/// Schema for `event`
+pub trait EventType: FlowNodeType + Downcast + Debug + Send + DynClone {
+    /// Get value of `property` child
+    fn properies(&self) -> &Vec<Property>;
+}
+dyn_clone::clone_trait_object!(EventType);
+impl_downcast!(EventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:eventBasedGateway")]
 pub struct EventBasedGateway {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "gatewayDirection")]
+    #[tia("GatewayType",rg*="gateway_direction")]
     pub gateway_direction: Option<String>,
     #[xml(attr = "instantiate")]
+    #[tia("EventBasedGatewayType",rg*="instantiate")]
     pub instantiate: Option<bool>,
     #[xml(attr = "eventGatewayType")]
+    #[tia("EventBasedGatewayType",rg*="event_gateway_type")]
     pub event_gateway_type: Option<String>,
 }
 impl DocumentElement for EventBasedGateway {
@@ -2767,12 +3694,18 @@ impl DocumentElementContainer for EventBasedGateway {
     }
 }
 // Traits
-impl GatewayType for EventBasedGateway {}
-impl FlowNodeType for EventBasedGateway {}
-impl FlowElementType for EventBasedGateway {}
-impl BaseElementType for EventBasedGateway {}
+
 //
-pub trait EventBasedGatewayType: GatewayType {}
+
+/// Schema for `eventBasedGateway`
+pub trait EventBasedGatewayType: GatewayType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `instantiate`
+    fn instantiate(&self) -> &Option<bool>;
+    /// Get value of attribute `eventGatewayType`
+    fn event_gateway_type(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(EventBasedGatewayType);
+impl_downcast!(EventBasedGatewayType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2819,34 +3752,48 @@ impl DocumentElementContainer for EventDefinition {
         }
     }
 }
-pub trait EventDefinitionType: RootElementType {}
+/// Schema for `eventDefinition`
+pub trait EventDefinitionType: RootElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(EventDefinitionType);
+impl_downcast!(EventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:exclusiveGateway")]
 pub struct ExclusiveGateway {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "gatewayDirection")]
+    #[tia("GatewayType",rg*="gateway_direction")]
     pub gateway_direction: Option<String>,
     #[xml(attr = "default")]
+    #[tia("ExclusiveGatewayType",rg*="default")]
     pub default: Option<String>,
 }
 impl DocumentElement for ExclusiveGateway {
@@ -2867,23 +3814,30 @@ impl DocumentElementContainer for ExclusiveGateway {
     }
 }
 // Traits
-impl GatewayType for ExclusiveGateway {}
-impl FlowNodeType for ExclusiveGateway {}
-impl FlowElementType for ExclusiveGateway {}
-impl BaseElementType for ExclusiveGateway {}
+
 //
-pub trait ExclusiveGatewayType: GatewayType {}
+
+/// Schema for `exclusiveGateway`
+pub trait ExclusiveGatewayType: GatewayType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `default`
+    fn default(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(ExclusiveGatewayType);
+impl_downcast!(ExclusiveGatewayType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:expression")]
 pub struct Expression {
     #[xml(attr = "id")]
+    #[tia("BaseElementWithMixedContentType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementWithMixedContentType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementWithMixedContentType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for Expression {
@@ -2904,20 +3858,30 @@ impl DocumentElementContainer for Expression {
     }
 }
 // Traits
-impl BaseElementWithMixedContentType for Expression {}
+
 //
-pub trait ExpressionType: BaseElementWithMixedContentType {}
+
+/// Schema for `expression`
+pub trait ExpressionType:
+    BaseElementWithMixedContentType + Downcast + Debug + Send + DynClone
+{
+}
+dyn_clone::clone_trait_object!(ExpressionType);
+impl_downcast!(ExpressionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:extension")]
 pub struct Extension {
     #[xml(attr = "definition")]
+    #[tia("ExtensionType",rg*="definition")]
     pub definition: Option<String>,
     #[xml(attr = "mustUnderstand")]
+    #[tia("ExtensionType",rg*="must_understand")]
     pub must_understand: Option<bool>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("ExtensionType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
 }
 impl DocumentElement for Extension {
@@ -2937,11 +3901,22 @@ impl DocumentElementContainer for Extension {
 // Traits
 
 //
-pub trait ExtensionType {}
+
+/// Schema for `extension`
+pub trait ExtensionType: Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `definition`
+    fn definition(&self) -> &Option<String>;
+    /// Get value of attribute `mustUnderstand`
+    fn must_understand(&self) -> &Option<bool>;
+    /// Get value of `documentation` child
+    fn documentations(&self) -> &Vec<Documentation>;
+}
+dyn_clone::clone_trait_object!(ExtensionType);
+impl_downcast!(ExtensionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:extensionElements")]
 pub struct ExtensionElements {
     #[xml(text, cdata)]
@@ -2957,7 +3932,11 @@ impl DocumentElementContainer for ExtensionElements {}
 // Traits
 
 //
-pub trait ExtensionElementsType {}
+
+/// Schema for `extensionElements`
+pub trait ExtensionElementsType: Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ExtensionElementsType);
+impl_downcast!(ExtensionElementsType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3067,7 +4046,19 @@ impl DocumentElementContainer for FlowElement {
         }
     }
 }
-pub trait FlowElementType: BaseElementType {}
+/// Schema for `flowElement`
+pub trait FlowElementType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `auditing` child
+    fn auditing(&self) -> &Option<Auditing>;
+    /// Get value of `monitoring` child
+    fn monitoring(&self) -> &Option<Monitoring>;
+    /// Get value of `categoryValueRef` child
+    fn category_value_refs(&self) -> &Vec<CategoryValueRef>;
+}
+dyn_clone::clone_trait_object!(FlowElementType);
+impl_downcast!(FlowElementType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3082,22 +4073,35 @@ impl DocumentElementContainer for FlowNode {
         }
     }
 }
-pub trait FlowNodeType: FlowElementType {}
+/// Schema for `flowNode`
+pub trait FlowNodeType: FlowElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of `incoming` child
+    fn incomings(&self) -> &Vec<Incoming>;
+    /// Get value of `outgoing` child
+    fn outgoings(&self) -> &Vec<Outgoing>;
+}
+dyn_clone::clone_trait_object!(FlowNodeType);
+impl_downcast!(FlowNodeType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:formalExpression")]
 pub struct FormalExpression {
     #[xml(attr = "id")]
+    #[tia("BaseElementWithMixedContentType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementWithMixedContentType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementWithMixedContentType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "language")]
+    #[tia("FormalExpressionType",rg*="language")]
     pub language: Option<URI>,
     #[xml(attr = "evaluatesToTypeRef")]
+    #[tia("FormalExpressionType",rg*="evaluates_totype_ref")]
     pub evaluates_totype_ref: Option<String>,
 }
 impl DocumentElement for FormalExpression {
@@ -3119,34 +4123,52 @@ impl DocumentElementContainer for FormalExpression {
 }
 // Traits
 impl ExpressionType for FormalExpression {}
-impl BaseElementWithMixedContentType for FormalExpression {}
 //
-pub trait FormalExpressionType: ExpressionType {}
+
+/// Schema for `formalExpression`
+pub trait FormalExpressionType: ExpressionType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `language`
+    fn language(&self) -> &Option<URI>;
+    /// Get value of attribute `evaluatesToTypeRef`
+    fn evaluates_totype_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(FormalExpressionType);
+impl_downcast!(FormalExpressionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:gateway")]
 pub struct Gateway {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "gatewayDirection")]
+    #[tia("GatewayType",rg*="gateway_direction")]
     pub gateway_direction: Option<String>,
 }
 impl DocumentElement for Gateway {
@@ -3167,34 +4189,48 @@ impl DocumentElementContainer for Gateway {
     }
 }
 // Traits
-impl FlowNodeType for Gateway {}
-impl FlowElementType for Gateway {}
-impl BaseElementType for Gateway {}
+
 //
-pub trait GatewayType: FlowNodeType {}
+
+/// Schema for `gateway`
+pub trait GatewayType: FlowNodeType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `gatewayDirection`
+    fn gateway_direction(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(GatewayType);
+impl_downcast!(GatewayType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalBusinessRuleTask")]
 pub struct GlobalBusinessRuleTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("GlobalTaskType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(attr = "implementation")]
+    #[tia("GlobalBusinessRuleTaskType",rg*="implementation")]
     pub implementation: Option<String>,
 }
 impl DocumentElement for GlobalBusinessRuleTask {
@@ -3215,55 +4251,74 @@ impl DocumentElementContainer for GlobalBusinessRuleTask {
     }
 }
 // Traits
-impl GlobalTaskType for GlobalBusinessRuleTask {}
-impl CallableElementType for GlobalBusinessRuleTask {}
 impl RootElementType for GlobalBusinessRuleTask {}
-impl BaseElementType for GlobalBusinessRuleTask {}
 //
-pub trait GlobalBusinessRuleTaskType: GlobalTaskType {}
+
+/// Schema for `globalBusinessRuleTask`
+pub trait GlobalBusinessRuleTaskType: GlobalTaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(GlobalBusinessRuleTaskType);
+impl_downcast!(GlobalBusinessRuleTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalChoreographyTask")]
 pub struct GlobalChoreographyTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CollaborationType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "isClosed")]
+    #[tia("CollaborationType",rg*="is_closed")]
     pub is_closed: Option<bool>,
     #[xml(child = "bpmn:participant")]
+    #[tia("CollaborationType",rg*="participants")]
     pub participants: Vec<Participant>,
     #[xml(child = "bpmn:messageFlow")]
+    #[tia("CollaborationType",rg*="message_flows")]
     pub message_flows: Vec<MessageFlow>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("CollaborationType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(
         child = "bpmn:callConversation",
         child = "bpmn:conversation",
         child = "bpmn:subConversation"
     )]
+    #[tia("CollaborationType",rg*="conversation_nodes")]
     pub conversation_nodes: Vec<ConversationNode>,
     #[xml(child = "bpmn:conversationAssociation")]
+    #[tia("CollaborationType",rg*="conversation_associations")]
     pub conversation_associations: Vec<ConversationAssociation>,
     #[xml(child = "bpmn:participantAssociation")]
+    #[tia("CollaborationType",rg*="participant_associations")]
     pub participant_associations: Vec<ParticipantAssociation>,
     #[xml(child = "bpmn:messageFlowAssociation")]
+    #[tia("CollaborationType",rg*="message_flow_associations")]
     pub message_flow_associations: Vec<MessageFlowAssociation>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("CollaborationType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(child = "bpmn:choreographyRef")]
+    #[tia("CollaborationType",rg*="choreography_refs")]
     pub choreography_refs: Vec<ChoreographyRef>,
     #[xml(child = "bpmn:conversationLink")]
+    #[tia("CollaborationType",rg*="conversation_links")]
     pub conversation_links: Vec<ConversationLink>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -3298,8 +4353,10 @@ pub struct GlobalChoreographyTask {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("ChoreographyType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
     #[xml(attr = "initiatingParticipantRef")]
+    #[tia("GlobalChoreographyTaskType",rg*="initiating_participant_ref")]
     pub initiating_participant_ref: Option<String>,
 }
 impl DocumentElement for GlobalChoreographyTask {
@@ -3320,55 +4377,76 @@ impl DocumentElementContainer for GlobalChoreographyTask {
     }
 }
 // Traits
-impl ChoreographyType for GlobalChoreographyTask {}
-impl CollaborationType for GlobalChoreographyTask {}
 impl RootElementType for GlobalChoreographyTask {}
-impl BaseElementType for GlobalChoreographyTask {}
 //
-pub trait GlobalChoreographyTaskType: ChoreographyType {}
+
+/// Schema for `globalChoreographyTask`
+pub trait GlobalChoreographyTaskType:
+    ChoreographyType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `initiatingParticipantRef`
+    fn initiating_participant_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(GlobalChoreographyTaskType);
+impl_downcast!(GlobalChoreographyTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalConversation")]
 pub struct GlobalConversation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CollaborationType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "isClosed")]
+    #[tia("CollaborationType",rg*="is_closed")]
     pub is_closed: Option<bool>,
     #[xml(child = "bpmn:participant")]
+    #[tia("CollaborationType",rg*="participants")]
     pub participants: Vec<Participant>,
     #[xml(child = "bpmn:messageFlow")]
+    #[tia("CollaborationType",rg*="message_flows")]
     pub message_flows: Vec<MessageFlow>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("CollaborationType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(
         child = "bpmn:callConversation",
         child = "bpmn:conversation",
         child = "bpmn:subConversation"
     )]
+    #[tia("CollaborationType",rg*="conversation_nodes")]
     pub conversation_nodes: Vec<ConversationNode>,
     #[xml(child = "bpmn:conversationAssociation")]
+    #[tia("CollaborationType",rg*="conversation_associations")]
     pub conversation_associations: Vec<ConversationAssociation>,
     #[xml(child = "bpmn:participantAssociation")]
+    #[tia("CollaborationType",rg*="participant_associations")]
     pub participant_associations: Vec<ParticipantAssociation>,
     #[xml(child = "bpmn:messageFlowAssociation")]
+    #[tia("CollaborationType",rg*="message_flow_associations")]
     pub message_flow_associations: Vec<MessageFlowAssociation>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("CollaborationType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(child = "bpmn:choreographyRef")]
+    #[tia("CollaborationType",rg*="choreography_refs")]
     pub choreography_refs: Vec<ChoreographyRef>,
     #[xml(child = "bpmn:conversationLink")]
+    #[tia("CollaborationType",rg*="conversation_links")]
     pub conversation_links: Vec<ConversationLink>,
 }
 impl DocumentElement for GlobalConversation {
@@ -3389,32 +4467,42 @@ impl DocumentElementContainer for GlobalConversation {
     }
 }
 // Traits
-impl CollaborationType for GlobalConversation {}
 impl RootElementType for GlobalConversation {}
-impl BaseElementType for GlobalConversation {}
 //
-pub trait GlobalConversationType: CollaborationType {}
+
+/// Schema for `globalConversation`
+pub trait GlobalConversationType: CollaborationType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(GlobalConversationType);
+impl_downcast!(GlobalConversationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalManualTask")]
 pub struct GlobalManualTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("GlobalTaskType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
 }
 impl DocumentElement for GlobalManualTask {
@@ -3435,37 +4523,48 @@ impl DocumentElementContainer for GlobalManualTask {
     }
 }
 // Traits
-impl GlobalTaskType for GlobalManualTask {}
-impl CallableElementType for GlobalManualTask {}
 impl RootElementType for GlobalManualTask {}
-impl BaseElementType for GlobalManualTask {}
 //
-pub trait GlobalManualTaskType: GlobalTaskType {}
+
+/// Schema for `globalManualTask`
+pub trait GlobalManualTaskType: GlobalTaskType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(GlobalManualTaskType);
+impl_downcast!(GlobalManualTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalScriptTask")]
 pub struct GlobalScriptTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("GlobalTaskType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(attr = "scriptLanguage")]
+    #[tia("GlobalScriptTaskType",rg*="script_language")]
     pub script_language: Option<URI>,
     #[xml(child = "bpmn:script")]
+    #[tia("GlobalScriptTaskType",rg*="script")]
     pub script: Option<Script>,
 }
 impl DocumentElement for GlobalScriptTask {
@@ -3488,33 +4587,47 @@ impl DocumentElementContainer for GlobalScriptTask {
     }
 }
 // Traits
-impl GlobalTaskType for GlobalScriptTask {}
-impl CallableElementType for GlobalScriptTask {}
 impl RootElementType for GlobalScriptTask {}
-impl BaseElementType for GlobalScriptTask {}
 //
-pub trait GlobalScriptTaskType: GlobalTaskType {}
+
+/// Schema for `globalScriptTask`
+pub trait GlobalScriptTaskType: GlobalTaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `scriptLanguage`
+    fn script_language(&self) -> &Option<URI>;
+    /// Get value of `script` child
+    fn script(&self) -> &Option<Script>;
+}
+dyn_clone::clone_trait_object!(GlobalScriptTaskType);
+impl_downcast!(GlobalScriptTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalTask")]
 pub struct GlobalTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("GlobalTaskType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
 }
 impl DocumentElement for GlobalTask {
@@ -3537,36 +4650,51 @@ impl DocumentElementContainer for GlobalTask {
     }
 }
 // Traits
-impl CallableElementType for GlobalTask {}
 impl RootElementType for GlobalTask {}
-impl BaseElementType for GlobalTask {}
 //
-pub trait GlobalTaskType: CallableElementType {}
+
+/// Schema for `globalTask`
+pub trait GlobalTaskType: CallableElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of `resourceRole` child
+    fn resource_roles(&self) -> &Vec<ResourceRole>;
+}
+dyn_clone::clone_trait_object!(GlobalTaskType);
+impl_downcast!(GlobalTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:globalUserTask")]
 pub struct GlobalUserTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("GlobalTaskType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(attr = "implementation")]
+    #[tia("GlobalUserTaskType",rg*="implementation")]
     pub implementation: Option<String>,
     #[xml(child = "bpmn:rendering")]
+    #[tia("GlobalUserTaskType",rg*="renderings")]
     pub renderings: Vec<Rendering>,
 }
 impl DocumentElement for GlobalUserTask {
@@ -3589,25 +4717,35 @@ impl DocumentElementContainer for GlobalUserTask {
     }
 }
 // Traits
-impl GlobalTaskType for GlobalUserTask {}
-impl CallableElementType for GlobalUserTask {}
 impl RootElementType for GlobalUserTask {}
-impl BaseElementType for GlobalUserTask {}
 //
-pub trait GlobalUserTaskType: GlobalTaskType {}
+
+/// Schema for `globalUserTask`
+pub trait GlobalUserTaskType: GlobalTaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+    /// Get value of `rendering` child
+    fn renderings(&self) -> &Vec<Rendering>;
+}
+dyn_clone::clone_trait_object!(GlobalUserTaskType);
+impl_downcast!(GlobalUserTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:group")]
 pub struct Group {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "categoryValueRef")]
+    #[tia("GroupType",rg*="category_value_ref")]
     pub category_value_ref: Option<String>,
 }
 impl DocumentElement for Group {
@@ -3629,28 +4767,41 @@ impl DocumentElementContainer for Group {
 }
 // Traits
 impl ArtifactType for Group {}
-impl BaseElementType for Group {}
 //
-pub trait GroupType: ArtifactType {}
+
+/// Schema for `group`
+pub trait GroupType: ArtifactType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `categoryValueRef`
+    fn category_value_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(GroupType);
+impl_downcast!(GroupType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:humanPerformer")]
 pub struct HumanPerformer {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ResourceRoleType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:resourceRef")]
+    #[tia("ResourceRoleType",rg*="resource_ref")]
     pub resource_ref: ResourceRef,
     #[xml(child = "bpmn:resourceParameterBinding")]
+    #[tia("ResourceRoleType",rg*="resource_parameter_bindings")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
     #[xml(child = "bpmn:resourceAssignmentExpression")]
+    #[tia("ResourceRoleType",rg*="resource_assignment_expression")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
 impl DocumentElement for HumanPerformer {
@@ -3672,41 +4823,56 @@ impl DocumentElementContainer for HumanPerformer {
 }
 // Traits
 impl PerformerType for HumanPerformer {}
-impl ResourceRoleType for HumanPerformer {}
-impl BaseElementType for HumanPerformer {}
 //
-pub trait HumanPerformerType: PerformerType {}
+
+/// Schema for `humanPerformer`
+pub trait HumanPerformerType: PerformerType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(HumanPerformerType);
+impl_downcast!(HumanPerformerType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:implicitThrowEvent")]
 pub struct ImplicitThrowEvent {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(child = "bpmn:property")]
+    #[tia("EventType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInput")]
+    #[tia("ThrowEventType",rg*="data_inputs")]
     pub data_inputs: Vec<DataInput>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ThrowEventType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:inputSet")]
+    #[tia("ThrowEventType",rg*="input_set")]
     pub input_set: Option<InputSet>,
     #[xml(
         child = "bpmn:cancelEventDefinition",
@@ -3720,8 +4886,10 @@ pub struct ImplicitThrowEvent {
         child = "bpmn:terminateEventDefinition",
         child = "bpmn:timerEventDefinition"
     )]
+    #[tia("ThrowEventType",rg*="event_definitions")]
     pub event_definitions: Vec<EventDefinition>,
     #[xml(child = "bpmn:eventDefinitionRef")]
+    #[tia("ThrowEventType",rg*="event_definition_refs")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
 impl DocumentElement for ImplicitThrowEvent {
@@ -3742,40 +4910,51 @@ impl DocumentElementContainer for ImplicitThrowEvent {
     }
 }
 // Traits
-impl ThrowEventType for ImplicitThrowEvent {}
-impl EventType for ImplicitThrowEvent {}
-impl FlowNodeType for ImplicitThrowEvent {}
-impl FlowElementType for ImplicitThrowEvent {}
-impl BaseElementType for ImplicitThrowEvent {}
+
 //
-pub trait ImplicitThrowEventType: ThrowEventType {}
+
+/// Schema for `implicitThrowEvent`
+pub trait ImplicitThrowEventType: ThrowEventType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ImplicitThrowEventType);
+impl_downcast!(ImplicitThrowEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inclusiveGateway")]
 pub struct InclusiveGateway {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "gatewayDirection")]
+    #[tia("GatewayType",rg*="gateway_direction")]
     pub gateway_direction: Option<String>,
     #[xml(attr = "default")]
+    #[tia("InclusiveGatewayType",rg*="default")]
     pub default: Option<String>,
 }
 impl DocumentElement for InclusiveGateway {
@@ -3796,33 +4975,45 @@ impl DocumentElementContainer for InclusiveGateway {
     }
 }
 // Traits
-impl GatewayType for InclusiveGateway {}
-impl FlowNodeType for InclusiveGateway {}
-impl FlowElementType for InclusiveGateway {}
-impl BaseElementType for InclusiveGateway {}
+
 //
-pub trait InclusiveGatewayType: GatewayType {}
+
+/// Schema for `inclusiveGateway`
+pub trait InclusiveGatewayType: GatewayType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `default`
+    fn default(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(InclusiveGatewayType);
+impl_downcast!(InclusiveGatewayType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inputSet")]
 pub struct InputSet {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("InputSetType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:dataInputRefs")]
+    #[tia("InputSetType",rg*="data_input_refss")]
     pub data_input_refss: Vec<DataInputRefs>,
     #[xml(child = "bpmn:optionalInputRefs")]
+    #[tia("InputSetType",rg*="optional_input_refss")]
     pub optional_input_refss: Vec<OptionalInputRefs>,
     #[xml(child = "bpmn:whileExecutingInputRefs")]
+    #[tia("InputSetType",rg*="while_executing_input_refss")]
     pub while_executing_input_refss: Vec<WhileExecutingInputRefs>,
     #[xml(child = "bpmn:outputSetRefs")]
+    #[tia("InputSetType",rg*="output_set_refss")]
     pub output_set_refss: Vec<OutputSetRefs>,
 }
 impl DocumentElement for InputSet {
@@ -3854,26 +5045,47 @@ impl DocumentElementContainer for InputSet {
     }
 }
 // Traits
-impl BaseElementType for InputSet {}
+
 //
-pub trait InputSetType: BaseElementType {}
+
+/// Schema for `inputSet`
+pub trait InputSetType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `dataInputRefs` child
+    fn data_input_refss(&self) -> &Vec<DataInputRefs>;
+    /// Get value of `optionalInputRefs` child
+    fn optional_input_refss(&self) -> &Vec<OptionalInputRefs>;
+    /// Get value of `whileExecutingInputRefs` child
+    fn while_executing_input_refss(&self) -> &Vec<WhileExecutingInputRefs>;
+    /// Get value of `outputSetRefs` child
+    fn output_set_refss(&self) -> &Vec<OutputSetRefs>;
+}
+dyn_clone::clone_trait_object!(InputSetType);
+impl_downcast!(InputSetType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:interface")]
 pub struct Interface {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("InterfaceType",rg*="name")]
     pub name: String,
     #[xml(attr = "implementationRef")]
+    #[tia("InterfaceType",rg*="implementation_ref")]
     pub implementation_ref: Option<String>,
     #[xml(child = "bpmn:operation")]
+    #[tia("InterfaceType",rg*="operations")]
     pub operations: Vec<Operation>,
 }
 impl DocumentElement for Interface {
@@ -3897,42 +5109,66 @@ impl DocumentElementContainer for Interface {
 }
 // Traits
 impl RootElementType for Interface {}
-impl BaseElementType for Interface {}
 //
-pub trait InterfaceType: RootElementType {}
+
+/// Schema for `interface`
+pub trait InterfaceType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &String;
+    /// Get value of attribute `implementationRef`
+    fn implementation_ref(&self) -> &Option<String>;
+    /// Get value of `operation` child
+    fn operations(&self) -> &Vec<Operation>;
+}
+dyn_clone::clone_trait_object!(InterfaceType);
+impl_downcast!(InterfaceType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:intermediateCatchEvent")]
 pub struct IntermediateCatchEvent {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(child = "bpmn:property")]
+    #[tia("EventType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(attr = "parallelMultiple")]
+    #[tia("CatchEventType",rg*="parallel_multiple")]
     pub parallel_multiple: Option<bool>,
     #[xml(child = "bpmn:dataOutput")]
+    #[tia("CatchEventType",rg*="data_outputs")]
     pub data_outputs: Vec<DataOutput>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("CatchEventType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:outputSet")]
+    #[tia("CatchEventType",rg*="output_set")]
     pub output_set: Option<OutputSet>,
     #[xml(
         child = "bpmn:cancelEventDefinition",
@@ -3946,8 +5182,10 @@ pub struct IntermediateCatchEvent {
         child = "bpmn:terminateEventDefinition",
         child = "bpmn:timerEventDefinition"
     )]
+    #[tia("CatchEventType",rg*="event_definitions")]
     pub event_definitions: Vec<EventDefinition>,
     #[xml(child = "bpmn:eventDefinitionRef")]
+    #[tia("CatchEventType",rg*="event_definition_refs")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
 impl DocumentElement for IntermediateCatchEvent {
@@ -3968,44 +5206,57 @@ impl DocumentElementContainer for IntermediateCatchEvent {
     }
 }
 // Traits
-impl CatchEventType for IntermediateCatchEvent {}
-impl EventType for IntermediateCatchEvent {}
-impl FlowNodeType for IntermediateCatchEvent {}
-impl FlowElementType for IntermediateCatchEvent {}
-impl BaseElementType for IntermediateCatchEvent {}
+
 //
-pub trait IntermediateCatchEventType: CatchEventType {}
+
+/// Schema for `intermediateCatchEvent`
+pub trait IntermediateCatchEventType: CatchEventType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(IntermediateCatchEventType);
+impl_downcast!(IntermediateCatchEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:intermediateThrowEvent")]
 pub struct IntermediateThrowEvent {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(child = "bpmn:property")]
+    #[tia("EventType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInput")]
+    #[tia("ThrowEventType",rg*="data_inputs")]
     pub data_inputs: Vec<DataInput>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ThrowEventType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:inputSet")]
+    #[tia("ThrowEventType",rg*="input_set")]
     pub input_set: Option<InputSet>,
     #[xml(
         child = "bpmn:cancelEventDefinition",
@@ -4019,8 +5270,10 @@ pub struct IntermediateThrowEvent {
         child = "bpmn:terminateEventDefinition",
         child = "bpmn:timerEventDefinition"
     )]
+    #[tia("ThrowEventType",rg*="event_definitions")]
     pub event_definitions: Vec<EventDefinition>,
     #[xml(child = "bpmn:eventDefinitionRef")]
+    #[tia("ThrowEventType",rg*="event_definition_refs")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
 impl DocumentElement for IntermediateThrowEvent {
@@ -4041,30 +5294,36 @@ impl DocumentElementContainer for IntermediateThrowEvent {
     }
 }
 // Traits
-impl ThrowEventType for IntermediateThrowEvent {}
-impl EventType for IntermediateThrowEvent {}
-impl FlowNodeType for IntermediateThrowEvent {}
-impl FlowElementType for IntermediateThrowEvent {}
-impl BaseElementType for IntermediateThrowEvent {}
+
 //
-pub trait IntermediateThrowEventType: ThrowEventType {}
+
+/// Schema for `intermediateThrowEvent`
+pub trait IntermediateThrowEventType: ThrowEventType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(IntermediateThrowEventType);
+impl_downcast!(IntermediateThrowEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:ioBinding")]
 pub struct InputOutputBinding {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "operationRef")]
+    #[tia("InputOutputBindingType",rg*="operation_ref")]
     pub operation_ref: String,
     #[xml(attr = "inputDataRef")]
+    #[tia("InputOutputBindingType",rg*="input_data_ref")]
     pub input_data_ref: String,
     #[xml(attr = "outputDataRef")]
+    #[tia("InputOutputBindingType",rg*="output_data_ref")]
     pub output_data_ref: String,
 }
 impl DocumentElement for InputOutputBinding {
@@ -4085,28 +5344,46 @@ impl DocumentElementContainer for InputOutputBinding {
     }
 }
 // Traits
-impl BaseElementType for InputOutputBinding {}
+
 //
-pub trait IoBindingType: BaseElementType {}
+
+/// Schema for `ioBinding`
+pub trait InputOutputBindingType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `operationRef`
+    fn operation_ref(&self) -> &String;
+    /// Get value of attribute `inputDataRef`
+    fn input_data_ref(&self) -> &String;
+    /// Get value of attribute `outputDataRef`
+    fn output_data_ref(&self) -> &String;
+}
+dyn_clone::clone_trait_object!(InputOutputBindingType);
+impl_downcast!(InputOutputBindingType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:ioSpecification")]
 pub struct InputOutputSpecification {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:dataInput")]
+    #[tia("InputOutputSpecificationType",rg*="data_inputs")]
     pub data_inputs: Vec<DataInput>,
     #[xml(child = "bpmn:dataOutput")]
+    #[tia("InputOutputSpecificationType",rg*="data_outputs")]
     pub data_outputs: Vec<DataOutput>,
     #[xml(child = "bpmn:inputSet")]
+    #[tia("InputOutputSpecificationType",rg*="input_sets")]
     pub input_sets: Vec<InputSet>,
     #[xml(child = "bpmn:outputSet")]
+    #[tia("InputOutputSpecificationType",rg*="output_sets")]
     pub output_sets: Vec<OutputSet>,
 }
 impl DocumentElement for InputOutputSpecification {
@@ -4138,26 +5415,47 @@ impl DocumentElementContainer for InputOutputSpecification {
     }
 }
 // Traits
-impl BaseElementType for InputOutputSpecification {}
+
 //
-pub trait IoSpecificationType: BaseElementType {}
+
+/// Schema for `ioSpecification`
+pub trait InputOutputSpecificationType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `dataInput` child
+    fn data_inputs(&self) -> &Vec<DataInput>;
+    /// Get value of `dataOutput` child
+    fn data_outputs(&self) -> &Vec<DataOutput>;
+    /// Get value of `inputSet` child
+    fn input_sets(&self) -> &Vec<InputSet>;
+    /// Get value of `outputSet` child
+    fn output_sets(&self) -> &Vec<OutputSet>;
+}
+dyn_clone::clone_trait_object!(InputOutputSpecificationType);
+impl_downcast!(InputOutputSpecificationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:itemDefinition")]
 pub struct ItemDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "structureRef")]
+    #[tia("ItemDefinitionType",rg*="structure_ref")]
     pub structure_ref: Option<String>,
     #[xml(attr = "isCollection")]
+    #[tia("ItemDefinitionType",rg*="is_collection")]
     pub is_collection: Option<bool>,
     #[xml(attr = "itemKind")]
+    #[tia("ItemDefinitionType",rg*="item_kind")]
     pub item_kind: Option<String>,
 }
 impl DocumentElement for ItemDefinition {
@@ -4179,30 +5477,48 @@ impl DocumentElementContainer for ItemDefinition {
 }
 // Traits
 impl RootElementType for ItemDefinition {}
-impl BaseElementType for ItemDefinition {}
 //
-pub trait ItemDefinitionType: RootElementType {}
+
+/// Schema for `itemDefinition`
+pub trait ItemDefinitionType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `structureRef`
+    fn structure_ref(&self) -> &Option<String>;
+    /// Get value of attribute `isCollection`
+    fn is_collection(&self) -> &Option<bool>;
+    /// Get value of attribute `itemKind`
+    fn item_kind(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(ItemDefinitionType);
+impl_downcast!(ItemDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:lane")]
 pub struct Lane {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("LaneType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "partitionElementRef")]
+    #[tia("LaneType",rg*="partition_element_ref")]
     pub partition_element_ref: Option<String>,
     #[xml(child = "bpmn:partitionElement")]
+    #[tia("LaneType",rg*="partition_element")]
     pub partition_element: Option<BaseElement>,
     #[xml(child = "bpmn:flowNodeRef")]
+    #[tia("LaneType",rg*="flow_node_refs")]
     pub flow_node_refs: Vec<FlowNodeRef>,
     #[xml(child = "bpmn:childLaneSet")]
+    #[tia("LaneType",rg*="child_lane_set")]
     pub child_lane_set: Option<LaneSet>,
 }
 impl DocumentElement for Lane {
@@ -4231,24 +5547,44 @@ impl DocumentElementContainer for Lane {
     }
 }
 // Traits
-impl BaseElementType for Lane {}
+
 //
-pub trait LaneType: BaseElementType {}
+
+/// Schema for `lane`
+pub trait LaneType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `partitionElementRef`
+    fn partition_element_ref(&self) -> &Option<String>;
+    /// Get value of `partitionElement` child
+    fn partition_element(&self) -> &Option<BaseElement>;
+    /// Get value of `flowNodeRef` child
+    fn flow_node_refs(&self) -> &Vec<FlowNodeRef>;
+    /// Get value of `childLaneSet` child
+    fn child_lane_set(&self) -> &Option<LaneSet>;
+}
+dyn_clone::clone_trait_object!(LaneType);
+impl_downcast!(LaneType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:laneSet")]
 pub struct LaneSet {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("LaneSetType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:lane")]
+    #[tia("LaneSetType",rg*="lanes")]
     pub lanes: Vec<Lane>,
 }
 impl DocumentElement for LaneSet {
@@ -4271,26 +5607,41 @@ impl DocumentElementContainer for LaneSet {
     }
 }
 // Traits
-impl BaseElementType for LaneSet {}
+
 //
-pub trait LaneSetType: BaseElementType {}
+
+/// Schema for `laneSet`
+pub trait LaneSetType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `lane` child
+    fn lanes(&self) -> &Vec<Lane>;
+}
+dyn_clone::clone_trait_object!(LaneSetType);
+impl_downcast!(LaneSetType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:linkEventDefinition")]
 pub struct LinkEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("LinkEventDefinitionType",rg*="name")]
     pub name: String,
     #[xml(child = "bpmn:source")]
+    #[tia("LinkEventDefinitionType",rg*="sources")]
     pub sources: Vec<Source>,
     #[xml(child = "bpmn:target")]
+    #[tia("LinkEventDefinitionType",rg*="target")]
     pub target: Option<Target>,
 }
 impl DocumentElement for LinkEventDefinition {
@@ -4318,9 +5669,21 @@ impl DocumentElementContainer for LinkEventDefinition {
 // Traits
 impl EventDefinitionType for LinkEventDefinition {}
 impl RootElementType for LinkEventDefinition {}
-impl BaseElementType for LinkEventDefinition {}
 //
-pub trait LinkEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `linkEventDefinition`
+pub trait LinkEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `name`
+    fn name(&self) -> &String;
+    /// Get value of `source` child
+    fn sources(&self) -> &Vec<Source>;
+    /// Get value of `target` child
+    fn target(&self) -> &Option<Target>;
+}
+dyn_clone::clone_trait_object!(LinkEventDefinitionType);
+impl_downcast!(LinkEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4343,53 +5706,75 @@ impl DocumentElementContainer for LoopCharacteristics {
         }
     }
 }
-pub trait LoopCharacteristicsType: BaseElementType {}
+/// Schema for `loopCharacteristics`
+pub trait LoopCharacteristicsType: BaseElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(LoopCharacteristicsType);
+impl_downcast!(LoopCharacteristicsType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:manualTask")]
 pub struct ManualTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
 }
 impl DocumentElement for ManualTask {
@@ -4411,27 +5796,32 @@ impl DocumentElementContainer for ManualTask {
 }
 // Traits
 impl TaskType for ManualTask {}
-impl ActivityType for ManualTask {}
-impl FlowNodeType for ManualTask {}
-impl FlowElementType for ManualTask {}
-impl BaseElementType for ManualTask {}
 //
-pub trait ManualTaskType: TaskType {}
+
+/// Schema for `manualTask`
+pub trait ManualTaskType: TaskType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ManualTaskType);
+impl_downcast!(ManualTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:message")]
 pub struct Message {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("MessageType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "itemRef")]
+    #[tia("MessageType",rg*="item_ref")]
     pub item_ref: Option<String>,
 }
 impl DocumentElement for Message {
@@ -4453,24 +5843,37 @@ impl DocumentElementContainer for Message {
 }
 // Traits
 impl RootElementType for Message {}
-impl BaseElementType for Message {}
 //
-pub trait MessageType: RootElementType {}
+
+/// Schema for `message`
+pub trait MessageType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `itemRef`
+    fn item_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(MessageType);
+impl_downcast!(MessageType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageEventDefinition")]
 pub struct MessageEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "messageRef")]
+    #[tia("MessageEventDefinitionType",rg*="message_ref")]
     pub message_ref: Option<String>,
     #[xml(child = "bpmn:operationRef")]
+    #[tia("MessageEventDefinitionType",rg*="operation_ref")]
     pub operation_ref: Option<OperationRef>,
 }
 impl DocumentElement for MessageEventDefinition {
@@ -4495,28 +5898,45 @@ impl DocumentElementContainer for MessageEventDefinition {
 // Traits
 impl EventDefinitionType for MessageEventDefinition {}
 impl RootElementType for MessageEventDefinition {}
-impl BaseElementType for MessageEventDefinition {}
 //
-pub trait MessageEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `messageEventDefinition`
+pub trait MessageEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `messageRef`
+    fn message_ref(&self) -> &Option<String>;
+    /// Get value of `operationRef` child
+    fn operation_ref(&self) -> &Option<OperationRef>;
+}
+dyn_clone::clone_trait_object!(MessageEventDefinitionType);
+impl_downcast!(MessageEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageFlow")]
 pub struct MessageFlow {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("MessageFlowType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "sourceRef")]
+    #[tia("MessageFlowType",rg*="source_ref")]
     pub source_ref: String,
     #[xml(attr = "targetRef")]
+    #[tia("MessageFlowType",rg*="target_ref")]
     pub target_ref: String,
     #[xml(attr = "messageRef")]
+    #[tia("MessageFlowType",rg*="message_ref")]
     pub message_ref: Option<String>,
 }
 impl DocumentElement for MessageFlow {
@@ -4537,24 +5957,42 @@ impl DocumentElementContainer for MessageFlow {
     }
 }
 // Traits
-impl BaseElementType for MessageFlow {}
+
 //
-pub trait MessageFlowType: BaseElementType {}
+
+/// Schema for `messageFlow`
+pub trait MessageFlowType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `sourceRef`
+    fn source_ref(&self) -> &String;
+    /// Get value of attribute `targetRef`
+    fn target_ref(&self) -> &String;
+    /// Get value of attribute `messageRef`
+    fn message_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(MessageFlowType);
+impl_downcast!(MessageFlowType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageFlowAssociation")]
 pub struct MessageFlowAssociation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "innerMessageFlowRef")]
+    #[tia("MessageFlowAssociationType",rg*="inner_message_flow_ref")]
     pub inner_message_flow_ref: String,
     #[xml(attr = "outerMessageFlowRef")]
+    #[tia("MessageFlowAssociationType",rg*="outer_message_flow_ref")]
     pub outer_message_flow_ref: String,
 }
 impl DocumentElement for MessageFlowAssociation {
@@ -4575,20 +6013,32 @@ impl DocumentElementContainer for MessageFlowAssociation {
     }
 }
 // Traits
-impl BaseElementType for MessageFlowAssociation {}
+
 //
-pub trait MessageFlowAssociationType: BaseElementType {}
+
+/// Schema for `messageFlowAssociation`
+pub trait MessageFlowAssociationType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `innerMessageFlowRef`
+    fn inner_message_flow_ref(&self) -> &String;
+    /// Get value of attribute `outerMessageFlowRef`
+    fn outer_message_flow_ref(&self) -> &String;
+}
+dyn_clone::clone_trait_object!(MessageFlowAssociationType);
+impl_downcast!(MessageFlowAssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:monitoring")]
 pub struct Monitoring {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for Monitoring {
@@ -4609,42 +6059,60 @@ impl DocumentElementContainer for Monitoring {
     }
 }
 // Traits
-impl BaseElementType for Monitoring {}
+
 //
-pub trait MonitoringType: BaseElementType {}
+
+/// Schema for `monitoring`
+pub trait MonitoringType: BaseElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(MonitoringType);
+impl_downcast!(MonitoringType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:multiInstanceLoopCharacteristics")]
 pub struct MultiInstanceLoopCharacteristics {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "isSequential")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="is_sequential")]
     pub is_sequential: Option<bool>,
     #[xml(attr = "behavior")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="behavior")]
     pub behavior: Option<String>,
     #[xml(attr = "oneBehaviorEventRef")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="one_behavior_event_ref")]
     pub one_behavior_event_ref: Option<String>,
     #[xml(attr = "noneBehaviorEventRef")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="none_behavior_event_ref")]
     pub none_behavior_event_ref: Option<String>,
     #[xml(child = "bpmn:loopCardinality")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_cardinality")]
     pub loop_cardinality: Option<Expression>,
     #[xml(child = "bpmn:loopDataInputRef")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_data_input_ref")]
     pub loop_data_input_ref: Option<LoopDataInputRef>,
     #[xml(child = "bpmn:loopDataOutputRef")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_data_output_ref")]
     pub loop_data_output_ref: Option<LoopDataOutputRef>,
     #[xml(child = "bpmn:inputDataItem")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="input_data_item")]
     pub input_data_item: Option<DataInput>,
     #[xml(child = "bpmn:outputDataItem")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="output_data_item")]
     pub output_data_item: Option<DataOutput>,
     #[xml(child = "bpmn:complexBehaviorDefinition")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="complex_behavior_definitions")]
     pub complex_behavior_definitions: Vec<ComplexBehaviorDefinition>,
     #[xml(child = "bpmn:completionCondition")]
+    #[tia("MultiInstanceLoopCharacteristicsType",rg*="completion_condition")]
     pub completion_condition: Option<Expression>,
 }
 impl DocumentElement for MultiInstanceLoopCharacteristics {
@@ -4686,30 +6154,66 @@ impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
 }
 // Traits
 impl LoopCharacteristicsType for MultiInstanceLoopCharacteristics {}
-impl BaseElementType for MultiInstanceLoopCharacteristics {}
 //
-pub trait MultiInstanceLoopCharacteristicsType: LoopCharacteristicsType {}
+
+/// Schema for `multiInstanceLoopCharacteristics`
+pub trait MultiInstanceLoopCharacteristicsType:
+    LoopCharacteristicsType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `isSequential`
+    fn is_sequential(&self) -> &Option<bool>;
+    /// Get value of attribute `behavior`
+    fn behavior(&self) -> &Option<String>;
+    /// Get value of attribute `oneBehaviorEventRef`
+    fn one_behavior_event_ref(&self) -> &Option<String>;
+    /// Get value of attribute `noneBehaviorEventRef`
+    fn none_behavior_event_ref(&self) -> &Option<String>;
+    /// Get value of `loopCardinality` child
+    fn loop_cardinality(&self) -> &Option<Expression>;
+    /// Get value of `loopDataInputRef` child
+    fn loop_data_input_ref(&self) -> &Option<LoopDataInputRef>;
+    /// Get value of `loopDataOutputRef` child
+    fn loop_data_output_ref(&self) -> &Option<LoopDataOutputRef>;
+    /// Get value of `inputDataItem` child
+    fn input_data_item(&self) -> &Option<DataInput>;
+    /// Get value of `outputDataItem` child
+    fn output_data_item(&self) -> &Option<DataOutput>;
+    /// Get value of `complexBehaviorDefinition` child
+    fn complex_behavior_definitions(&self) -> &Vec<ComplexBehaviorDefinition>;
+    /// Get value of `completionCondition` child
+    fn completion_condition(&self) -> &Option<Expression>;
+}
+dyn_clone::clone_trait_object!(MultiInstanceLoopCharacteristicsType);
+impl_downcast!(MultiInstanceLoopCharacteristicsType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:operation")]
 pub struct Operation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("OperationType",rg*="name")]
     pub name: String,
     #[xml(attr = "implementationRef")]
+    #[tia("OperationType",rg*="implementation_ref")]
     pub implementation_ref: Option<String>,
     #[xml(child = "bpmn:inMessageRef")]
+    #[tia("OperationType",rg*="in_message_ref")]
     pub in_message_ref: InMessageRef,
     #[xml(child = "bpmn:outMessageRef")]
+    #[tia("OperationType",rg*="out_message_ref")]
     pub out_message_ref: Option<OutMessageRef>,
     #[xml(child = "bpmn:errorRef")]
+    #[tia("OperationType",rg*="error_refs")]
     pub error_refs: Vec<ErrorRef>,
 }
 impl DocumentElement for Operation {
@@ -4738,30 +6242,53 @@ impl DocumentElementContainer for Operation {
     }
 }
 // Traits
-impl BaseElementType for Operation {}
+
 //
-pub trait OperationType: BaseElementType {}
+
+/// Schema for `operation`
+pub trait OperationType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &String;
+    /// Get value of attribute `implementationRef`
+    fn implementation_ref(&self) -> &Option<String>;
+    /// Get value of `inMessageRef` child
+    fn in_message_ref(&self) -> &InMessageRef;
+    /// Get value of `outMessageRef` child
+    fn out_message_ref(&self) -> &Option<OutMessageRef>;
+    /// Get value of `errorRef` child
+    fn error_refs(&self) -> &Vec<ErrorRef>;
+}
+dyn_clone::clone_trait_object!(OperationType);
+impl_downcast!(OperationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outputSet")]
 pub struct OutputSet {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("OutputSetType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:dataOutputRefs")]
+    #[tia("OutputSetType",rg*="data_output_refss")]
     pub data_output_refss: Vec<DataOutputRefs>,
     #[xml(child = "bpmn:optionalOutputRefs")]
+    #[tia("OutputSetType",rg*="optional_output_refss")]
     pub optional_output_refss: Vec<OptionalOutputRefs>,
     #[xml(child = "bpmn:whileExecutingOutputRefs")]
+    #[tia("OutputSetType",rg*="while_executing_output_refss")]
     pub while_executing_output_refss: Vec<WhileExecutingOutputRefs>,
     #[xml(child = "bpmn:inputSetRefs")]
+    #[tia("OutputSetType",rg*="input_set_refss")]
     pub input_set_refss: Vec<InputSetRefs>,
 }
 impl DocumentElement for OutputSet {
@@ -4793,34 +6320,59 @@ impl DocumentElementContainer for OutputSet {
     }
 }
 // Traits
-impl BaseElementType for OutputSet {}
+
 //
-pub trait OutputSetType: BaseElementType {}
+
+/// Schema for `outputSet`
+pub trait OutputSetType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `dataOutputRefs` child
+    fn data_output_refss(&self) -> &Vec<DataOutputRefs>;
+    /// Get value of `optionalOutputRefs` child
+    fn optional_output_refss(&self) -> &Vec<OptionalOutputRefs>;
+    /// Get value of `whileExecutingOutputRefs` child
+    fn while_executing_output_refss(&self) -> &Vec<WhileExecutingOutputRefs>;
+    /// Get value of `inputSetRefs` child
+    fn input_set_refss(&self) -> &Vec<InputSetRefs>;
+}
+dyn_clone::clone_trait_object!(OutputSetType);
+impl_downcast!(OutputSetType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:parallelGateway")]
 pub struct ParallelGateway {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "gatewayDirection")]
+    #[tia("GatewayType",rg*="gateway_direction")]
     pub gateway_direction: Option<String>,
 }
 impl DocumentElement for ParallelGateway {
@@ -4841,33 +6393,42 @@ impl DocumentElementContainer for ParallelGateway {
     }
 }
 // Traits
-impl GatewayType for ParallelGateway {}
-impl FlowNodeType for ParallelGateway {}
-impl FlowElementType for ParallelGateway {}
-impl BaseElementType for ParallelGateway {}
+
 //
-pub trait ParallelGatewayType: GatewayType {}
+
+/// Schema for `parallelGateway`
+pub trait ParallelGatewayType: GatewayType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ParallelGatewayType);
+impl_downcast!(ParallelGatewayType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participant")]
 pub struct Participant {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ParticipantType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "processRef")]
+    #[tia("ParticipantType",rg*="process_ref")]
     pub process_ref: Option<String>,
     #[xml(child = "bpmn:interfaceRef")]
+    #[tia("ParticipantType",rg*="interface_refs")]
     pub interface_refs: Vec<InterfaceRef>,
     #[xml(child = "bpmn:endPointRef")]
+    #[tia("ParticipantType",rg*="end_point_refs")]
     pub end_point_refs: Vec<EndPointRef>,
     #[xml(child = "bpmn:participantMultiplicity")]
+    #[tia("ParticipantType",rg*="participant_multiplicity")]
     pub participant_multiplicity: Option<ParticipantMultiplicity>,
 }
 impl DocumentElement for Participant {
@@ -4896,24 +6457,44 @@ impl DocumentElementContainer for Participant {
     }
 }
 // Traits
-impl BaseElementType for Participant {}
+
 //
-pub trait ParticipantType: BaseElementType {}
+
+/// Schema for `participant`
+pub trait ParticipantType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `processRef`
+    fn process_ref(&self) -> &Option<String>;
+    /// Get value of `interfaceRef` child
+    fn interface_refs(&self) -> &Vec<InterfaceRef>;
+    /// Get value of `endPointRef` child
+    fn end_point_refs(&self) -> &Vec<EndPointRef>;
+    /// Get value of `participantMultiplicity` child
+    fn participant_multiplicity(&self) -> &Option<ParticipantMultiplicity>;
+}
+dyn_clone::clone_trait_object!(ParticipantType);
+impl_downcast!(ParticipantType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participantAssociation")]
 pub struct ParticipantAssociation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:innerParticipantRef")]
+    #[tia("ParticipantAssociationType",rg*="inner_participant_ref")]
     pub inner_participant_ref: InnerParticipantRef,
     #[xml(child = "bpmn:outerParticipantRef")]
+    #[tia("ParticipantAssociationType",rg*="outer_participant_ref")]
     pub outer_participant_ref: OuterParticipantRef,
 }
 impl DocumentElement for ParticipantAssociation {
@@ -4939,24 +6520,38 @@ impl DocumentElementContainer for ParticipantAssociation {
     }
 }
 // Traits
-impl BaseElementType for ParticipantAssociation {}
+
 //
-pub trait ParticipantAssociationType: BaseElementType {}
+
+/// Schema for `participantAssociation`
+pub trait ParticipantAssociationType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of `innerParticipantRef` child
+    fn inner_participant_ref(&self) -> &InnerParticipantRef;
+    /// Get value of `outerParticipantRef` child
+    fn outer_participant_ref(&self) -> &OuterParticipantRef;
+}
+dyn_clone::clone_trait_object!(ParticipantAssociationType);
+impl_downcast!(ParticipantAssociationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participantMultiplicity")]
 pub struct ParticipantMultiplicity {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "minimum")]
+    #[tia("ParticipantMultiplicityType",rg*="minimum")]
     pub minimum: Option<Int>,
     #[xml(attr = "maximum")]
+    #[tia("ParticipantMultiplicityType",rg*="maximum")]
     pub maximum: Option<Int>,
 }
 impl DocumentElement for ParticipantMultiplicity {
@@ -4977,24 +6572,40 @@ impl DocumentElementContainer for ParticipantMultiplicity {
     }
 }
 // Traits
-impl BaseElementType for ParticipantMultiplicity {}
+
 //
-pub trait ParticipantMultiplicityType: BaseElementType {}
+
+/// Schema for `participantMultiplicity`
+pub trait ParticipantMultiplicityType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `minimum`
+    fn minimum(&self) -> &Option<Int>;
+    /// Get value of attribute `maximum`
+    fn maximum(&self) -> &Option<Int>;
+}
+dyn_clone::clone_trait_object!(ParticipantMultiplicityType);
+impl_downcast!(ParticipantMultiplicityType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:partnerEntity")]
 pub struct PartnerEntity {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("PartnerEntityType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("PartnerEntityType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
 }
 impl DocumentElement for PartnerEntity {
@@ -5018,24 +6629,37 @@ impl DocumentElementContainer for PartnerEntity {
 }
 // Traits
 impl RootElementType for PartnerEntity {}
-impl BaseElementType for PartnerEntity {}
 //
-pub trait PartnerEntityType: RootElementType {}
+
+/// Schema for `partnerEntity`
+pub trait PartnerEntityType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `participantRef` child
+    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+}
+dyn_clone::clone_trait_object!(PartnerEntityType);
+impl_downcast!(PartnerEntityType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:partnerRole")]
 pub struct PartnerRole {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("PartnerRoleType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("PartnerRoleType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
 }
 impl DocumentElement for PartnerRole {
@@ -5059,28 +6683,43 @@ impl DocumentElementContainer for PartnerRole {
 }
 // Traits
 impl RootElementType for PartnerRole {}
-impl BaseElementType for PartnerRole {}
 //
-pub trait PartnerRoleType: RootElementType {}
+
+/// Schema for `partnerRole`
+pub trait PartnerRoleType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `participantRef` child
+    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+}
+dyn_clone::clone_trait_object!(PartnerRoleType);
+impl_downcast!(PartnerRoleType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:performer")]
 pub struct Performer {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ResourceRoleType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:resourceRef")]
+    #[tia("ResourceRoleType",rg*="resource_ref")]
     pub resource_ref: ResourceRef,
     #[xml(child = "bpmn:resourceParameterBinding")]
+    #[tia("ResourceRoleType",rg*="resource_parameter_bindings")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
     #[xml(child = "bpmn:resourceAssignmentExpression")]
+    #[tia("ResourceRoleType",rg*="resource_assignment_expression")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
 impl DocumentElement for Performer {
@@ -5101,29 +6740,39 @@ impl DocumentElementContainer for Performer {
     }
 }
 // Traits
-impl ResourceRoleType for Performer {}
-impl BaseElementType for Performer {}
+
 //
-pub trait PerformerType: ResourceRoleType {}
+
+/// Schema for `performer`
+pub trait PerformerType: ResourceRoleType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(PerformerType);
+impl_downcast!(PerformerType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:potentialOwner")]
 pub struct PotentialOwner {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ResourceRoleType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:resourceRef")]
+    #[tia("ResourceRoleType",rg*="resource_ref")]
     pub resource_ref: ResourceRef,
     #[xml(child = "bpmn:resourceParameterBinding")]
+    #[tia("ResourceRoleType",rg*="resource_parameter_bindings")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
     #[xml(child = "bpmn:resourceAssignmentExpression")]
+    #[tia("ResourceRoleType",rg*="resource_assignment_expression")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
 impl DocumentElement for PotentialOwner {
@@ -5146,45 +6795,62 @@ impl DocumentElementContainer for PotentialOwner {
 // Traits
 impl HumanPerformerType for PotentialOwner {}
 impl PerformerType for PotentialOwner {}
-impl ResourceRoleType for PotentialOwner {}
-impl BaseElementType for PotentialOwner {}
 //
-pub trait PotentialOwnerType: HumanPerformerType {}
+
+/// Schema for `potentialOwner`
+pub trait PotentialOwnerType: HumanPerformerType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(PotentialOwnerType);
+impl_downcast!(PotentialOwnerType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:process")]
 pub struct Process {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("CallableElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[tia("CallableElementType",rg*="supported_interface_refs")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("CallableElementType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
+    #[tia("CallableElementType",rg*="io_bindings")]
     pub io_bindings: Vec<InputOutputBinding>,
     #[xml(attr = "processType")]
+    #[tia("ProcessType",rg*="process_type")]
     pub process_type: Option<String>,
     #[xml(attr = "isClosed")]
+    #[tia("ProcessType",rg*="is_closed")]
     pub is_closed: Option<bool>,
     #[xml(attr = "isExecutable")]
+    #[tia("ProcessType",rg*="is_executable")]
     pub is_executable: Option<bool>,
     #[xml(attr = "definitionalCollaborationRef")]
+    #[tia("ProcessType",rg*="definitional_collaboration_ref")]
     pub definitional_collaboration_ref: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("ProcessType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("ProcessType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:property")]
+    #[tia("ProcessType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:laneSet")]
+    #[tia("ProcessType",rg*="lane_sets")]
     pub lane_sets: Vec<LaneSet>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -5219,18 +6885,23 @@ pub struct Process {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("ProcessType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("ProcessType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ProcessType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(child = "bpmn:correlationSubscription")]
+    #[tia("ProcessType",rg*="correlation_subscriptions")]
     pub correlation_subscriptions: Vec<CorrelationSubscription>,
     #[xml(child = "bpmn:supports")]
+    #[tia("ProcessType",rg*="supportss")]
     pub supportss: Vec<Supports>,
 }
 impl DocumentElement for Process {
@@ -5277,28 +6948,63 @@ impl DocumentElementContainer for Process {
     }
 }
 // Traits
-impl CallableElementType for Process {}
 impl RootElementType for Process {}
-impl BaseElementType for Process {}
 //
-pub trait ProcessType: CallableElementType {}
+
+/// Schema for `process`
+pub trait ProcessType: CallableElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `processType`
+    fn process_type(&self) -> &Option<String>;
+    /// Get value of attribute `isClosed`
+    fn is_closed(&self) -> &Option<bool>;
+    /// Get value of attribute `isExecutable`
+    fn is_executable(&self) -> &Option<bool>;
+    /// Get value of attribute `definitionalCollaborationRef`
+    fn definitional_collaboration_ref(&self) -> &Option<String>;
+    /// Get value of `auditing` child
+    fn auditing(&self) -> &Option<Auditing>;
+    /// Get value of `monitoring` child
+    fn monitoring(&self) -> &Option<Monitoring>;
+    /// Get value of `property` child
+    fn properies(&self) -> &Vec<Property>;
+    /// Get value of `laneSet` child
+    fn lane_sets(&self) -> &Vec<LaneSet>;
+    /// Get value of `flowElement` child
+    fn flow_elements(&self) -> &Vec<FlowElement>;
+    /// Get value of `artifact` child
+    fn artifacts(&self) -> &Vec<Artifact>;
+    /// Get value of `resourceRole` child
+    fn resource_roles(&self) -> &Vec<ResourceRole>;
+    /// Get value of `correlationSubscription` child
+    fn correlation_subscriptions(&self) -> &Vec<CorrelationSubscription>;
+    /// Get value of `supports` child
+    fn supportss(&self) -> &Vec<Supports>;
+}
+dyn_clone::clone_trait_object!(ProcessType);
+impl_downcast!(ProcessType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:property")]
 pub struct Property {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("PropertyType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "itemSubjectRef")]
+    #[tia("PropertyType",rg*="item_subject_ref")]
     pub item_subject_ref: Option<String>,
     #[xml(child = "bpmn:dataState")]
+    #[tia("PropertyType",rg*="data_state")]
     pub data_state: Option<DataState>,
 }
 impl DocumentElement for Property {
@@ -5321,63 +7027,97 @@ impl DocumentElementContainer for Property {
     }
 }
 // Traits
-impl BaseElementType for Property {}
+
 //
-pub trait PropertyType: BaseElementType {}
+
+/// Schema for `property`
+pub trait PropertyType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `itemSubjectRef`
+    fn item_subject_ref(&self) -> &Option<String>;
+    /// Get value of `dataState` child
+    fn data_state(&self) -> &Option<DataState>;
+}
+dyn_clone::clone_trait_object!(PropertyType);
+impl_downcast!(PropertyType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:receiveTask")]
 pub struct ReceiveTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "implementation")]
+    #[tia("ReceiveTaskType",rg*="implementation")]
     pub implementation: Option<String>,
     #[xml(attr = "instantiate")]
+    #[tia("ReceiveTaskType",rg*="instantiate")]
     pub instantiate: Option<bool>,
     #[xml(attr = "messageRef")]
+    #[tia("ReceiveTaskType",rg*="message_ref")]
     pub message_ref: Option<String>,
     #[xml(attr = "operationRef")]
+    #[tia("ReceiveTaskType",rg*="operation_ref")]
     pub operation_ref: Option<String>,
 }
 impl DocumentElement for ReceiveTask {
@@ -5399,31 +7139,47 @@ impl DocumentElementContainer for ReceiveTask {
 }
 // Traits
 impl TaskType for ReceiveTask {}
-impl ActivityType for ReceiveTask {}
-impl FlowNodeType for ReceiveTask {}
-impl FlowElementType for ReceiveTask {}
-impl BaseElementType for ReceiveTask {}
 //
-pub trait ReceiveTaskType: TaskType {}
+
+/// Schema for `receiveTask`
+pub trait ReceiveTaskType: TaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+    /// Get value of attribute `instantiate`
+    fn instantiate(&self) -> &Option<bool>;
+    /// Get value of attribute `messageRef`
+    fn message_ref(&self) -> &Option<String>;
+    /// Get value of attribute `operationRef`
+    fn operation_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(ReceiveTaskType);
+impl_downcast!(ReceiveTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:relationship")]
 pub struct Relationship {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "type")]
+    #[tia("RelationshipType",rg*="typ")]
     pub typ: String,
     #[xml(attr = "direction")]
+    #[tia("RelationshipType",rg*="direction")]
     pub direction: Option<String>,
     #[xml(child = "bpmn:source")]
+    #[tia("RelationshipType",rg*="sources")]
     pub sources: Vec<Source>,
     #[xml(child = "bpmn:target")]
+    #[tia("RelationshipType",rg*="targets")]
     pub targets: Vec<Target>,
 }
 impl DocumentElement for Relationship {
@@ -5449,20 +7205,36 @@ impl DocumentElementContainer for Relationship {
     }
 }
 // Traits
-impl BaseElementType for Relationship {}
+
 //
-pub trait RelationshipType: BaseElementType {}
+
+/// Schema for `relationship`
+pub trait RelationshipType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `type`
+    fn typ(&self) -> &String;
+    /// Get value of attribute `direction`
+    fn direction(&self) -> &Option<String>;
+    /// Get value of `source` child
+    fn sources(&self) -> &Vec<Source>;
+    /// Get value of `target` child
+    fn targets(&self) -> &Vec<Target>;
+}
+dyn_clone::clone_trait_object!(RelationshipType);
+impl_downcast!(RelationshipType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:rendering")]
 pub struct Rendering {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for Rendering {
@@ -5483,24 +7255,33 @@ impl DocumentElementContainer for Rendering {
     }
 }
 // Traits
-impl BaseElementType for Rendering {}
+
 //
-pub trait RenderingType: BaseElementType {}
+
+/// Schema for `rendering`
+pub trait RenderingType: BaseElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(RenderingType);
+impl_downcast!(RenderingType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resource")]
 pub struct Resource {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ResourceType",rg*="name")]
     pub name: String,
     #[xml(child = "bpmn:resourceParameter")]
+    #[tia("ResourceType",rg*="resource_parameters")]
     pub resource_parameters: Vec<ResourceParameter>,
 }
 impl DocumentElement for Resource {
@@ -5524,22 +7305,34 @@ impl DocumentElementContainer for Resource {
 }
 // Traits
 impl RootElementType for Resource {}
-impl BaseElementType for Resource {}
 //
-pub trait ResourceType: RootElementType {}
+
+/// Schema for `resource`
+pub trait ResourceType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &String;
+    /// Get value of `resourceParameter` child
+    fn resource_parameters(&self) -> &Vec<ResourceParameter>;
+}
+dyn_clone::clone_trait_object!(ResourceType);
+impl_downcast!(ResourceType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceAssignmentExpression")]
 pub struct ResourceAssignmentExpression {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:expression")]
+    #[tia("ResourceAssignmentExpressionType",rg*="expression")]
     pub expression: Expression,
 }
 impl DocumentElement for ResourceAssignmentExpression {
@@ -5562,26 +7355,41 @@ impl DocumentElementContainer for ResourceAssignmentExpression {
     }
 }
 // Traits
-impl BaseElementType for ResourceAssignmentExpression {}
+
 //
-pub trait ResourceAssignmentExpressionType: BaseElementType {}
+
+/// Schema for `resourceAssignmentExpression`
+pub trait ResourceAssignmentExpressionType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `expression` child
+    fn expression(&self) -> &Expression;
+}
+dyn_clone::clone_trait_object!(ResourceAssignmentExpressionType);
+impl_downcast!(ResourceAssignmentExpressionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceParameter")]
 pub struct ResourceParameter {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ResourceParameterType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "type")]
+    #[tia("ResourceParameterType",rg*="typ")]
     pub typ: Option<String>,
     #[xml(attr = "isRequired")]
+    #[tia("ResourceParameterType",rg*="is_required")]
     pub is_required: Option<bool>,
 }
 impl DocumentElement for ResourceParameter {
@@ -5602,24 +7410,40 @@ impl DocumentElementContainer for ResourceParameter {
     }
 }
 // Traits
-impl BaseElementType for ResourceParameter {}
+
 //
-pub trait ResourceParameterType: BaseElementType {}
+
+/// Schema for `resourceParameter`
+pub trait ResourceParameterType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `type`
+    fn typ(&self) -> &Option<String>;
+    /// Get value of attribute `isRequired`
+    fn is_required(&self) -> &Option<bool>;
+}
+dyn_clone::clone_trait_object!(ResourceParameterType);
+impl_downcast!(ResourceParameterType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceParameterBinding")]
 pub struct ResourceParameterBinding {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "parameterRef")]
+    #[tia("ResourceParameterBindingType",rg*="parameter_ref")]
     pub parameter_ref: String,
     #[xml(child = "bpmn:expression")]
+    #[tia("ResourceParameterBindingType",rg*="expression")]
     pub expression: Expression,
 }
 impl DocumentElement for ResourceParameterBinding {
@@ -5642,28 +7466,46 @@ impl DocumentElementContainer for ResourceParameterBinding {
     }
 }
 // Traits
-impl BaseElementType for ResourceParameterBinding {}
+
 //
-pub trait ResourceParameterBindingType: BaseElementType {}
+
+/// Schema for `resourceParameterBinding`
+pub trait ResourceParameterBindingType:
+    BaseElementType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `parameterRef`
+    fn parameter_ref(&self) -> &String;
+    /// Get value of `expression` child
+    fn expression(&self) -> &Expression;
+}
+dyn_clone::clone_trait_object!(ResourceParameterBindingType);
+impl_downcast!(ResourceParameterBindingType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceRole")]
 pub struct ResourceRole {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ResourceRoleType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:resourceRef")]
+    #[tia("ResourceRoleType",rg*="resource_ref")]
     pub resource_ref: ResourceRef,
     #[xml(child = "bpmn:resourceParameterBinding")]
+    #[tia("ResourceRoleType",rg*="resource_parameter_bindings")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
     #[xml(child = "bpmn:resourceAssignmentExpression")]
+    #[tia("ResourceRoleType",rg*="resource_assignment_expression")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
 impl DocumentElement for ResourceRole {
@@ -5692,9 +7534,22 @@ impl DocumentElementContainer for ResourceRole {
     }
 }
 // Traits
-impl BaseElementType for ResourceRole {}
+
 //
-pub trait ResourceRoleType: BaseElementType {}
+
+/// Schema for `resourceRole`
+pub trait ResourceRoleType: BaseElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of `resourceRef` child
+    fn resource_ref(&self) -> &ResourceRef;
+    /// Get value of `resourceParameterBinding` child
+    fn resource_parameter_bindings(&self) -> &Vec<ResourceParameterBinding>;
+    /// Get value of `resourceAssignmentExpression` child
+    fn resource_assignment_expression(&self) -> &Option<ResourceAssignmentExpression>;
+}
+dyn_clone::clone_trait_object!(ResourceRoleType);
+impl_downcast!(ResourceRoleType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5774,57 +7629,81 @@ impl DocumentElementContainer for RootElement {
         }
     }
 }
-pub trait RootElementType: BaseElementType {}
+/// Schema for `rootElement`
+pub trait RootElementType: BaseElementType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(RootElementType);
+impl_downcast!(RootElementType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:scriptTask")]
 pub struct ScriptTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "scriptFormat")]
+    #[tia("ScriptTaskType",rg*="script_format")]
     pub script_format: Option<String>,
     #[xml(child = "bpmn:script")]
+    #[tia("ScriptTaskType",rg*="script")]
     pub script: Option<Script>,
 }
 impl DocumentElement for ScriptTask {
@@ -5848,16 +7727,21 @@ impl DocumentElementContainer for ScriptTask {
 }
 // Traits
 impl TaskType for ScriptTask {}
-impl ActivityType for ScriptTask {}
-impl FlowNodeType for ScriptTask {}
-impl FlowElementType for ScriptTask {}
-impl BaseElementType for ScriptTask {}
 //
-pub trait ScriptTaskType: TaskType {}
+
+/// Schema for `scriptTask`
+pub trait ScriptTaskType: TaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `scriptFormat`
+    fn script_format(&self) -> &Option<String>;
+    /// Get value of `script` child
+    fn script(&self) -> &Option<Script>;
+}
+dyn_clone::clone_trait_object!(ScriptTaskType);
+impl_downcast!(ScriptTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:script")]
 pub struct Script {
     #[xml(text, cdata)]
@@ -5873,59 +7757,85 @@ impl DocumentElementContainer for Script {}
 // Traits
 
 //
-pub trait ScriptType {}
+
+/// Schema for `script`
+pub trait ScriptType: Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(ScriptType);
+impl_downcast!(ScriptType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:sendTask")]
 pub struct SendTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "implementation")]
+    #[tia("SendTaskType",rg*="implementation")]
     pub implementation: Option<String>,
     #[xml(attr = "messageRef")]
+    #[tia("SendTaskType",rg*="message_ref")]
     pub message_ref: Option<String>,
     #[xml(attr = "operationRef")]
+    #[tia("SendTaskType",rg*="operation_ref")]
     pub operation_ref: Option<String>,
 }
 impl DocumentElement for SendTask {
@@ -5947,39 +7857,57 @@ impl DocumentElementContainer for SendTask {
 }
 // Traits
 impl TaskType for SendTask {}
-impl ActivityType for SendTask {}
-impl FlowNodeType for SendTask {}
-impl FlowElementType for SendTask {}
-impl BaseElementType for SendTask {}
 //
-pub trait SendTaskType: TaskType {}
+
+/// Schema for `sendTask`
+pub trait SendTaskType: TaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+    /// Get value of attribute `messageRef`
+    fn message_ref(&self) -> &Option<String>;
+    /// Get value of attribute `operationRef`
+    fn operation_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(SendTaskType);
+impl_downcast!(SendTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:sequenceFlow")]
 pub struct SequenceFlow {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(attr = "sourceRef")]
+    #[tia("SequenceFlowType",rg*="source_ref")]
     pub source_ref: String,
     #[xml(attr = "targetRef")]
+    #[tia("SequenceFlowType",rg*="target_ref")]
     pub target_ref: String,
     #[xml(attr = "isImmediate")]
+    #[tia("SequenceFlowType",rg*="is_immediate")]
     pub is_immediate: Option<bool>,
     #[xml(child = "bpmn:conditionExpression")]
+    #[tia("SequenceFlowType",rg*="condition_expression")]
     pub condition_expression: Option<Expression>,
 }
 impl DocumentElement for SequenceFlow {
@@ -6002,60 +7930,93 @@ impl DocumentElementContainer for SequenceFlow {
     }
 }
 // Traits
-impl FlowElementType for SequenceFlow {}
-impl BaseElementType for SequenceFlow {}
+
 //
-pub trait SequenceFlowType: FlowElementType {}
+
+/// Schema for `sequenceFlow`
+pub trait SequenceFlowType: FlowElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `sourceRef`
+    fn source_ref(&self) -> &String;
+    /// Get value of attribute `targetRef`
+    fn target_ref(&self) -> &String;
+    /// Get value of attribute `isImmediate`
+    fn is_immediate(&self) -> &Option<bool>;
+    /// Get value of `conditionExpression` child
+    fn condition_expression(&self) -> &Option<Expression>;
+}
+dyn_clone::clone_trait_object!(SequenceFlowType);
+impl_downcast!(SequenceFlowType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:serviceTask")]
 pub struct ServiceTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "implementation")]
+    #[tia("ServiceTaskType",rg*="implementation")]
     pub implementation: Option<String>,
     #[xml(attr = "operationRef")]
+    #[tia("ServiceTaskType",rg*="operation_ref")]
     pub operation_ref: Option<String>,
 }
 impl DocumentElement for ServiceTask {
@@ -6077,27 +8038,37 @@ impl DocumentElementContainer for ServiceTask {
 }
 // Traits
 impl TaskType for ServiceTask {}
-impl ActivityType for ServiceTask {}
-impl FlowNodeType for ServiceTask {}
-impl FlowElementType for ServiceTask {}
-impl BaseElementType for ServiceTask {}
 //
-pub trait ServiceTaskType: TaskType {}
+
+/// Schema for `serviceTask`
+pub trait ServiceTaskType: TaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+    /// Get value of attribute `operationRef`
+    fn operation_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(ServiceTaskType);
+impl_downcast!(ServiceTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:signal")]
 pub struct Signal {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("SignalType",rg*="name")]
     pub name: Option<String>,
     #[xml(attr = "structureRef")]
+    #[tia("SignalType",rg*="structure_ref")]
     pub structure_ref: Option<String>,
 }
 impl DocumentElement for Signal {
@@ -6119,22 +8090,34 @@ impl DocumentElementContainer for Signal {
 }
 // Traits
 impl RootElementType for Signal {}
-impl BaseElementType for Signal {}
 //
-pub trait SignalType: RootElementType {}
+
+/// Schema for `signal`
+pub trait SignalType: RootElementType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `name`
+    fn name(&self) -> &Option<String>;
+    /// Get value of attribute `structureRef`
+    fn structure_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(SignalType);
+impl_downcast!(SignalType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:signalEventDefinition")]
 pub struct SignalEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "signalRef")]
+    #[tia("SignalEventDefinitionType",rg*="signal_ref")]
     pub signal_ref: Option<String>,
 }
 impl DocumentElement for SignalEventDefinition {
@@ -6157,26 +8140,40 @@ impl DocumentElementContainer for SignalEventDefinition {
 // Traits
 impl EventDefinitionType for SignalEventDefinition {}
 impl RootElementType for SignalEventDefinition {}
-impl BaseElementType for SignalEventDefinition {}
 //
-pub trait SignalEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `signalEventDefinition`
+pub trait SignalEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `signalRef`
+    fn signal_ref(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(SignalEventDefinitionType);
+impl_downcast!(SignalEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:standardLoopCharacteristics")]
 pub struct StandardLoopCharacteristics {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "testBefore")]
+    #[tia("StandardLoopCharacteristicsType",rg*="test_before")]
     pub test_before: Option<bool>,
     #[xml(attr = "loopMaximum")]
+    #[tia("StandardLoopCharacteristicsType",rg*="loop_maximum")]
     pub loop_maximum: Option<Integer>,
     #[xml(child = "bpmn:loopCondition")]
+    #[tia("StandardLoopCharacteristicsType",rg*="loop_condition")]
     pub loop_condition: Option<Expression>,
 }
 impl DocumentElement for StandardLoopCharacteristics {
@@ -6200,42 +8197,68 @@ impl DocumentElementContainer for StandardLoopCharacteristics {
 }
 // Traits
 impl LoopCharacteristicsType for StandardLoopCharacteristics {}
-impl BaseElementType for StandardLoopCharacteristics {}
 //
-pub trait StandardLoopCharacteristicsType: LoopCharacteristicsType {}
+
+/// Schema for `standardLoopCharacteristics`
+pub trait StandardLoopCharacteristicsType:
+    LoopCharacteristicsType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of attribute `testBefore`
+    fn test_before(&self) -> &Option<bool>;
+    /// Get value of attribute `loopMaximum`
+    fn loop_maximum(&self) -> &Option<Integer>;
+    /// Get value of `loopCondition` child
+    fn loop_condition(&self) -> &Option<Expression>;
+}
+dyn_clone::clone_trait_object!(StandardLoopCharacteristicsType);
+impl_downcast!(StandardLoopCharacteristicsType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:startEvent")]
 pub struct StartEvent {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(child = "bpmn:property")]
+    #[tia("EventType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(attr = "parallelMultiple")]
+    #[tia("CatchEventType",rg*="parallel_multiple")]
     pub parallel_multiple: Option<bool>,
     #[xml(child = "bpmn:dataOutput")]
+    #[tia("CatchEventType",rg*="data_outputs")]
     pub data_outputs: Vec<DataOutput>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("CatchEventType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:outputSet")]
+    #[tia("CatchEventType",rg*="output_set")]
     pub output_set: Option<OutputSet>,
     #[xml(
         child = "bpmn:cancelEventDefinition",
@@ -6249,10 +8272,13 @@ pub struct StartEvent {
         child = "bpmn:terminateEventDefinition",
         child = "bpmn:timerEventDefinition"
     )]
+    #[tia("CatchEventType",rg*="event_definitions")]
     pub event_definitions: Vec<EventDefinition>,
     #[xml(child = "bpmn:eventDefinitionRef")]
+    #[tia("CatchEventType",rg*="event_definition_refs")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
     #[xml(attr = "isInterrupting")]
+    #[tia("StartEventType",rg*="is_interrupting")]
     pub is_interrupting: Option<bool>,
 }
 impl DocumentElement for StartEvent {
@@ -6273,44 +8299,60 @@ impl DocumentElementContainer for StartEvent {
     }
 }
 // Traits
-impl CatchEventType for StartEvent {}
-impl EventType for StartEvent {}
-impl FlowNodeType for StartEvent {}
-impl FlowElementType for StartEvent {}
-impl BaseElementType for StartEvent {}
+
 //
-pub trait StartEventType: CatchEventType {}
+
+/// Schema for `startEvent`
+pub trait StartEventType: CatchEventType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `isInterrupting`
+    fn is_interrupting(&self) -> &Option<bool>;
+}
+dyn_clone::clone_trait_object!(StartEventType);
+impl_downcast!(StartEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:subChoreography")]
 pub struct SubChoreography {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "initiatingParticipantRef")]
+    #[tia("ChoreographyActivityType",rg*="initiating_participant_ref")]
     pub initiating_participant_ref: String,
     #[xml(attr = "loopType")]
+    #[tia("ChoreographyActivityType",rg*="loop_type")]
     pub loop_type: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("ChoreographyActivityType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("ChoreographyActivityType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -6345,12 +8387,14 @@ pub struct SubChoreography {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("SubChoreographyType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("SubChoreographyType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
 }
 impl DocumentElement for SubChoreography {
@@ -6376,37 +8420,53 @@ impl DocumentElementContainer for SubChoreography {
     }
 }
 // Traits
-impl ChoreographyActivityType for SubChoreography {}
-impl FlowNodeType for SubChoreography {}
-impl FlowElementType for SubChoreography {}
-impl BaseElementType for SubChoreography {}
+
 //
-pub trait SubChoreographyType: ChoreographyActivityType {}
+
+/// Schema for `subChoreography`
+pub trait SubChoreographyType:
+    ChoreographyActivityType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `flowElement` child
+    fn flow_elements(&self) -> &Vec<FlowElement>;
+    /// Get value of `artifact` child
+    fn artifacts(&self) -> &Vec<Artifact>;
+}
+dyn_clone::clone_trait_object!(SubChoreographyType);
+impl_downcast!(SubChoreographyType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:subConversation")]
 pub struct SubConversation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("ConversationNodeType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:participantRef")]
+    #[tia("ConversationNodeType",rg*="participant_refs")]
     pub participant_refs: Vec<ParticipantRef>,
     #[xml(child = "bpmn:messageFlowRef")]
+    #[tia("ConversationNodeType",rg*="message_flow_refs")]
     pub message_flow_refs: Vec<MessageFlowRef>,
     #[xml(child = "bpmn:correlationKey")]
+    #[tia("ConversationNodeType",rg*="correlation_keys")]
     pub correlation_keys: Vec<CorrelationKey>,
     #[xml(
         child = "bpmn:callConversation",
         child = "bpmn:conversation",
         child = "bpmn:subConversation"
     )]
+    #[tia("SubConversationType",rg*="conversation_nodes")]
     pub conversation_nodes: Vec<ConversationNode>,
 }
 impl DocumentElement for SubConversation {
@@ -6429,60 +8489,87 @@ impl DocumentElementContainer for SubConversation {
     }
 }
 // Traits
-impl ConversationNodeType for SubConversation {}
-impl BaseElementType for SubConversation {}
+
 //
-pub trait SubConversationType: ConversationNodeType {}
+
+/// Schema for `subConversation`
+pub trait SubConversationType: ConversationNodeType + Downcast + Debug + Send + DynClone {
+    /// Get value of `conversationNode` child
+    fn conversation_nodes(&self) -> &Vec<ConversationNode>;
+}
+dyn_clone::clone_trait_object!(SubConversationType);
+impl_downcast!(SubConversationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:subProcess")]
 pub struct SubProcess {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "triggeredByEvent")]
+    #[tia("SubProcessType",rg*="triggered_byevent")]
     pub triggered_byevent: Option<bool>,
     #[xml(child = "bpmn:laneSet")]
+    #[tia("SubProcessType",rg*="lane_sets")]
     pub lane_sets: Vec<LaneSet>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -6517,12 +8604,14 @@ pub struct SubProcess {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("SubProcessType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("SubProcessType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
 }
 impl DocumentElement for SubProcess {
@@ -6551,58 +8640,87 @@ impl DocumentElementContainer for SubProcess {
     }
 }
 // Traits
-impl ActivityType for SubProcess {}
-impl FlowNodeType for SubProcess {}
-impl FlowElementType for SubProcess {}
-impl BaseElementType for SubProcess {}
+
 //
-pub trait SubProcessType: ActivityType {}
+
+/// Schema for `subProcess`
+pub trait SubProcessType: ActivityType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `triggeredByEvent`
+    fn triggered_byevent(&self) -> &Option<bool>;
+    /// Get value of `laneSet` child
+    fn lane_sets(&self) -> &Vec<LaneSet>;
+    /// Get value of `flowElement` child
+    fn flow_elements(&self) -> &Vec<FlowElement>;
+    /// Get value of `artifact` child
+    fn artifacts(&self) -> &Vec<Artifact>;
+}
+dyn_clone::clone_trait_object!(SubProcessType);
+impl_downcast!(SubProcessType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:task")]
 pub struct Task {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
 }
 impl DocumentElement for Task {
@@ -6623,23 +8741,27 @@ impl DocumentElementContainer for Task {
     }
 }
 // Traits
-impl ActivityType for Task {}
-impl FlowNodeType for Task {}
-impl FlowElementType for Task {}
-impl BaseElementType for Task {}
+
 //
-pub trait TaskType: ActivityType {}
+
+/// Schema for `task`
+pub trait TaskType: ActivityType + Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(TaskType);
+impl_downcast!(TaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:terminateEventDefinition")]
 pub struct TerminateEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
 }
 impl DocumentElement for TerminateEventDefinition {
@@ -6662,24 +8784,35 @@ impl DocumentElementContainer for TerminateEventDefinition {
 // Traits
 impl EventDefinitionType for TerminateEventDefinition {}
 impl RootElementType for TerminateEventDefinition {}
-impl BaseElementType for TerminateEventDefinition {}
 //
-pub trait TerminateEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `terminateEventDefinition`
+pub trait TerminateEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+}
+dyn_clone::clone_trait_object!(TerminateEventDefinitionType);
+impl_downcast!(TerminateEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:textAnnotation")]
 pub struct TextAnnotation {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "textFormat")]
+    #[tia("TextAnnotationType",rg*="text_format")]
     pub text_format: Option<String>,
     #[xml(child = "bpmn:text")]
+    #[tia("TextAnnotationType",rg*="text")]
     pub text: Option<Text>,
 }
 impl DocumentElement for TextAnnotation {
@@ -6703,13 +8836,21 @@ impl DocumentElementContainer for TextAnnotation {
 }
 // Traits
 impl ArtifactType for TextAnnotation {}
-impl BaseElementType for TextAnnotation {}
 //
-pub trait TextAnnotationType: ArtifactType {}
+
+/// Schema for `textAnnotation`
+pub trait TextAnnotationType: ArtifactType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `textFormat`
+    fn text_format(&self) -> &Option<String>;
+    /// Get value of `text` child
+    fn text(&self) -> &Option<Text>;
+}
+dyn_clone::clone_trait_object!(TextAnnotationType);
+impl_downcast!(TextAnnotationType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:text")]
 pub struct Text {
     #[xml(text, cdata)]
@@ -6725,7 +8866,11 @@ impl DocumentElementContainer for Text {}
 // Traits
 
 //
-pub trait TextType {}
+
+/// Schema for `text`
+pub trait TextType: Downcast + Debug + Send + DynClone {}
+dyn_clone::clone_trait_object!(TextType);
+impl_downcast!(TextType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6740,24 +8885,44 @@ impl DocumentElementContainer for ThrowEvent {
         }
     }
 }
-pub trait ThrowEventType: EventType {}
+/// Schema for `throwEvent`
+pub trait ThrowEventType: EventType + Downcast + Debug + Send + DynClone {
+    /// Get value of `dataInput` child
+    fn data_inputs(&self) -> &Vec<DataInput>;
+    /// Get value of `dataInputAssociation` child
+    fn data_input_associations(&self) -> &Vec<DataInputAssociation>;
+    /// Get value of `inputSet` child
+    fn input_set(&self) -> &Option<InputSet>;
+    /// Get value of `eventDefinition` child
+    fn event_definitions(&self) -> &Vec<EventDefinition>;
+    /// Get value of `eventDefinitionRef` child
+    fn event_definition_refs(&self) -> &Vec<EventDefinitionRef>;
+}
+dyn_clone::clone_trait_object!(ThrowEventType);
+impl_downcast!(ThrowEventType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:timerEventDefinition")]
 pub struct TimerEventDefinition {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:timeDate")]
+    #[tia("TimerEventDefinitionType",rg*="time_date")]
     pub time_date: Option<Expression>,
     #[xml(child = "bpmn:timeDuration")]
+    #[tia("TimerEventDefinitionType",rg*="time_duration")]
     pub time_duration: Option<Expression>,
     #[xml(child = "bpmn:timeCycle")]
+    #[tia("TimerEventDefinitionType",rg*="time_cycle")]
     pub time_cycle: Option<Expression>,
 }
 impl DocumentElement for TimerEventDefinition {
@@ -6788,59 +8953,92 @@ impl DocumentElementContainer for TimerEventDefinition {
 // Traits
 impl EventDefinitionType for TimerEventDefinition {}
 impl RootElementType for TimerEventDefinition {}
-impl BaseElementType for TimerEventDefinition {}
 //
-pub trait TimerEventDefinitionType: EventDefinitionType {}
+
+/// Schema for `timerEventDefinition`
+pub trait TimerEventDefinitionType:
+    EventDefinitionType + Downcast + Debug + Send + DynClone
+{
+    /// Get value of `timeDate` child
+    fn time_date(&self) -> &Option<Expression>;
+    /// Get value of `timeDuration` child
+    fn time_duration(&self) -> &Option<Expression>;
+    /// Get value of `timeCycle` child
+    fn time_cycle(&self) -> &Option<Expression>;
+}
+dyn_clone::clone_trait_object!(TimerEventDefinitionType);
+impl_downcast!(TimerEventDefinitionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:transaction")]
 pub struct Transaction {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "triggeredByEvent")]
+    #[tia("SubProcessType",rg*="triggered_byevent")]
     pub triggered_byevent: Option<bool>,
     #[xml(child = "bpmn:laneSet")]
+    #[tia("SubProcessType",rg*="lane_sets")]
     pub lane_sets: Vec<LaneSet>,
     #[xml(
         child = "bpmn:adHocSubProcess",
@@ -6875,14 +9073,17 @@ pub struct Transaction {
         child = "bpmn:transaction",
         child = "bpmn:userTask"
     )]
+    #[tia("SubProcessType",rg*="flow_elements")]
     pub flow_elements: Vec<FlowElement>,
     #[xml(
         child = "bpmn:association",
         child = "bpmn:group",
         child = "bpmn:textAnnotation"
     )]
+    #[tia("SubProcessType",rg*="artifacts")]
     pub artifacts: Vec<Artifact>,
     #[xml(attr = "method")]
+    #[tia("TransactionType",rg*="method")]
     pub method: Option<String>,
 }
 impl DocumentElement for Transaction {
@@ -6903,63 +9104,87 @@ impl DocumentElementContainer for Transaction {
     }
 }
 // Traits
-impl SubProcessType for Transaction {}
-impl ActivityType for Transaction {}
-impl FlowNodeType for Transaction {}
-impl FlowElementType for Transaction {}
-impl BaseElementType for Transaction {}
+
 //
-pub trait TransactionType: SubProcessType {}
+
+/// Schema for `transaction`
+pub trait TransactionType: SubProcessType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `method`
+    fn method(&self) -> &Option<String>;
+}
+dyn_clone::clone_trait_object!(TransactionType);
+impl_downcast!(TransactionType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:userTask")]
 pub struct UserTask {
     #[xml(attr = "id")]
+    #[tia("BaseElementType",rg*="id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
+    #[tia("BaseElementType",rg*="documentations")]
     pub documentations: Vec<Documentation>,
     #[xml(child = "bpmn:extensionElements")]
+    #[tia("BaseElementType",rg*="extension_elements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(attr = "name")]
+    #[tia("FlowElementType",rg*="name")]
     pub name: Option<String>,
     #[xml(child = "bpmn:auditing")]
+    #[tia("FlowElementType",rg*="auditing")]
     pub auditing: Option<Auditing>,
     #[xml(child = "bpmn:monitoring")]
+    #[tia("FlowElementType",rg*="monitoring")]
     pub monitoring: Option<Monitoring>,
     #[xml(child = "bpmn:categoryValueRef")]
+    #[tia("FlowElementType",rg*="category_value_refs")]
     pub category_value_refs: Vec<CategoryValueRef>,
     #[xml(child = "bpmn:incoming")]
+    #[tia("FlowNodeType",rg*="incomings")]
     pub incomings: Vec<Incoming>,
     #[xml(child = "bpmn:outgoing")]
+    #[tia("FlowNodeType",rg*="outgoings")]
     pub outgoings: Vec<Outgoing>,
     #[xml(attr = "isForCompensation")]
+    #[tia("ActivityType",rg*="is_for_compensation")]
     pub is_for_compensation: Option<bool>,
     #[xml(attr = "startQuantity")]
+    #[tia("ActivityType",rg*="start_quantity")]
     pub start_quantity: Option<Integer>,
     #[xml(attr = "completionQuantity")]
+    #[tia("ActivityType",rg*="completion_quantity")]
     pub completion_quantity: Option<Integer>,
     #[xml(attr = "default")]
+    #[tia("ActivityType",rg*="default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
+    #[tia("ActivityType",rg*="io_specification")]
     pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
+    #[tia("ActivityType",rg*="properies")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
+    #[tia("ActivityType",rg*="data_input_associations")]
     pub data_input_associations: Vec<DataInputAssociation>,
     #[xml(child = "bpmn:dataOutputAssociation")]
+    #[tia("ActivityType",rg*="data_output_associations")]
     pub data_output_associations: Vec<DataOutputAssociation>,
     #[xml(child = "bpmn:resourceRole")]
+    #[tia("ActivityType",rg*="resource_roles")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(
         child = "bpmn:multiInstanceLoopCharacteristics",
         child = "bpmn:standardLoopCharacteristics"
     )]
+    #[tia("ActivityType",rg*="loop_characteristics")]
     pub loop_characteristics: Option<LoopCharacteristics>,
     #[xml(attr = "implementation")]
+    #[tia("UserTaskType",rg*="implementation")]
     pub implementation: Option<String>,
     #[xml(child = "bpmn:rendering")]
+    #[tia("UserTaskType",rg*="renderings")]
     pub renderings: Vec<Rendering>,
 }
 impl DocumentElement for UserTask {
@@ -6983,12 +9208,17 @@ impl DocumentElementContainer for UserTask {
 }
 // Traits
 impl TaskType for UserTask {}
-impl ActivityType for UserTask {}
-impl FlowNodeType for UserTask {}
-impl FlowElementType for UserTask {}
-impl BaseElementType for UserTask {}
 //
-pub trait UserTaskType: TaskType {}
+
+/// Schema for `userTask`
+pub trait UserTaskType: TaskType + Downcast + Debug + Send + DynClone {
+    /// Get value of attribute `implementation`
+    fn implementation(&self) -> &Option<String>;
+    /// Get value of `rendering` child
+    fn renderings(&self) -> &Vec<Rendering>;
+}
+dyn_clone::clone_trait_object!(UserTaskType);
+impl_downcast!(UserTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
