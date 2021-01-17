@@ -269,6 +269,10 @@ impl DocumentElementContainer for Definitions {
         None
     }
 }
+// Traits
+
+//
+pub trait DefinitionsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -293,88 +297,25 @@ impl DocumentElementContainer for Import {
         None
     }
 }
+// Traits
+
+//
+pub trait ImportType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:activity")]
-pub struct Activity {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:auditing")]
-    pub auditing: Option<Auditing>,
-    #[xml(child = "bpmn:monitoring")]
-    pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
-    pub outgoings: Vec<Outgoing>,
-    #[xml(attr = "isForCompensation")]
-    pub is_for_compensation: Option<bool>,
-    #[xml(attr = "startQuantity")]
-    pub start_quantity: Option<Integer>,
-    #[xml(attr = "completionQuantity")]
-    pub completion_quantity: Option<Integer>,
-    #[xml(attr = "default")]
-    pub default: Option<String>,
-    #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
-    #[xml(child = "bpmn:property")]
-    pub properies: Vec<Property>,
-    #[xml(child = "bpmn:dataInputAssociation")]
-    pub data_input_associations: Vec<DataInputAssociation>,
-    #[xml(child = "bpmn:dataOutputAssociation")]
-    pub data_output_associations: Vec<DataOutputAssociation>,
-    #[xml(child = "bpmn:resourceRole")]
-    pub resource_roles: Vec<ResourceRole>,
-    #[xml(
-        child = "bpmn:multiInstanceLoopCharacteristics",
-        child = "bpmn:standardLoopCharacteristics"
-    )]
-    pub loop_characteristics: Option<LoopCharacteristics>,
-}
-impl DocumentElement for Activity {
-    fn element(&self) -> Element {
-        Element::Activity
-    }
-}
-#[allow(unused_variables)]
+pub enum Activity {}
 impl DocumentElementContainer for Activity {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.io_specification.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.properies.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.data_input_associations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.data_output_associations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.resource_roles.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.loop_characteristics.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
+pub trait ActivityType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -408,7 +349,7 @@ pub struct AdHocSubProcess {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -471,7 +412,7 @@ pub struct AdHocSubProcess {
     #[xml(attr = "ordering")]
     pub ordering: Option<String>,
     #[xml(child = "bpmn:completionCondition")]
-    pub completion_condition: Option<CompletionCondition>,
+    pub completion_condition: Option<Expression>,
 }
 impl DocumentElement for AdHocSubProcess {
     fn element(&self) -> Element {
@@ -492,36 +433,14 @@ impl DocumentElementContainer for AdHocSubProcess {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:completionCondition")]
-pub struct CompletionCondition {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for CompletionCondition {
-    fn element(&self) -> Element {
-        Element::CompletionCondition
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for CompletionCondition {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl SubProcessType for AdHocSubProcess {}
+impl ActivityType for AdHocSubProcess {}
+impl FlowNodeType for AdHocSubProcess {}
+impl FlowElementType for AdHocSubProcess {}
+impl BaseElementType for AdHocSubProcess {}
+//
+pub trait AdHocSubProcessType: SubProcessType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -536,14 +455,18 @@ pub enum Artifact {
     TextAnnotation(TextAnnotation),
 }
 impl DocumentElementContainer for Artifact {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             Artifact::Association(e) => e.find_by_id(id),
             Artifact::Group(e) => e.find_by_id(id),
             Artifact::TextAnnotation(e) => e.find_by_id(id),
+
+            _ => None,
         }
     }
 }
+pub trait ArtifactType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -557,9 +480,9 @@ pub struct Assignment {
     #[xml(child = "bpmn:extensionElements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:from")]
-    pub from: From,
+    pub from: Expression,
     #[xml(child = "bpmn:to")]
-    pub to: To,
+    pub to: Expression,
 }
 impl DocumentElement for Assignment {
     fn element(&self) -> Element {
@@ -583,66 +506,10 @@ impl DocumentElementContainer for Assignment {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:from")]
-pub struct From {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for From {
-    fn element(&self) -> Element {
-        Element::From
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for From {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:to")]
-pub struct To {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for To {
-    fn element(&self) -> Element {
-        Element::To
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for To {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl BaseElementType for Assignment {}
+//
+pub trait AssignmentType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -679,6 +546,11 @@ impl DocumentElementContainer for Association {
         None
     }
 }
+// Traits
+impl ArtifactType for Association {}
+impl BaseElementType for Association {}
+//
+pub trait AssociationType: ArtifactType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -709,76 +581,40 @@ impl DocumentElementContainer for Auditing {
         None
     }
 }
+// Traits
+impl BaseElementType for Auditing {}
+//
+pub trait AuditingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:baseElement")]
-pub struct BaseElement {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for BaseElement {
-    fn element(&self) -> Element {
-        Element::BaseElement
-    }
-}
-#[allow(unused_variables)]
+pub enum BaseElement {}
 impl DocumentElementContainer for BaseElement {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.documentations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.extension_elements.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
+pub trait BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:baseElementWithMixedContent")]
-pub struct BaseElementWithMixedContent {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for BaseElementWithMixedContent {
-    fn element(&self) -> Element {
-        Element::BaseElementWithMixedContent
-    }
-}
-#[allow(unused_variables)]
+pub enum BaseElementWithMixedContent {}
 impl DocumentElementContainer for BaseElementWithMixedContent {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.documentations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.extension_elements.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
+pub trait BaseElementWithMixedContentType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -850,6 +686,14 @@ impl DocumentElementContainer for BoundaryEvent {
         None
     }
 }
+// Traits
+impl CatchEventType for BoundaryEvent {}
+impl EventType for BoundaryEvent {}
+impl FlowNodeType for BoundaryEvent {}
+impl FlowElementType for BoundaryEvent {}
+impl BaseElementType for BoundaryEvent {}
+//
+pub trait BoundaryEventType: CatchEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -883,7 +727,7 @@ pub struct BusinessRuleTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -917,6 +761,14 @@ impl DocumentElementContainer for BusinessRuleTask {
         None
     }
 }
+// Traits
+impl TaskType for BusinessRuleTask {}
+impl ActivityType for BusinessRuleTask {}
+impl FlowNodeType for BusinessRuleTask {}
+impl FlowElementType for BusinessRuleTask {}
+impl BaseElementType for BusinessRuleTask {}
+//
+pub trait BusinessRuleTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -934,9 +786,9 @@ pub struct CallableElement {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
 }
 impl DocumentElement for CallableElement {
     fn element(&self) -> Element {
@@ -963,26 +815,11 @@ impl DocumentElementContainer for CallableElement {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:supportedInterfaceRef")]
-pub struct SupportedInterfaceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for SupportedInterfaceRef {
-    fn element(&self) -> Element {
-        Element::SupportedInterfaceRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for SupportedInterfaceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl RootElementType for CallableElement {}
+impl BaseElementType for CallableElement {}
+//
+pub trait CallableElementType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1016,7 +853,7 @@ pub struct CallActivity {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -1050,6 +887,13 @@ impl DocumentElementContainer for CallActivity {
         None
     }
 }
+// Traits
+impl ActivityType for CallActivity {}
+impl FlowNodeType for CallActivity {}
+impl FlowElementType for CallActivity {}
+impl BaseElementType for CallActivity {}
+//
+pub trait CallActivityType: ActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1106,6 +950,13 @@ impl DocumentElementContainer for CallChoreography {
         None
     }
 }
+// Traits
+impl ChoreographyActivityType for CallChoreography {}
+impl FlowNodeType for CallChoreography {}
+impl FlowElementType for CallChoreography {}
+impl BaseElementType for CallChoreography {}
+//
+pub trait CallChoreographyType: ChoreographyActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1150,6 +1001,11 @@ impl DocumentElementContainer for CallConversation {
         None
     }
 }
+// Traits
+impl ConversationNodeType for CallConversation {}
+impl BaseElementType for CallConversation {}
+//
+pub trait CallConversationType: ConversationNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1180,107 +1036,27 @@ impl DocumentElementContainer for CancelEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for CancelEventDefinition {}
+impl RootElementType for CancelEventDefinition {}
+impl BaseElementType for CancelEventDefinition {}
+//
+pub trait CancelEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:catchEvent")]
-pub struct CatchEvent {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:auditing")]
-    pub auditing: Option<Auditing>,
-    #[xml(child = "bpmn:monitoring")]
-    pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
-    pub outgoings: Vec<Outgoing>,
-    #[xml(child = "bpmn:property")]
-    pub properies: Vec<Property>,
-    #[xml(attr = "parallelMultiple")]
-    pub parallel_multiple: Option<bool>,
-    #[xml(child = "bpmn:dataOutput")]
-    pub data_outputs: Vec<DataOutput>,
-    #[xml(child = "bpmn:dataOutputAssociation")]
-    pub data_output_associations: Vec<DataOutputAssociation>,
-    #[xml(child = "bpmn:outputSet")]
-    pub output_set: Option<OutputSet>,
-    #[xml(
-        child = "bpmn:cancelEventDefinition",
-        child = "bpmn:compensateEventDefinition",
-        child = "bpmn:conditionalEventDefinition",
-        child = "bpmn:errorEventDefinition",
-        child = "bpmn:escalationEventDefinition",
-        child = "bpmn:linkEventDefinition",
-        child = "bpmn:messageEventDefinition",
-        child = "bpmn:signalEventDefinition",
-        child = "bpmn:terminateEventDefinition",
-        child = "bpmn:timerEventDefinition"
-    )]
-    pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
-}
-impl DocumentElement for CatchEvent {
-    fn element(&self) -> Element {
-        Element::CatchEvent
-    }
-}
-#[allow(unused_variables)]
+pub enum CatchEvent {}
 impl DocumentElementContainer for CatchEvent {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.data_outputs.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.data_output_associations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.output_set.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.event_definitions.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.event_definition_refs.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:eventDefinitionRef")]
-pub struct EventDefinitionRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for EventDefinitionRef {
-    fn element(&self) -> Element {
-        Element::EventDefinitionRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for EventDefinitionRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+pub trait CatchEventType: EventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1317,6 +1093,11 @@ impl DocumentElementContainer for Category {
         None
     }
 }
+// Traits
+impl RootElementType for Category {}
+impl BaseElementType for Category {}
+//
+pub trait CategoryType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1349,6 +1130,10 @@ impl DocumentElementContainer for CategoryValue {
         None
     }
 }
+// Traits
+impl BaseElementType for CategoryValue {}
+//
+pub trait CategoryValueType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1447,81 +1232,27 @@ impl DocumentElementContainer for Choreography {
         None
     }
 }
+// Traits
+impl CollaborationType for Choreography {}
+impl RootElementType for Choreography {}
+impl BaseElementType for Choreography {}
+//
+pub trait ChoreographyType: CollaborationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyActivity")]
-pub struct ChoreographyActivity {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:auditing")]
-    pub auditing: Option<Auditing>,
-    #[xml(child = "bpmn:monitoring")]
-    pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
-    pub outgoings: Vec<Outgoing>,
-    #[xml(attr = "initiatingParticipantRef")]
-    pub initiating_participant_ref: String,
-    #[xml(attr = "loopType")]
-    pub loop_type: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
-    pub participant_refs: Vec<ParticipantRef>,
-    #[xml(child = "bpmn:correlationKey")]
-    pub correlation_keys: Vec<CorrelationKey>,
-}
-impl DocumentElement for ChoreographyActivity {
-    fn element(&self) -> Element {
-        Element::ChoreographyActivity
-    }
-}
-#[allow(unused_variables)]
+pub enum ChoreographyActivity {}
 impl DocumentElementContainer for ChoreographyActivity {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.participant_refs.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.correlation_keys.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:participantRef")]
-pub struct ParticipantRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for ParticipantRef {
-    fn element(&self) -> Element {
-        Element::ParticipantRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ParticipantRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+pub trait ChoreographyActivityType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1576,26 +1307,13 @@ impl DocumentElementContainer for ChoreographyTask {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:messageFlowRef")]
-pub struct MessageFlowRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for MessageFlowRef {
-    fn element(&self) -> Element {
-        Element::MessageFlowRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for MessageFlowRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl ChoreographyActivityType for ChoreographyTask {}
+impl FlowNodeType for ChoreographyTask {}
+impl FlowElementType for ChoreographyTask {}
+impl BaseElementType for ChoreographyTask {}
+//
+pub trait ChoreographyTaskType: ChoreographyActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1687,26 +1405,11 @@ impl DocumentElementContainer for Collaboration {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:choreographyRef")]
-pub struct ChoreographyRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for ChoreographyRef {
-    fn element(&self) -> Element {
-        Element::ChoreographyRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ChoreographyRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl RootElementType for Collaboration {}
+impl BaseElementType for Collaboration {}
+//
+pub trait CollaborationType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1741,6 +1444,12 @@ impl DocumentElementContainer for CompensateEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for CompensateEventDefinition {}
+impl RootElementType for CompensateEventDefinition {}
+impl BaseElementType for CompensateEventDefinition {}
+//
+pub trait CompensateEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1754,9 +1463,9 @@ pub struct ComplexBehaviorDefinition {
     #[xml(child = "bpmn:extensionElements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:condition")]
-    pub condition: Condition,
+    pub condition: FormalExpression,
     #[xml(child = "bpmn:event")]
-    pub event: Option<Event>,
+    pub event: Option<ImplicitThrowEvent>,
 }
 impl DocumentElement for ComplexBehaviorDefinition {
     fn element(&self) -> Element {
@@ -1780,105 +1489,10 @@ impl DocumentElementContainer for ComplexBehaviorDefinition {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:condition")]
-pub struct Condition {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "language")]
-    pub language: Option<URI>,
-    #[xml(attr = "evaluatesToTypeRef")]
-    pub evaluates_totype_ref: Option<String>,
-}
-impl DocumentElement for Condition {
-    fn element(&self) -> Element {
-        Element::Condition
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Condition {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:event")]
-pub struct Event {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:auditing")]
-    pub auditing: Option<Auditing>,
-    #[xml(child = "bpmn:monitoring")]
-    pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
-    pub outgoings: Vec<Outgoing>,
-    #[xml(child = "bpmn:property")]
-    pub properies: Vec<Property>,
-    #[xml(child = "bpmn:dataInput")]
-    pub data_inputs: Vec<DataInput>,
-    #[xml(child = "bpmn:dataInputAssociation")]
-    pub data_input_associations: Vec<DataInputAssociation>,
-    #[xml(child = "bpmn:inputSet")]
-    pub input_set: Option<InputSet>,
-    #[xml(
-        child = "bpmn:cancelEventDefinition",
-        child = "bpmn:compensateEventDefinition",
-        child = "bpmn:conditionalEventDefinition",
-        child = "bpmn:errorEventDefinition",
-        child = "bpmn:escalationEventDefinition",
-        child = "bpmn:linkEventDefinition",
-        child = "bpmn:messageEventDefinition",
-        child = "bpmn:signalEventDefinition",
-        child = "bpmn:terminateEventDefinition",
-        child = "bpmn:timerEventDefinition"
-    )]
-    pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
-}
-impl DocumentElement for Event {
-    fn element(&self) -> Element {
-        Element::Event
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Event {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl BaseElementType for ComplexBehaviorDefinition {}
+//
+pub trait ComplexBehaviorDefinitionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1908,7 +1522,7 @@ pub struct ComplexGateway {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:activationCondition")]
-    pub activation_condition: Option<ActivationCondition>,
+    pub activation_condition: Option<Expression>,
 }
 impl DocumentElement for ComplexGateway {
     fn element(&self) -> Element {
@@ -1929,36 +1543,13 @@ impl DocumentElementContainer for ComplexGateway {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:activationCondition")]
-pub struct ActivationCondition {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for ActivationCondition {
-    fn element(&self) -> Element {
-        Element::ActivationCondition
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ActivationCondition {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl GatewayType for ComplexGateway {}
+impl FlowNodeType for ComplexGateway {}
+impl FlowElementType for ComplexGateway {}
+impl BaseElementType for ComplexGateway {}
+//
+pub trait ComplexGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -1972,7 +1563,7 @@ pub struct ConditionalEventDefinition {
     #[xml(child = "bpmn:extensionElements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:condition")]
-    pub condition: Condition,
+    pub condition: Expression,
 }
 impl DocumentElement for ConditionalEventDefinition {
     fn element(&self) -> Element {
@@ -1993,6 +1584,12 @@ impl DocumentElementContainer for ConditionalEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for ConditionalEventDefinition {}
+impl RootElementType for ConditionalEventDefinition {}
+impl BaseElementType for ConditionalEventDefinition {}
+//
+pub trait ConditionalEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2031,6 +1628,11 @@ impl DocumentElementContainer for Conversation {
         None
     }
 }
+// Traits
+impl ConversationNodeType for Conversation {}
+impl BaseElementType for Conversation {}
+//
+pub trait ConversationType: ConversationNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2065,6 +1667,10 @@ impl DocumentElementContainer for ConversationAssociation {
         None
     }
 }
+// Traits
+impl BaseElementType for ConversationAssociation {}
+//
+pub trait ConversationAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2101,6 +1707,10 @@ impl DocumentElementContainer for ConversationLink {
         None
     }
 }
+// Traits
+impl BaseElementType for ConversationLink {}
+//
+pub trait ConversationLinkType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2115,14 +1725,18 @@ pub enum ConversationNode {
     SubConversation(SubConversation),
 }
 impl DocumentElementContainer for ConversationNode {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             ConversationNode::CallConversation(e) => e.find_by_id(id),
             ConversationNode::Conversation(e) => e.find_by_id(id),
             ConversationNode::SubConversation(e) => e.find_by_id(id),
+
+            _ => None,
         }
     }
 }
+pub trait ConversationNodeType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2159,26 +1773,10 @@ impl DocumentElementContainer for CorrelationKey {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:correlationPropertyRef")]
-pub struct CorrelationPropertyRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for CorrelationPropertyRef {
-    fn element(&self) -> Element {
-        Element::CorrelationPropertyRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for CorrelationPropertyRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for CorrelationKey {}
+//
+pub trait CorrelationKeyType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2220,6 +1818,11 @@ impl DocumentElementContainer for CorrelationProperty {
         None
     }
 }
+// Traits
+impl RootElementType for CorrelationProperty {}
+impl BaseElementType for CorrelationProperty {}
+//
+pub trait CorrelationPropertyType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2235,7 +1838,7 @@ pub struct CorrelationPropertyBinding {
     #[xml(attr = "correlationPropertyRef")]
     pub correlation_property_ref: String,
     #[xml(child = "bpmn:dataPath")]
-    pub data_path: DataPath,
+    pub data_path: FormalExpression,
 }
 impl DocumentElement for CorrelationPropertyBinding {
     fn element(&self) -> Element {
@@ -2256,40 +1859,10 @@ impl DocumentElementContainer for CorrelationPropertyBinding {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:dataPath")]
-pub struct DataPath {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "language")]
-    pub language: Option<URI>,
-    #[xml(attr = "evaluatesToTypeRef")]
-    pub evaluates_totype_ref: Option<String>,
-}
-impl DocumentElement for DataPath {
-    fn element(&self) -> Element {
-        Element::DataPath
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for DataPath {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl BaseElementType for CorrelationPropertyBinding {}
+//
+pub trait CorrelationPropertyBindingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2305,7 +1878,7 @@ pub struct CorrelationPropertyRetrievalExpression {
     #[xml(attr = "messageRef")]
     pub message_ref: String,
     #[xml(child = "bpmn:messagePath")]
-    pub message_path: MessagePath,
+    pub message_path: FormalExpression,
 }
 impl DocumentElement for CorrelationPropertyRetrievalExpression {
     fn element(&self) -> Element {
@@ -2326,40 +1899,10 @@ impl DocumentElementContainer for CorrelationPropertyRetrievalExpression {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:messagePath")]
-pub struct MessagePath {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "language")]
-    pub language: Option<URI>,
-    #[xml(attr = "evaluatesToTypeRef")]
-    pub evaluates_totype_ref: Option<String>,
-}
-impl DocumentElement for MessagePath {
-    fn element(&self) -> Element {
-        Element::MessagePath
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for MessagePath {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl BaseElementType for CorrelationPropertyRetrievalExpression {}
+//
+pub trait CorrelationPropertyRetrievalExpressionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2396,6 +1939,10 @@ impl DocumentElementContainer for CorrelationSubscription {
         None
     }
 }
+// Traits
+impl BaseElementType for CorrelationSubscription {}
+//
+pub trait CorrelationSubscriptionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2413,7 +1960,7 @@ pub struct DataAssociation {
     #[xml(child = "bpmn:targetRef")]
     pub target_ref: TargetRef,
     #[xml(child = "bpmn:transformation")]
-    pub transformation: Option<Transformation>,
+    pub transformation: Option<FormalExpression>,
     #[xml(child = "bpmn:assignment")]
     pub assignments: Vec<Assignment>,
 }
@@ -2445,80 +1992,10 @@ impl DocumentElementContainer for DataAssociation {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:sourceRef")]
-pub struct SourceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for SourceRef {
-    fn element(&self) -> Element {
-        Element::SourceRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for SourceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:targetRef")]
-pub struct TargetRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for TargetRef {
-    fn element(&self) -> Element {
-        Element::TargetRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for TargetRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:transformation")]
-pub struct Transformation {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "language")]
-    pub language: Option<URI>,
-    #[xml(attr = "evaluatesToTypeRef")]
-    pub evaluates_totype_ref: Option<String>,
-}
-impl DocumentElement for Transformation {
-    fn element(&self) -> Element {
-        Element::Transformation
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Transformation {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl BaseElementType for DataAssociation {}
+//
+pub trait DataAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2559,6 +2036,10 @@ impl DocumentElementContainer for DataInput {
         None
     }
 }
+// Traits
+impl BaseElementType for DataInput {}
+//
+pub trait DataInputType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2576,7 +2057,7 @@ pub struct DataInputAssociation {
     #[xml(child = "bpmn:targetRef")]
     pub target_ref: TargetRef,
     #[xml(child = "bpmn:transformation")]
-    pub transformation: Option<Transformation>,
+    pub transformation: Option<FormalExpression>,
     #[xml(child = "bpmn:assignment")]
     pub assignments: Vec<Assignment>,
 }
@@ -2597,6 +2078,11 @@ impl DocumentElementContainer for DataInputAssociation {
         None
     }
 }
+// Traits
+impl DataAssociationType for DataInputAssociation {}
+impl BaseElementType for DataInputAssociation {}
+//
+pub trait DataInputAssociationType: DataAssociationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2643,6 +2129,11 @@ impl DocumentElementContainer for DataObject {
         None
     }
 }
+// Traits
+impl FlowElementType for DataObject {}
+impl BaseElementType for DataObject {}
+//
+pub trait DataObjectType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2689,6 +2180,11 @@ impl DocumentElementContainer for DataObjectReference {
         None
     }
 }
+// Traits
+impl FlowElementType for DataObjectReference {}
+impl BaseElementType for DataObjectReference {}
+//
+pub trait DataObjectReferenceType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2729,6 +2225,10 @@ impl DocumentElementContainer for DataOutput {
         None
     }
 }
+// Traits
+impl BaseElementType for DataOutput {}
+//
+pub trait DataOutputType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2746,7 +2246,7 @@ pub struct DataOutputAssociation {
     #[xml(child = "bpmn:targetRef")]
     pub target_ref: TargetRef,
     #[xml(child = "bpmn:transformation")]
-    pub transformation: Option<Transformation>,
+    pub transformation: Option<FormalExpression>,
     #[xml(child = "bpmn:assignment")]
     pub assignments: Vec<Assignment>,
 }
@@ -2767,6 +2267,11 @@ impl DocumentElementContainer for DataOutputAssociation {
         None
     }
 }
+// Traits
+impl DataAssociationType for DataOutputAssociation {}
+impl BaseElementType for DataOutputAssociation {}
+//
+pub trait DataOutputAssociationType: DataAssociationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2799,6 +2304,10 @@ impl DocumentElementContainer for DataState {
         None
     }
 }
+// Traits
+impl BaseElementType for DataState {}
+//
+pub trait DataStateType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2841,6 +2350,11 @@ impl DocumentElementContainer for DataStore {
         None
     }
 }
+// Traits
+impl RootElementType for DataStore {}
+impl BaseElementType for DataStore {}
+//
+pub trait DataStoreType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2887,6 +2401,11 @@ impl DocumentElementContainer for DataStoreReference {
         None
     }
 }
+// Traits
+impl FlowElementType for DataStoreReference {}
+impl BaseElementType for DataStoreReference {}
+//
+pub trait DataStoreReferenceType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2917,6 +2436,10 @@ impl DocumentElementContainer for Documentation {
         None
     }
 }
+// Traits
+
+//
+pub trait DocumentationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -2982,6 +2505,14 @@ impl DocumentElementContainer for EndEvent {
         None
     }
 }
+// Traits
+impl ThrowEventType for EndEvent {}
+impl EventType for EndEvent {}
+impl FlowNodeType for EndEvent {}
+impl FlowElementType for EndEvent {}
+impl BaseElementType for EndEvent {}
+//
+pub trait EndEventType: ThrowEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3012,6 +2543,11 @@ impl DocumentElementContainer for EndPoint {
         None
     }
 }
+// Traits
+impl RootElementType for EndPoint {}
+impl BaseElementType for EndPoint {}
+//
+pub trait EndPointType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3048,6 +2584,11 @@ impl DocumentElementContainer for Error {
         None
     }
 }
+// Traits
+impl RootElementType for Error {}
+impl BaseElementType for Error {}
+//
+pub trait ErrorType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3080,6 +2621,12 @@ impl DocumentElementContainer for ErrorEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for ErrorEventDefinition {}
+impl RootElementType for ErrorEventDefinition {}
+impl BaseElementType for ErrorEventDefinition {}
+//
+pub trait ErrorEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3116,6 +2663,11 @@ impl DocumentElementContainer for Escalation {
         None
     }
 }
+// Traits
+impl RootElementType for Escalation {}
+impl BaseElementType for Escalation {}
+//
+pub trait EscalationType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3148,6 +2700,27 @@ impl DocumentElementContainer for EscalationEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for EscalationEventDefinition {}
+impl RootElementType for EscalationEventDefinition {}
+impl BaseElementType for EscalationEventDefinition {}
+//
+pub trait EscalationEventDefinitionType: EventDefinitionType {}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(XmlRead, Clone, PartialEq, Debug)]
+#[xml(tag = "bpmn:event")]
+pub enum Event {}
+impl DocumentElementContainer for Event {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+}
+pub trait EventType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3196,6 +2769,13 @@ impl DocumentElementContainer for EventBasedGateway {
         None
     }
 }
+// Traits
+impl GatewayType for EventBasedGateway {}
+impl FlowNodeType for EventBasedGateway {}
+impl FlowElementType for EventBasedGateway {}
+impl BaseElementType for EventBasedGateway {}
+//
+pub trait EventBasedGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3224,6 +2804,7 @@ pub enum EventDefinition {
     TimerEventDefinition(TimerEventDefinition),
 }
 impl DocumentElementContainer for EventDefinition {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             EventDefinition::CancelEventDefinition(e) => e.find_by_id(id),
@@ -3236,9 +2817,12 @@ impl DocumentElementContainer for EventDefinition {
             EventDefinition::SignalEventDefinition(e) => e.find_by_id(id),
             EventDefinition::TerminateEventDefinition(e) => e.find_by_id(id),
             EventDefinition::TimerEventDefinition(e) => e.find_by_id(id),
+
+            _ => None,
         }
     }
 }
+pub trait EventDefinitionType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3285,6 +2869,13 @@ impl DocumentElementContainer for ExclusiveGateway {
         None
     }
 }
+// Traits
+impl GatewayType for ExclusiveGateway {}
+impl FlowNodeType for ExclusiveGateway {}
+impl FlowElementType for ExclusiveGateway {}
+impl BaseElementType for ExclusiveGateway {}
+//
+pub trait ExclusiveGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3315,6 +2906,10 @@ impl DocumentElementContainer for Expression {
         None
     }
 }
+// Traits
+impl BaseElementWithMixedContentType for Expression {}
+//
+pub trait ExpressionType: BaseElementWithMixedContentType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3342,6 +2937,10 @@ impl DocumentElementContainer for Extension {
         None
     }
 }
+// Traits
+
+//
+pub trait ExtensionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3362,6 +2961,10 @@ impl DocumentElementContainer for ExtensionElements {
         None
     }
 }
+// Traits
+
+//
+pub trait ExtensionElementsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3432,6 +3035,7 @@ pub enum FlowElement {
     UserTask(UserTask),
 }
 impl DocumentElementContainer for FlowElement {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             FlowElement::AdHocSubProcess(e) => e.find_by_id(id),
@@ -3465,116 +3069,27 @@ impl DocumentElementContainer for FlowElement {
             FlowElement::Task(e) => e.find_by_id(id),
             FlowElement::Transaction(e) => e.find_by_id(id),
             FlowElement::UserTask(e) => e.find_by_id(id),
+
+            _ => None,
         }
     }
 }
+pub trait FlowElementType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:categoryValueRef")]
-pub struct CategoryValueRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for CategoryValueRef {
-    fn element(&self) -> Element {
-        Element::CategoryValueRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for CategoryValueRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:flowNode")]
-pub struct FlowNode {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:auditing")]
-    pub auditing: Option<Auditing>,
-    #[xml(child = "bpmn:monitoring")]
-    pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
-    pub outgoings: Vec<Outgoing>,
-}
-impl DocumentElement for FlowNode {
-    fn element(&self) -> Element {
-        Element::FlowNode
-    }
-}
-#[allow(unused_variables)]
+pub enum FlowNode {}
 impl DocumentElementContainer for FlowNode {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.incomings.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.outgoings.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:incoming")]
-pub struct Incoming {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for Incoming {
-    fn element(&self) -> Element {
-        Element::Incoming
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Incoming {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:outgoing")]
-pub struct Outgoing {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for Outgoing {
-    fn element(&self) -> Element {
-        Element::Outgoing
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Outgoing {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+pub trait FlowNodeType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3609,6 +3124,11 @@ impl DocumentElementContainer for FormalExpression {
         None
     }
 }
+// Traits
+impl ExpressionType for FormalExpression {}
+impl BaseElementWithMixedContentType for FormalExpression {}
+//
+pub trait FormalExpressionType: ExpressionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3653,6 +3173,12 @@ impl DocumentElementContainer for Gateway {
         None
     }
 }
+// Traits
+impl FlowNodeType for Gateway {}
+impl FlowElementType for Gateway {}
+impl BaseElementType for Gateway {}
+//
+pub trait GatewayType: FlowNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3670,9 +3196,9 @@ pub struct GlobalBusinessRuleTask {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(attr = "implementation")]
@@ -3695,6 +3221,13 @@ impl DocumentElementContainer for GlobalBusinessRuleTask {
         None
     }
 }
+// Traits
+impl GlobalTaskType for GlobalBusinessRuleTask {}
+impl CallableElementType for GlobalBusinessRuleTask {}
+impl RootElementType for GlobalBusinessRuleTask {}
+impl BaseElementType for GlobalBusinessRuleTask {}
+//
+pub trait GlobalBusinessRuleTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3793,6 +3326,13 @@ impl DocumentElementContainer for GlobalChoreographyTask {
         None
     }
 }
+// Traits
+impl ChoreographyType for GlobalChoreographyTask {}
+impl CollaborationType for GlobalChoreographyTask {}
+impl RootElementType for GlobalChoreographyTask {}
+impl BaseElementType for GlobalChoreographyTask {}
+//
+pub trait GlobalChoreographyTaskType: ChoreographyType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3855,6 +3395,12 @@ impl DocumentElementContainer for GlobalConversation {
         None
     }
 }
+// Traits
+impl CollaborationType for GlobalConversation {}
+impl RootElementType for GlobalConversation {}
+impl BaseElementType for GlobalConversation {}
+//
+pub trait GlobalConversationType: CollaborationType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3872,9 +3418,9 @@ pub struct GlobalManualTask {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
     pub resource_roles: Vec<ResourceRole>,
 }
@@ -3895,6 +3441,13 @@ impl DocumentElementContainer for GlobalManualTask {
         None
     }
 }
+// Traits
+impl GlobalTaskType for GlobalManualTask {}
+impl CallableElementType for GlobalManualTask {}
+impl RootElementType for GlobalManualTask {}
+impl BaseElementType for GlobalManualTask {}
+//
+pub trait GlobalManualTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3912,9 +3465,9 @@ pub struct GlobalScriptTask {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(attr = "scriptLanguage")]
@@ -3941,6 +3494,13 @@ impl DocumentElementContainer for GlobalScriptTask {
         None
     }
 }
+// Traits
+impl GlobalTaskType for GlobalScriptTask {}
+impl CallableElementType for GlobalScriptTask {}
+impl RootElementType for GlobalScriptTask {}
+impl BaseElementType for GlobalScriptTask {}
+//
+pub trait GlobalScriptTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -3958,9 +3518,9 @@ pub struct GlobalTask {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
     pub resource_roles: Vec<ResourceRole>,
 }
@@ -3983,6 +3543,12 @@ impl DocumentElementContainer for GlobalTask {
         None
     }
 }
+// Traits
+impl CallableElementType for GlobalTask {}
+impl RootElementType for GlobalTask {}
+impl BaseElementType for GlobalTask {}
+//
+pub trait GlobalTaskType: CallableElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4000,9 +3566,9 @@ pub struct GlobalUserTask {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
     #[xml(child = "bpmn:resourceRole")]
     pub resource_roles: Vec<ResourceRole>,
     #[xml(attr = "implementation")]
@@ -4029,6 +3595,13 @@ impl DocumentElementContainer for GlobalUserTask {
         None
     }
 }
+// Traits
+impl GlobalTaskType for GlobalUserTask {}
+impl CallableElementType for GlobalUserTask {}
+impl RootElementType for GlobalUserTask {}
+impl BaseElementType for GlobalUserTask {}
+//
+pub trait GlobalUserTaskType: GlobalTaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4061,6 +3634,11 @@ impl DocumentElementContainer for Group {
         None
     }
 }
+// Traits
+impl ArtifactType for Group {}
+impl BaseElementType for Group {}
+//
+pub trait GroupType: ArtifactType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4099,6 +3677,12 @@ impl DocumentElementContainer for HumanPerformer {
         None
     }
 }
+// Traits
+impl PerformerType for HumanPerformer {}
+impl ResourceRoleType for HumanPerformer {}
+impl BaseElementType for HumanPerformer {}
+//
+pub trait HumanPerformerType: PerformerType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4164,6 +3748,14 @@ impl DocumentElementContainer for ImplicitThrowEvent {
         None
     }
 }
+// Traits
+impl ThrowEventType for ImplicitThrowEvent {}
+impl EventType for ImplicitThrowEvent {}
+impl FlowNodeType for ImplicitThrowEvent {}
+impl FlowElementType for ImplicitThrowEvent {}
+impl BaseElementType for ImplicitThrowEvent {}
+//
+pub trait ImplicitThrowEventType: ThrowEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4210,6 +3802,13 @@ impl DocumentElementContainer for InclusiveGateway {
         None
     }
 }
+// Traits
+impl GatewayType for InclusiveGateway {}
+impl FlowNodeType for InclusiveGateway {}
+impl FlowElementType for InclusiveGateway {}
+impl BaseElementType for InclusiveGateway {}
+//
+pub trait InclusiveGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4261,86 +3860,10 @@ impl DocumentElementContainer for InputSet {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:dataInputRefs")]
-pub struct DataInputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for DataInputRefs {
-    fn element(&self) -> Element {
-        Element::DataInputRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for DataInputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:optionalInputRefs")]
-pub struct OptionalInputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for OptionalInputRefs {
-    fn element(&self) -> Element {
-        Element::OptionalInputRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OptionalInputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:whileExecutingInputRefs")]
-pub struct WhileExecutingInputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for WhileExecutingInputRefs {
-    fn element(&self) -> Element {
-        Element::WhileExecutingInputRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for WhileExecutingInputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:outputSetRefs")]
-pub struct OutputSetRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for OutputSetRefs {
-    fn element(&self) -> Element {
-        Element::OutputSetRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OutputSetRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for InputSet {}
+//
+pub trait InputSetType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4379,6 +3902,11 @@ impl DocumentElementContainer for Interface {
         None
     }
 }
+// Traits
+impl RootElementType for Interface {}
+impl BaseElementType for Interface {}
+//
+pub trait InterfaceType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4446,6 +3974,14 @@ impl DocumentElementContainer for IntermediateCatchEvent {
         None
     }
 }
+// Traits
+impl CatchEventType for IntermediateCatchEvent {}
+impl EventType for IntermediateCatchEvent {}
+impl FlowNodeType for IntermediateCatchEvent {}
+impl FlowElementType for IntermediateCatchEvent {}
+impl BaseElementType for IntermediateCatchEvent {}
+//
+pub trait IntermediateCatchEventType: CatchEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4511,12 +4047,20 @@ impl DocumentElementContainer for IntermediateThrowEvent {
         None
     }
 }
+// Traits
+impl ThrowEventType for IntermediateThrowEvent {}
+impl EventType for IntermediateThrowEvent {}
+impl FlowNodeType for IntermediateThrowEvent {}
+impl FlowElementType for IntermediateThrowEvent {}
+impl BaseElementType for IntermediateThrowEvent {}
+//
+pub trait IntermediateThrowEventType: ThrowEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
 #[derive(Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:ioBinding")]
-pub struct IoBinding {
+pub struct InputOutputBinding {
     #[xml(attr = "id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
@@ -4530,13 +4074,13 @@ pub struct IoBinding {
     #[xml(attr = "outputDataRef")]
     pub output_data_ref: String,
 }
-impl DocumentElement for IoBinding {
+impl DocumentElement for InputOutputBinding {
     fn element(&self) -> Element {
         Element::IoBinding
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for IoBinding {
+impl DocumentElementContainer for InputOutputBinding {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4547,12 +4091,16 @@ impl DocumentElementContainer for IoBinding {
         None
     }
 }
+// Traits
+impl BaseElementType for InputOutputBinding {}
+//
+pub trait IoBindingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
 #[derive(Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:ioSpecification")]
-pub struct IoSpecification {
+pub struct InputOutputSpecification {
     #[xml(attr = "id")]
     pub id: Option<Id>,
     #[xml(child = "bpmn:documentation")]
@@ -4568,13 +4116,13 @@ pub struct IoSpecification {
     #[xml(child = "bpmn:outputSet")]
     pub output_sets: Vec<OutputSet>,
 }
-impl DocumentElement for IoSpecification {
+impl DocumentElement for InputOutputSpecification {
     fn element(&self) -> Element {
         Element::IoSpecification
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for IoSpecification {
+impl DocumentElementContainer for InputOutputSpecification {
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4596,6 +4144,10 @@ impl DocumentElementContainer for IoSpecification {
         None
     }
 }
+// Traits
+impl BaseElementType for InputOutputSpecification {}
+//
+pub trait IoSpecificationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4632,6 +4184,11 @@ impl DocumentElementContainer for ItemDefinition {
         None
     }
 }
+// Traits
+impl RootElementType for ItemDefinition {}
+impl BaseElementType for ItemDefinition {}
+//
+pub trait ItemDefinitionType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4649,11 +4206,11 @@ pub struct Lane {
     #[xml(attr = "partitionElementRef")]
     pub partition_element_ref: Option<String>,
     #[xml(child = "bpmn:partitionElement")]
-    pub partition_element: Option<PartitionElement>,
+    pub partition_element: Option<BaseElement>,
     #[xml(child = "bpmn:flowNodeRef")]
     pub flow_node_refs: Vec<FlowNodeRef>,
     #[xml(child = "bpmn:childLaneSet")]
-    pub child_lane_set: Option<ChildLaneSet>,
+    pub child_lane_set: Option<LaneSet>,
 }
 impl DocumentElement for Lane {
     fn element(&self) -> Element {
@@ -4680,97 +4237,10 @@ impl DocumentElementContainer for Lane {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:partitionElement")]
-pub struct PartitionElement {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for PartitionElement {
-    fn element(&self) -> Element {
-        Element::PartitionElement
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for PartitionElement {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-        if let Some(e) = self.documentations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.extension_elements.find_by_id(id) {
-            return Some(e);
-        }
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:flowNodeRef")]
-pub struct FlowNodeRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for FlowNodeRef {
-    fn element(&self) -> Element {
-        Element::FlowNodeRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for FlowNodeRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:childLaneSet")]
-pub struct ChildLaneSet {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:lane")]
-    pub lanes: Vec<Lane>,
-}
-impl DocumentElement for ChildLaneSet {
-    fn element(&self) -> Element {
-        Element::ChildLaneSet
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ChildLaneSet {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-        if let Some(e) = self.lanes.find_by_id(id) {
-            return Some(e);
-        }
-        None
-    }
-}
+// Traits
+impl BaseElementType for Lane {}
+//
+pub trait LaneType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4807,6 +4277,10 @@ impl DocumentElementContainer for LaneSet {
         None
     }
 }
+// Traits
+impl BaseElementType for LaneSet {}
+//
+pub trait LaneSetType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4848,46 +4322,12 @@ impl DocumentElementContainer for LinkEventDefinition {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:source")]
-pub struct Source {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for Source {
-    fn element(&self) -> Element {
-        Element::Source
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Source {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:target")]
-pub struct Target {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for Target {
-    fn element(&self) -> Element {
-        Element::Target
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Target {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl EventDefinitionType for LinkEventDefinition {}
+impl RootElementType for LinkEventDefinition {}
+impl BaseElementType for LinkEventDefinition {}
+//
+pub trait LinkEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4900,13 +4340,17 @@ pub enum LoopCharacteristics {
     StandardLoopCharacteristics(StandardLoopCharacteristics),
 }
 impl DocumentElementContainer for LoopCharacteristics {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             LoopCharacteristics::MultiInstanceLoopCharacteristics(e) => e.find_by_id(id),
             LoopCharacteristics::StandardLoopCharacteristics(e) => e.find_by_id(id),
+
+            _ => None,
         }
     }
 }
+pub trait LoopCharacteristicsType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -4940,7 +4384,7 @@ pub struct ManualTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -4972,6 +4416,14 @@ impl DocumentElementContainer for ManualTask {
         None
     }
 }
+// Traits
+impl TaskType for ManualTask {}
+impl ActivityType for ManualTask {}
+impl FlowNodeType for ManualTask {}
+impl FlowElementType for ManualTask {}
+impl BaseElementType for ManualTask {}
+//
+pub trait ManualTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5006,6 +4458,11 @@ impl DocumentElementContainer for Message {
         None
     }
 }
+// Traits
+impl RootElementType for Message {}
+impl BaseElementType for Message {}
+//
+pub trait MessageType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5042,26 +4499,12 @@ impl DocumentElementContainer for MessageEventDefinition {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:operationRef")]
-pub struct OperationRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for OperationRef {
-    fn element(&self) -> Element {
-        Element::OperationRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OperationRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl EventDefinitionType for MessageEventDefinition {}
+impl RootElementType for MessageEventDefinition {}
+impl BaseElementType for MessageEventDefinition {}
+//
+pub trait MessageEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5100,6 +4543,10 @@ impl DocumentElementContainer for MessageFlow {
         None
     }
 }
+// Traits
+impl BaseElementType for MessageFlow {}
+//
+pub trait MessageFlowType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5134,6 +4581,10 @@ impl DocumentElementContainer for MessageFlowAssociation {
         None
     }
 }
+// Traits
+impl BaseElementType for MessageFlowAssociation {}
+//
+pub trait MessageFlowAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5164,6 +4615,10 @@ impl DocumentElementContainer for Monitoring {
         None
     }
 }
+// Traits
+impl BaseElementType for Monitoring {}
+//
+pub trait MonitoringType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5185,19 +4640,19 @@ pub struct MultiInstanceLoopCharacteristics {
     #[xml(attr = "noneBehaviorEventRef")]
     pub none_behavior_event_ref: Option<String>,
     #[xml(child = "bpmn:loopCardinality")]
-    pub loop_cardinality: Option<LoopCardinality>,
+    pub loop_cardinality: Option<Expression>,
     #[xml(child = "bpmn:loopDataInputRef")]
     pub loop_data_input_ref: Option<LoopDataInputRef>,
     #[xml(child = "bpmn:loopDataOutputRef")]
     pub loop_data_output_ref: Option<LoopDataOutputRef>,
     #[xml(child = "bpmn:inputDataItem")]
-    pub input_data_item: Option<InputDataItem>,
+    pub input_data_item: Option<DataInput>,
     #[xml(child = "bpmn:outputDataItem")]
-    pub output_data_item: Option<OutputDataItem>,
+    pub output_data_item: Option<DataOutput>,
     #[xml(child = "bpmn:complexBehaviorDefinition")]
     pub complex_behavior_definitions: Vec<ComplexBehaviorDefinition>,
     #[xml(child = "bpmn:completionCondition")]
-    pub completion_condition: Option<CompletionCondition>,
+    pub completion_condition: Option<Expression>,
 }
 impl DocumentElement for MultiInstanceLoopCharacteristics {
     fn element(&self) -> Element {
@@ -5236,156 +4691,11 @@ impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:loopCardinality")]
-pub struct LoopCardinality {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for LoopCardinality {
-    fn element(&self) -> Element {
-        Element::LoopCardinality
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for LoopCardinality {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:loopDataInputRef")]
-pub struct LoopDataInputRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for LoopDataInputRef {
-    fn element(&self) -> Element {
-        Element::LoopDataInputRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for LoopDataInputRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:loopDataOutputRef")]
-pub struct LoopDataOutputRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for LoopDataOutputRef {
-    fn element(&self) -> Element {
-        Element::LoopDataOutputRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for LoopDataOutputRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:inputDataItem")]
-pub struct InputDataItem {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(attr = "itemSubjectRef")]
-    pub item_subject_ref: Option<String>,
-    #[xml(attr = "isCollection")]
-    pub is_collection: Option<bool>,
-    #[xml(child = "bpmn:dataState")]
-    pub data_state: Option<DataState>,
-}
-impl DocumentElement for InputDataItem {
-    fn element(&self) -> Element {
-        Element::InputDataItem
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for InputDataItem {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-        if let Some(e) = self.data_state.find_by_id(id) {
-            return Some(e);
-        }
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:outputDataItem")]
-pub struct OutputDataItem {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(attr = "itemSubjectRef")]
-    pub item_subject_ref: Option<String>,
-    #[xml(attr = "isCollection")]
-    pub is_collection: Option<bool>,
-    #[xml(child = "bpmn:dataState")]
-    pub data_state: Option<DataState>,
-}
-impl DocumentElement for OutputDataItem {
-    fn element(&self) -> Element {
-        Element::OutputDataItem
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OutputDataItem {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-        if let Some(e) = self.data_state.find_by_id(id) {
-            return Some(e);
-        }
-        None
-    }
-}
+// Traits
+impl LoopCharacteristicsType for MultiInstanceLoopCharacteristics {}
+impl BaseElementType for MultiInstanceLoopCharacteristics {}
+//
+pub trait MultiInstanceLoopCharacteristicsType: LoopCharacteristicsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5434,66 +4744,10 @@ impl DocumentElementContainer for Operation {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:inMessageRef")]
-pub struct InMessageRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for InMessageRef {
-    fn element(&self) -> Element {
-        Element::InMessageRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for InMessageRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:outMessageRef")]
-pub struct OutMessageRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for OutMessageRef {
-    fn element(&self) -> Element {
-        Element::OutMessageRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OutMessageRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:errorRef")]
-pub struct ErrorRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for ErrorRef {
-    fn element(&self) -> Element {
-        Element::ErrorRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ErrorRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for Operation {}
+//
+pub trait OperationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5545,86 +4799,10 @@ impl DocumentElementContainer for OutputSet {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:dataOutputRefs")]
-pub struct DataOutputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for DataOutputRefs {
-    fn element(&self) -> Element {
-        Element::DataOutputRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for DataOutputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:optionalOutputRefs")]
-pub struct OptionalOutputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for OptionalOutputRefs {
-    fn element(&self) -> Element {
-        Element::OptionalOutputRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OptionalOutputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:whileExecutingOutputRefs")]
-pub struct WhileExecutingOutputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for WhileExecutingOutputRefs {
-    fn element(&self) -> Element {
-        Element::WhileExecutingOutputRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for WhileExecutingOutputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:inputSetRefs")]
-pub struct InputSetRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for InputSetRefs {
-    fn element(&self) -> Element {
-        Element::InputSetRefs
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for InputSetRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for OutputSet {}
+//
+pub trait OutputSetType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5669,6 +4847,13 @@ impl DocumentElementContainer for ParallelGateway {
         None
     }
 }
+// Traits
+impl GatewayType for ParallelGateway {}
+impl FlowNodeType for ParallelGateway {}
+impl FlowElementType for ParallelGateway {}
+impl BaseElementType for ParallelGateway {}
+//
+pub trait ParallelGatewayType: GatewayType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5717,46 +4902,10 @@ impl DocumentElementContainer for Participant {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:interfaceRef")]
-pub struct InterfaceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for InterfaceRef {
-    fn element(&self) -> Element {
-        Element::InterfaceRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for InterfaceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:endPointRef")]
-pub struct EndPointRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for EndPointRef {
-    fn element(&self) -> Element {
-        Element::EndPointRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for EndPointRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for Participant {}
+//
+pub trait ParticipantType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5796,46 +4945,10 @@ impl DocumentElementContainer for ParticipantAssociation {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:innerParticipantRef")]
-pub struct InnerParticipantRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for InnerParticipantRef {
-    fn element(&self) -> Element {
-        Element::InnerParticipantRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for InnerParticipantRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:outerParticipantRef")]
-pub struct OuterParticipantRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for OuterParticipantRef {
-    fn element(&self) -> Element {
-        Element::OuterParticipantRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for OuterParticipantRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for ParticipantAssociation {}
+//
+pub trait ParticipantAssociationType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5870,6 +4983,10 @@ impl DocumentElementContainer for ParticipantMultiplicity {
         None
     }
 }
+// Traits
+impl BaseElementType for ParticipantMultiplicity {}
+//
+pub trait ParticipantMultiplicityType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5906,6 +5023,11 @@ impl DocumentElementContainer for PartnerEntity {
         None
     }
 }
+// Traits
+impl RootElementType for PartnerEntity {}
+impl BaseElementType for PartnerEntity {}
+//
+pub trait PartnerEntityType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5942,6 +5064,11 @@ impl DocumentElementContainer for PartnerRole {
         None
     }
 }
+// Traits
+impl RootElementType for PartnerRole {}
+impl BaseElementType for PartnerRole {}
+//
+pub trait PartnerRoleType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -5980,6 +5107,11 @@ impl DocumentElementContainer for Performer {
         None
     }
 }
+// Traits
+impl ResourceRoleType for Performer {}
+impl BaseElementType for Performer {}
+//
+pub trait PerformerType: ResourceRoleType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6018,6 +5150,13 @@ impl DocumentElementContainer for PotentialOwner {
         None
     }
 }
+// Traits
+impl HumanPerformerType for PotentialOwner {}
+impl PerformerType for PotentialOwner {}
+impl ResourceRoleType for PotentialOwner {}
+impl BaseElementType for PotentialOwner {}
+//
+pub trait PotentialOwnerType: HumanPerformerType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6035,9 +5174,9 @@ pub struct Process {
     #[xml(child = "bpmn:supportedInterfaceRef")]
     pub supported_interface_refs: Vec<SupportedInterfaceRef>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:ioBinding")]
-    pub io_bindings: Vec<IoBinding>,
+    pub io_bindings: Vec<InputOutputBinding>,
     #[xml(attr = "processType")]
     pub process_type: Option<String>,
     #[xml(attr = "isClosed")]
@@ -6144,26 +5283,12 @@ impl DocumentElementContainer for Process {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:supports")]
-pub struct Supports {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for Supports {
-    fn element(&self) -> Element {
-        Element::Supports
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for Supports {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl CallableElementType for Process {}
+impl RootElementType for Process {}
+impl BaseElementType for Process {}
+//
+pub trait ProcessType: CallableElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6202,6 +5327,10 @@ impl DocumentElementContainer for Property {
         None
     }
 }
+// Traits
+impl BaseElementType for Property {}
+//
+pub trait PropertyType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6235,7 +5364,7 @@ pub struct ReceiveTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -6275,6 +5404,14 @@ impl DocumentElementContainer for ReceiveTask {
         None
     }
 }
+// Traits
+impl TaskType for ReceiveTask {}
+impl ActivityType for ReceiveTask {}
+impl FlowNodeType for ReceiveTask {}
+impl FlowElementType for ReceiveTask {}
+impl BaseElementType for ReceiveTask {}
+//
+pub trait ReceiveTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6318,6 +5455,10 @@ impl DocumentElementContainer for Relationship {
         None
     }
 }
+// Traits
+impl BaseElementType for Relationship {}
+//
+pub trait RelationshipType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6348,6 +5489,10 @@ impl DocumentElementContainer for Rendering {
         None
     }
 }
+// Traits
+impl BaseElementType for Rendering {}
+//
+pub trait RenderingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6384,6 +5529,11 @@ impl DocumentElementContainer for Resource {
         None
     }
 }
+// Traits
+impl RootElementType for Resource {}
+impl BaseElementType for Resource {}
+//
+pub trait ResourceType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6418,6 +5568,10 @@ impl DocumentElementContainer for ResourceAssignmentExpression {
         None
     }
 }
+// Traits
+impl BaseElementType for ResourceAssignmentExpression {}
+//
+pub trait ResourceAssignmentExpressionType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6454,6 +5608,10 @@ impl DocumentElementContainer for ResourceParameter {
         None
     }
 }
+// Traits
+impl BaseElementType for ResourceParameter {}
+//
+pub trait ResourceParameterType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6490,6 +5648,10 @@ impl DocumentElementContainer for ResourceParameterBinding {
         None
     }
 }
+// Traits
+impl BaseElementType for ResourceParameterBinding {}
+//
+pub trait ResourceParameterBindingType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6536,26 +5698,10 @@ impl DocumentElementContainer for ResourceRole {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:resourceRef")]
-pub struct ResourceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-impl DocumentElement for ResourceRef {
-    fn element(&self) -> Element {
-        Element::ResourceRef
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ResourceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+// Traits
+impl BaseElementType for ResourceRole {}
+//
+pub trait ResourceRoleType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6606,6 +5752,7 @@ pub enum RootElement {
     Signal(Signal),
 }
 impl DocumentElementContainer for RootElement {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             RootElement::Category(e) => e.find_by_id(id),
@@ -6629,9 +5776,12 @@ impl DocumentElementContainer for RootElement {
             RootElement::Process(e) => e.find_by_id(id),
             RootElement::Resource(e) => e.find_by_id(id),
             RootElement::Signal(e) => e.find_by_id(id),
+
+            _ => None,
         }
     }
 }
+pub trait RootElementType: BaseElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6665,7 +5815,7 @@ pub struct ScriptTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -6703,6 +5853,14 @@ impl DocumentElementContainer for ScriptTask {
         None
     }
 }
+// Traits
+impl TaskType for ScriptTask {}
+impl ActivityType for ScriptTask {}
+impl FlowNodeType for ScriptTask {}
+impl FlowElementType for ScriptTask {}
+impl BaseElementType for ScriptTask {}
+//
+pub trait ScriptTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6723,6 +5881,10 @@ impl DocumentElementContainer for Script {
         None
     }
 }
+// Traits
+
+//
+pub trait ScriptType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6756,7 +5918,7 @@ pub struct SendTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -6794,6 +5956,14 @@ impl DocumentElementContainer for SendTask {
         None
     }
 }
+// Traits
+impl TaskType for SendTask {}
+impl ActivityType for SendTask {}
+impl FlowNodeType for SendTask {}
+impl FlowElementType for SendTask {}
+impl BaseElementType for SendTask {}
+//
+pub trait SendTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6821,7 +5991,7 @@ pub struct SequenceFlow {
     #[xml(attr = "isImmediate")]
     pub is_immediate: Option<bool>,
     #[xml(child = "bpmn:conditionExpression")]
-    pub condition_expression: Option<ConditionExpression>,
+    pub condition_expression: Option<Expression>,
 }
 impl DocumentElement for SequenceFlow {
     fn element(&self) -> Element {
@@ -6842,36 +6012,11 @@ impl DocumentElementContainer for SequenceFlow {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:conditionExpression")]
-pub struct ConditionExpression {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for ConditionExpression {
-    fn element(&self) -> Element {
-        Element::ConditionExpression
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for ConditionExpression {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl FlowElementType for SequenceFlow {}
+impl BaseElementType for SequenceFlow {}
+//
+pub trait SequenceFlowType: FlowElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6905,7 +6050,7 @@ pub struct ServiceTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -6941,6 +6086,14 @@ impl DocumentElementContainer for ServiceTask {
         None
     }
 }
+// Traits
+impl TaskType for ServiceTask {}
+impl ActivityType for ServiceTask {}
+impl FlowNodeType for ServiceTask {}
+impl FlowElementType for ServiceTask {}
+impl BaseElementType for ServiceTask {}
+//
+pub trait ServiceTaskType: TaskType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -6975,6 +6128,11 @@ impl DocumentElementContainer for Signal {
         None
     }
 }
+// Traits
+impl RootElementType for Signal {}
+impl BaseElementType for Signal {}
+//
+pub trait SignalType: RootElementType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7007,6 +6165,12 @@ impl DocumentElementContainer for SignalEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for SignalEventDefinition {}
+impl RootElementType for SignalEventDefinition {}
+impl BaseElementType for SignalEventDefinition {}
+//
+pub trait SignalEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7024,7 +6188,7 @@ pub struct StandardLoopCharacteristics {
     #[xml(attr = "loopMaximum")]
     pub loop_maximum: Option<Integer>,
     #[xml(child = "bpmn:loopCondition")]
-    pub loop_condition: Option<LoopCondition>,
+    pub loop_condition: Option<Expression>,
 }
 impl DocumentElement for StandardLoopCharacteristics {
     fn element(&self) -> Element {
@@ -7045,36 +6209,11 @@ impl DocumentElementContainer for StandardLoopCharacteristics {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:loopCondition")]
-pub struct LoopCondition {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for LoopCondition {
-    fn element(&self) -> Element {
-        Element::LoopCondition
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for LoopCondition {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl LoopCharacteristicsType for StandardLoopCharacteristics {}
+impl BaseElementType for StandardLoopCharacteristics {}
+//
+pub trait StandardLoopCharacteristicsType: LoopCharacteristicsType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7144,6 +6283,14 @@ impl DocumentElementContainer for StartEvent {
         None
     }
 }
+// Traits
+impl CatchEventType for StartEvent {}
+impl EventType for StartEvent {}
+impl FlowNodeType for StartEvent {}
+impl FlowElementType for StartEvent {}
+impl BaseElementType for StartEvent {}
+//
+pub trait StartEventType: CatchEventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7239,6 +6386,13 @@ impl DocumentElementContainer for SubChoreography {
         None
     }
 }
+// Traits
+impl ChoreographyActivityType for SubChoreography {}
+impl FlowNodeType for SubChoreography {}
+impl FlowElementType for SubChoreography {}
+impl BaseElementType for SubChoreography {}
+//
+pub trait SubChoreographyType: ChoreographyActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7285,6 +6439,11 @@ impl DocumentElementContainer for SubConversation {
         None
     }
 }
+// Traits
+impl ConversationNodeType for SubConversation {}
+impl BaseElementType for SubConversation {}
+//
+pub trait SubConversationType: ConversationNodeType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7318,7 +6477,7 @@ pub struct SubProcess {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -7402,6 +6561,13 @@ impl DocumentElementContainer for SubProcess {
         None
     }
 }
+// Traits
+impl ActivityType for SubProcess {}
+impl FlowNodeType for SubProcess {}
+impl FlowElementType for SubProcess {}
+impl BaseElementType for SubProcess {}
+//
+pub trait SubProcessType: ActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7435,7 +6601,7 @@ pub struct Task {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -7467,6 +6633,13 @@ impl DocumentElementContainer for Task {
         None
     }
 }
+// Traits
+impl ActivityType for Task {}
+impl FlowNodeType for Task {}
+impl FlowElementType for Task {}
+impl BaseElementType for Task {}
+//
+pub trait TaskType: ActivityType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7497,6 +6670,12 @@ impl DocumentElementContainer for TerminateEventDefinition {
         None
     }
 }
+// Traits
+impl EventDefinitionType for TerminateEventDefinition {}
+impl RootElementType for TerminateEventDefinition {}
+impl BaseElementType for TerminateEventDefinition {}
+//
+pub trait TerminateEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7533,6 +6712,11 @@ impl DocumentElementContainer for TextAnnotation {
         None
     }
 }
+// Traits
+impl ArtifactType for TextAnnotation {}
+impl BaseElementType for TextAnnotation {}
+//
+pub trait TextAnnotationType: ArtifactType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7553,85 +6737,25 @@ impl DocumentElementContainer for Text {
         None
     }
 }
+// Traits
+
+//
+pub trait TextType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[derive(XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:throwEvent")]
-pub struct ThrowEvent {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-    #[xml(attr = "name")]
-    pub name: Option<String>,
-    #[xml(child = "bpmn:auditing")]
-    pub auditing: Option<Auditing>,
-    #[xml(child = "bpmn:monitoring")]
-    pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
-    pub outgoings: Vec<Outgoing>,
-    #[xml(child = "bpmn:property")]
-    pub properies: Vec<Property>,
-    #[xml(child = "bpmn:dataInput")]
-    pub data_inputs: Vec<DataInput>,
-    #[xml(child = "bpmn:dataInputAssociation")]
-    pub data_input_associations: Vec<DataInputAssociation>,
-    #[xml(child = "bpmn:inputSet")]
-    pub input_set: Option<InputSet>,
-    #[xml(
-        child = "bpmn:cancelEventDefinition",
-        child = "bpmn:compensateEventDefinition",
-        child = "bpmn:conditionalEventDefinition",
-        child = "bpmn:errorEventDefinition",
-        child = "bpmn:escalationEventDefinition",
-        child = "bpmn:linkEventDefinition",
-        child = "bpmn:messageEventDefinition",
-        child = "bpmn:signalEventDefinition",
-        child = "bpmn:terminateEventDefinition",
-        child = "bpmn:timerEventDefinition"
-    )]
-    pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
-}
-impl DocumentElement for ThrowEvent {
-    fn element(&self) -> Element {
-        Element::ThrowEvent
-    }
-}
-#[allow(unused_variables)]
+pub enum ThrowEvent {}
 impl DocumentElementContainer for ThrowEvent {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
+        match self {
+            _ => None,
         }
-        if let Some(e) = self.data_inputs.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.data_input_associations.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.input_set.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.event_definitions.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.event_definition_refs.find_by_id(id) {
-            return Some(e);
-        }
-        None
     }
 }
+pub trait ThrowEventType: EventType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7645,11 +6769,11 @@ pub struct TimerEventDefinition {
     #[xml(child = "bpmn:extensionElements")]
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:timeDate")]
-    pub time_date: Option<TimeDate>,
+    pub time_date: Option<Expression>,
     #[xml(child = "bpmn:timeDuration")]
-    pub time_duration: Option<TimeDuration>,
+    pub time_duration: Option<Expression>,
     #[xml(child = "bpmn:timeCycle")]
-    pub time_cycle: Option<TimeCycle>,
+    pub time_cycle: Option<Expression>,
 }
 impl DocumentElement for TimerEventDefinition {
     fn element(&self) -> Element {
@@ -7676,96 +6800,12 @@ impl DocumentElementContainer for TimerEventDefinition {
         None
     }
 }
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:timeDate")]
-pub struct TimeDate {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for TimeDate {
-    fn element(&self) -> Element {
-        Element::TimeDate
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for TimeDate {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:timeDuration")]
-pub struct TimeDuration {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for TimeDuration {
-    fn element(&self) -> Element {
-        Element::TimeDuration
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for TimeDuration {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
-#[xml(tag = "bpmn:timeCycle")]
-pub struct TimeCycle {
-    #[xml(attr = "id")]
-    pub id: Option<Id>,
-    #[xml(child = "bpmn:documentation")]
-    pub documentations: Vec<Documentation>,
-    #[xml(child = "bpmn:extensionElements")]
-    pub extension_elements: Option<ExtensionElements>,
-}
-impl DocumentElement for TimeCycle {
-    fn element(&self) -> Element {
-        Element::TimeCycle
-    }
-}
-#[allow(unused_variables)]
-impl DocumentElementContainer for TimeCycle {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        if let Some(ref id_) = self.id {
-            if id_ == id {
-                return Some(self);
-            }
-        }
-
-        None
-    }
-}
+// Traits
+impl EventDefinitionType for TimerEventDefinition {}
+impl RootElementType for TimerEventDefinition {}
+impl BaseElementType for TimerEventDefinition {}
+//
+pub trait TimerEventDefinitionType: EventDefinitionType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7799,7 +6839,7 @@ pub struct Transaction {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -7877,6 +6917,14 @@ impl DocumentElementContainer for Transaction {
         None
     }
 }
+// Traits
+impl SubProcessType for Transaction {}
+impl ActivityType for Transaction {}
+impl FlowNodeType for Transaction {}
+impl FlowElementType for Transaction {}
+impl BaseElementType for Transaction {}
+//
+pub trait TransactionType: SubProcessType {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7910,7 +6958,7 @@ pub struct UserTask {
     #[xml(attr = "default")]
     pub default: Option<String>,
     #[xml(child = "bpmn:ioSpecification")]
-    pub io_specification: Option<IoSpecification>,
+    pub io_specification: Option<InputOutputSpecification>,
     #[xml(child = "bpmn:property")]
     pub properies: Vec<Property>,
     #[xml(child = "bpmn:dataInputAssociation")]
@@ -7945,6 +6993,694 @@ impl DocumentElementContainer for UserTask {
         if let Some(e) = self.renderings.find_by_id(id) {
             return Some(e);
         }
+        None
+    }
+}
+// Traits
+impl TaskType for UserTask {}
+impl ActivityType for UserTask {}
+impl FlowNodeType for UserTask {}
+impl FlowElementType for UserTask {}
+impl BaseElementType for UserTask {}
+//
+pub trait UserTaskType: TaskType {}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:supportedInterfaceRef")]
+pub struct SupportedInterfaceRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for SupportedInterfaceRef {
+    fn element(&self) -> Element {
+        Element::SupportedInterfaceRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for SupportedInterfaceRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:eventDefinitionRef")]
+pub struct EventDefinitionRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for EventDefinitionRef {
+    fn element(&self) -> Element {
+        Element::EventDefinitionRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for EventDefinitionRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:participantRef")]
+pub struct ParticipantRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for ParticipantRef {
+    fn element(&self) -> Element {
+        Element::ParticipantRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for ParticipantRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:messageFlowRef")]
+pub struct MessageFlowRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for MessageFlowRef {
+    fn element(&self) -> Element {
+        Element::MessageFlowRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for MessageFlowRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:choreographyRef")]
+pub struct ChoreographyRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for ChoreographyRef {
+    fn element(&self) -> Element {
+        Element::ChoreographyRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for ChoreographyRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:correlationPropertyRef")]
+pub struct CorrelationPropertyRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for CorrelationPropertyRef {
+    fn element(&self) -> Element {
+        Element::CorrelationPropertyRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for CorrelationPropertyRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:sourceRef")]
+pub struct SourceRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for SourceRef {
+    fn element(&self) -> Element {
+        Element::SourceRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for SourceRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:targetRef")]
+pub struct TargetRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for TargetRef {
+    fn element(&self) -> Element {
+        Element::TargetRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for TargetRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:categoryValueRef")]
+pub struct CategoryValueRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for CategoryValueRef {
+    fn element(&self) -> Element {
+        Element::CategoryValueRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for CategoryValueRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:incoming")]
+pub struct Incoming {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for Incoming {
+    fn element(&self) -> Element {
+        Element::Incoming
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for Incoming {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:outgoing")]
+pub struct Outgoing {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for Outgoing {
+    fn element(&self) -> Element {
+        Element::Outgoing
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for Outgoing {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:dataInputRefs")]
+pub struct DataInputRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for DataInputRefs {
+    fn element(&self) -> Element {
+        Element::DataInputRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for DataInputRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:optionalInputRefs")]
+pub struct OptionalInputRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for OptionalInputRefs {
+    fn element(&self) -> Element {
+        Element::OptionalInputRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for OptionalInputRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:whileExecutingInputRefs")]
+pub struct WhileExecutingInputRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for WhileExecutingInputRefs {
+    fn element(&self) -> Element {
+        Element::WhileExecutingInputRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for WhileExecutingInputRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:outputSetRefs")]
+pub struct OutputSetRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for OutputSetRefs {
+    fn element(&self) -> Element {
+        Element::OutputSetRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for OutputSetRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:flowNodeRef")]
+pub struct FlowNodeRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for FlowNodeRef {
+    fn element(&self) -> Element {
+        Element::FlowNodeRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for FlowNodeRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:source")]
+pub struct Source {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for Source {
+    fn element(&self) -> Element {
+        Element::Source
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for Source {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:target")]
+pub struct Target {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for Target {
+    fn element(&self) -> Element {
+        Element::Target
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for Target {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:operationRef")]
+pub struct OperationRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for OperationRef {
+    fn element(&self) -> Element {
+        Element::OperationRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for OperationRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:loopDataInputRef")]
+pub struct LoopDataInputRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for LoopDataInputRef {
+    fn element(&self) -> Element {
+        Element::LoopDataInputRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for LoopDataInputRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:loopDataOutputRef")]
+pub struct LoopDataOutputRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for LoopDataOutputRef {
+    fn element(&self) -> Element {
+        Element::LoopDataOutputRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for LoopDataOutputRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:inMessageRef")]
+pub struct InMessageRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for InMessageRef {
+    fn element(&self) -> Element {
+        Element::InMessageRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for InMessageRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:outMessageRef")]
+pub struct OutMessageRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for OutMessageRef {
+    fn element(&self) -> Element {
+        Element::OutMessageRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for OutMessageRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:errorRef")]
+pub struct ErrorRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for ErrorRef {
+    fn element(&self) -> Element {
+        Element::ErrorRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for ErrorRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:dataOutputRefs")]
+pub struct DataOutputRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for DataOutputRefs {
+    fn element(&self) -> Element {
+        Element::DataOutputRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for DataOutputRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:optionalOutputRefs")]
+pub struct OptionalOutputRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for OptionalOutputRefs {
+    fn element(&self) -> Element {
+        Element::OptionalOutputRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for OptionalOutputRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:whileExecutingOutputRefs")]
+pub struct WhileExecutingOutputRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for WhileExecutingOutputRefs {
+    fn element(&self) -> Element {
+        Element::WhileExecutingOutputRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for WhileExecutingOutputRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:inputSetRefs")]
+pub struct InputSetRefs {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for InputSetRefs {
+    fn element(&self) -> Element {
+        Element::InputSetRefs
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for InputSetRefs {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:interfaceRef")]
+pub struct InterfaceRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for InterfaceRef {
+    fn element(&self) -> Element {
+        Element::InterfaceRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for InterfaceRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:endPointRef")]
+pub struct EndPointRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for EndPointRef {
+    fn element(&self) -> Element {
+        Element::EndPointRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for EndPointRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:innerParticipantRef")]
+pub struct InnerParticipantRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for InnerParticipantRef {
+    fn element(&self) -> Element {
+        Element::InnerParticipantRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for InnerParticipantRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:outerParticipantRef")]
+pub struct OuterParticipantRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for OuterParticipantRef {
+    fn element(&self) -> Element {
+        Element::OuterParticipantRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for OuterParticipantRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:supports")]
+pub struct Supports {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for Supports {
+    fn element(&self) -> Element {
+        Element::Supports
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for Supports {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+}
+/// Auto-generated from BPNM schema
+///
+/// (See codegen-rust.xsl)
+#[derive(Default, Clone, XmlRead, PartialEq, Debug)]
+#[xml(tag = "bpmn:resourceRef")]
+pub struct ResourceRef {
+    #[xml(text, cdata)]
+    pub content: Option<String>,
+}
+impl DocumentElement for ResourceRef {
+    fn element(&self) -> Element {
+        Element::ResourceRef
+    }
+}
+#[allow(unused_variables)]
+impl DocumentElementContainer for ResourceRef {
+    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         None
     }
 }

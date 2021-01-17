@@ -41,26 +41,37 @@
     
     <xsl:function name="local:struct-case">
         <xsl:param name="string"/>
-        <xsl:value-of select="
-            string-join(for $s in tokenize($string, '\W+')
-            return
-            concat(upper-case(substring($s, 1, 1)), substring($s, 2)), '')"/>
+        <xsl:choose>
+            <xsl:when test="matches($string, '^t[A-Z][A-Za-z0-9_]+')">
+                <xsl:value-of select="local:struct-case(substring($string, 2, string-length($string) - 1))"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="
+                    string-join(for $s in tokenize($string, '\W+')
+                    return
+                    concat(upper-case(substring($s, 1, 1)), substring($s, 2)), '')"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
     
+    <xsl:function name="local:type">
+        <xsl:param name="type"/>
+        <xsl:choose>
+            <xsl:when test="$type= 'xsd:ID'">Id</xsl:when>
+            <xsl:when test="$type = 'xsd:string'">String</xsl:when>
+            <xsl:when test="$type = 'xsd:anyURI'">URI</xsl:when>
+            <xsl:when test="$type = 'xsd:boolean'">bool</xsl:when>
+            <xsl:when test="$type = 'xsd:integer'">Integer</xsl:when>
+            <xsl:when test="$type = 'xsd:int'">Int</xsl:when>
+            <xsl:otherwise>String</xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
     <xsl:function name="local:attributeType">
         <xsl:param name="node"/>
         <xsl:if test="$node/@use = 'optional' or not($node/@use)">
             <xsl:text>Option&lt;</xsl:text>
         </xsl:if>
-        <xsl:choose>
-            <xsl:when test="$node/@type = 'xsd:ID'">Id</xsl:when>
-            <xsl:when test="$node/@type = 'xsd:string'">String</xsl:when>
-            <xsl:when test="$node/@type = 'xsd:anyURI'">URI</xsl:when>
-            <xsl:when test="$node/@type = 'xsd:boolean'">bool</xsl:when>
-            <xsl:when test="$node/@type = 'xsd:integer'">Integer</xsl:when>
-            <xsl:when test="$node/@type = 'xsd:int'">Int</xsl:when>
-            <xsl:otherwise>String</xsl:otherwise>
-        </xsl:choose>
+        <xsl:value-of select="local:type($node/@type)"/>
         <xsl:if test="$node/@use = 'optional' or not($node/@use)">
             <xsl:text>&gt;</xsl:text>
         </xsl:if>
@@ -82,10 +93,10 @@
                 <xsl:value-of select="true()"/>
             </xsl:when>
             <xsl:otherwise>
-        <xsl:for-each select="$type//xs:extension">
-            <xsl:variable name="extTypeName" select="./@base"/>
-            <xsl:value-of select="local:hasId($schema/xs:complexType[@name = $extTypeName])"/>
-        </xsl:for-each>
+                <xsl:for-each select="$type//xs:extension">
+                    <xsl:variable name="extTypeName" select="./@base"/>
+                    <xsl:value-of select="local:hasId($schema/xs:complexType[@name = $extTypeName])"/>
+                </xsl:for-each>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -102,29 +113,23 @@
         <!-- Generate enum with all elements -->
         <xsl:text>#[derive(Debug, Clone, PartialEq)] pub enum Element {</xsl:text>
         <xsl:for-each-group select="$schema//xs:element[@name]" group-by="@name">
-            <xsl:value-of select="local:struct-case(./@name)"/>
+            <xsl:value-of select="local:struct-case(current-group()[1]/@name)"/>
             <xsl:text>,</xsl:text>
         </xsl:for-each-group>
         <xsl:text>}</xsl:text>
         
-        <xsl:for-each-group select="$schema//xs:element[@name]" group-by="@name">
-            <xsl:call-template name="element">
-                <xsl:with-param name="element" select="."/>
+        <xsl:for-each select="$schema/xs:complexType[@name]">
+            <xsl:call-template name="type">
+                <xsl:with-param name="type" select="." />
             </xsl:call-template>
-        </xsl:for-each-group>
-    </xsl:template>
-    
-    
-    <xsl:template name="element">
-        <xsl:param name="element"/>
+        </xsl:for-each>
         
-        
-        <xsl:variable name="name" select="$element/@name"/>
-        <xsl:variable name="elementType" select="$element/@type"/>
-        <xsl:variable name="type" select="$schema/xs:complexType[@name = $elementType]"/>
-        
-        <xsl:choose>
-            <xsl:when test="not($type) and local:attributeType($elementType)">
+        <xsl:for-each-group select="$schema//xs:element[@name and @type]" group-by="@name">
+            <xsl:variable name="e" select="current-group()[1]"/>
+            <xsl:if test="contains($e/@type, ':')">
+                <xsl:variable name="name" select="$e/@name"/>
+                <xsl:variable name="type" select="$e/@type"/>
+                
                 <xsl:text xml:space="preserve">
                     /// Auto-generated from BPNM schema
                     ///
@@ -135,17 +140,31 @@
                 <xsl:value-of select="local:struct-case($name)"/>
                 <xsl:text xml:space="preserve"> {</xsl:text>
                 <xsl:text>#[xml(text, cdata)]</xsl:text>
-                <xsl:text>pub content:</xsl:text><xsl:value-of select="local:attributeType($elementType)"/>
+                <xsl:text>pub content:</xsl:text><xsl:value-of select="local:attributeType($type)"/>
                 <xsl:text xml:space="preserve">}</xsl:text>
                 
                 <xsl:call-template name="documentElementTrait">
                     <xsl:with-param name="name" select="$name"></xsl:with-param>
+                    <xsl:with-param name="typeName" select="$name"></xsl:with-param>
                     <xsl:with-param name="elements" select="()"></xsl:with-param>
                     <xsl:with-param name="id" select="false()"></xsl:with-param>
                 </xsl:call-template>
                 
-            </xsl:when>
-            <xsl:when test="$type/@abstract and count($schema//xs:element[@substitutionGroup = $name]) > 0">
+                
+            </xsl:if>
+        </xsl:for-each-group>
+    </xsl:template>
+    
+    
+    <xsl:template name="type">
+        <xsl:param name="type"/>
+        <xsl:variable name="t" select="$type/@name"/>
+        <xsl:variable name="typeName" select="$type/@name"/>
+        <xsl:variable name="element" select="$schema/xs:element[@type = $t]"/>
+        <xsl:variable name="name" select="$element/@name"/>
+        
+        <xsl:choose>
+            <xsl:when test="$type/@abstract ">
                 <xsl:text xml:space="preserve">
                     /// Auto-generated from BPNM schema
                     ///
@@ -154,7 +173,7 @@
                 <xsl:text >#[derive(XmlRead, Clone, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub enum </xsl:text>
-                <xsl:value-of select="local:struct-case($name)"/>
+                <xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{</xsl:text>
                 <xsl:for-each select="$elements[@substitutionGroup = $name]">
                     <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="./@name"/><xsl:text>")]</xsl:text>
@@ -168,17 +187,28 @@
                 <xsl:text>}</xsl:text>
                 
                 <xsl:text xml:space="preserve">
-                    impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text> {
+                    impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
+                        #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
                         fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
                         match self {
                     </xsl:text>
                 <xsl:for-each select="$elements[@substitutionGroup = $name]">
                     <xsl:value-of select="local:struct-case($name)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>(e) => e.find_by_id(id),
                 </xsl:for-each>
+                _ => None,
                 <xsl:text>
                     }
                     }
                     }</xsl:text>
+                
+                <xsl:text xml:space="preserve">pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                <xsl:if test="exists($type//xs:extension)">
+                    <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
+                    <xsl:text>:</xsl:text>
+                    <xsl:value-of select="local:struct-case($extTypeName)"/>
+                    <xsl:text>Type</xsl:text>
+                </xsl:if>
+                <xsl:text>{}</xsl:text>
                 
             </xsl:when>
             <xsl:otherwise>
@@ -190,7 +220,7 @@
                 <xsl:text >#[derive(Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
-                <xsl:value-of select="local:struct-case($name)"/>
+                <xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text> {</xsl:text>
                 
                 
@@ -204,12 +234,52 @@
                 
                 <xsl:call-template name="documentElementTrait">
                     <xsl:with-param name="name" select="$name"></xsl:with-param>
+                    <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
                     <xsl:with-param name="elements" select="local:elements($type)"></xsl:with-param>
                     <xsl:with-param name="id" select="local:hasId($type)"></xsl:with-param>
                 </xsl:call-template>
                 
+                
+                
+                <xsl:text>
+                    // Traits
+                </xsl:text>
+                <xsl:call-template name="traits">
+                    <xsl:with-param name="type" select="$type"></xsl:with-param>
+                    <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
+                </xsl:call-template>
+                
+                <xsl:text>
+                    //
+                </xsl:text>
+                
+                
+                <xsl:text xml:space="preserve">pub trait </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                <xsl:if test="exists($type//xs:extension)">
+                    <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
+                    <xsl:text>:</xsl:text>
+                    <xsl:value-of select="local:struct-case($extTypeName)"/>
+                    <xsl:text>Type</xsl:text>
+                </xsl:if>
+                <xsl:text>{}</xsl:text>                
             </xsl:otherwise>
         </xsl:choose>
+    </xsl:template>
+    
+    <xsl:template name="traits">
+        <xsl:param name="type"></xsl:param>
+        <xsl:param name="typeName"></xsl:param>
+        <xsl:if test="exists($type//xs:extension)">
+            <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
+            <xsl:text xml:space="preserve">impl </xsl:text>
+            <xsl:value-of select="local:struct-case($extTypeName)"/>
+            <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+            <xsl:text>{}</xsl:text>
+            <xsl:call-template name="traits">
+                <xsl:with-param name="type" select="$schema/xs:complexType[@name = $extTypeName]"></xsl:with-param>
+                <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template name="content">
@@ -242,10 +312,18 @@
         <xsl:variable name="subelements"
             select="$type//xs:element[@ref and not(contains(@ref, ':'))] | $type//xs:element[@name]"/>
         <xsl:for-each select="$subelements">
+            <xsl:variable name="tName" select="./@name"/>
             <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
-            <xsl:variable name="subType" select="if (./@ref) then $schema/xs:element[@name=$name]/@type else ./@type"/>
+            <xsl:variable name="subType" select="./@type"/>
+            <xsl:variable name="subType" select="if (not($subType)) then $schema/xs:element[@name = $name]/@type else $subType"/>
+            <xsl:variable name="subType" select="if (exists($schema/xs:complexType[@name = $subType])) then 
+                local:struct-case($subType)
+                else
+                local:struct-case($name)
+                "/>
+            <xsl:variable name="subType" select="if ($subType = '') then local:type($subType) else $subType"/>
             <xsl:choose>
-                <xsl:when test="$schema/xs:complexType[@name = $subType]/@abstract and count($schema/xs:element[@substitutionGroup = $name]) > 1">
+                <xsl:when test="count($schema/xs:element[@substitutionGroup = $name]) > 1">
                     <xsl:text>#[xml(</xsl:text>
                     <xsl:for-each select="$schema/xs:element[@substitutionGroup = $name]">
                         <xsl:text>child = "bpmn:</xsl:text><xsl:value-of select="./@name"/><xsl:text>",</xsl:text>
@@ -268,9 +346,7 @@
                 <xsl:when test="./@maxOccurs = 'unbounded'">Vec&lt;</xsl:when>
             </xsl:choose>
             
-            <xsl:value-of select="local:struct-case($name)"/>
-            <xsl:text></xsl:text>
-            
+            <xsl:value-of select="$subType"/>
             
             <xsl:choose>
                 <xsl:when test="./@minOccurs = 0 and (not(./@maxOccurs) or ./@maxOccurs = '1')">&gt;</xsl:when>
@@ -293,15 +369,17 @@
     
     <xsl:template name="documentElementTrait">
         <xsl:param name="name" required="yes"/>
+        <xsl:param name="typeName" required="yes"/>
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
-        <xsl:text xml:space="preserve">impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text> {
+        <xsl:text xml:space="preserve">impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
             fn element(&amp;self) -> Element {
             Element::</xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text>
                 }
                 }</xsl:text>
         <xsl:call-template name="documentElementContainerTrait">
             <xsl:with-param name="name" select="$name"></xsl:with-param>
+            <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
             <xsl:with-param name="elements" select="$elements"></xsl:with-param>
             <xsl:with-param name="id" select="$id"></xsl:with-param>
         </xsl:call-template>
@@ -309,9 +387,10 @@
     
     <xsl:template name="documentElementContainerTrait">
         <xsl:param name="name" required="yes"/>
+        <xsl:param name="typeName" required="yes"/>
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
-        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text> {
+        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
             fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
         </xsl:text>
         
