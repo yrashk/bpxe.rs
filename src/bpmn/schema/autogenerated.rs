@@ -1,5 +1,5 @@
 // This file is generated from BPMN 2.0 schema using `codegen.sh` script
-use derive_more::AsRef;
+use derive_more::Deref;
 use dyn_clone::DynClone;
 use std::fmt::Debug;
 use strong_xml::XmlRead;
@@ -9222,8 +9222,7 @@ impl_downcast!(UserTaskType);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:supportedInterfaceRef")]
 pub struct SupportedInterfaceRef {
     #[xml(text, cdata)]
@@ -9239,8 +9238,7 @@ impl DocumentElementContainer for SupportedInterfaceRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:eventDefinitionRef")]
 pub struct EventDefinitionRef {
     #[xml(text, cdata)]
@@ -9256,8 +9254,7 @@ impl DocumentElementContainer for EventDefinitionRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:participantRef")]
 pub struct ParticipantRef {
     #[xml(text, cdata)]
@@ -9273,8 +9270,7 @@ impl DocumentElementContainer for ParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:messageFlowRef")]
 pub struct MessageFlowRef {
     #[xml(text, cdata)]
@@ -9290,8 +9286,7 @@ impl DocumentElementContainer for MessageFlowRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyRef")]
 pub struct ChoreographyRef {
     #[xml(text, cdata)]
@@ -9307,8 +9302,7 @@ impl DocumentElementContainer for ChoreographyRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:correlationPropertyRef")]
 pub struct CorrelationPropertyRef {
     #[xml(text, cdata)]
@@ -9324,8 +9318,7 @@ impl DocumentElementContainer for CorrelationPropertyRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:sourceRef")]
 pub struct SourceRef {
     #[xml(text, cdata)]
@@ -9341,8 +9334,7 @@ impl DocumentElementContainer for SourceRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:targetRef")]
 pub struct TargetRef {
     #[xml(text, cdata)]
@@ -9358,8 +9350,7 @@ impl DocumentElementContainer for TargetRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:categoryValueRef")]
 pub struct CategoryValueRef {
     #[xml(text, cdata)]
@@ -9375,8 +9366,7 @@ impl DocumentElementContainer for CategoryValueRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:incoming")]
 pub struct Incoming {
     #[xml(text, cdata)]
@@ -9392,8 +9382,7 @@ impl DocumentElementContainer for Incoming {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outgoing")]
 pub struct Outgoing {
     #[xml(text, cdata)]
@@ -9409,8 +9398,7 @@ impl DocumentElementContainer for Outgoing {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataInputRefs")]
 pub struct DataInputRefs {
     #[xml(text, cdata)]
@@ -9426,8 +9414,7 @@ impl DocumentElementContainer for DataInputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:optionalInputRefs")]
 pub struct OptionalInputRefs {
     #[xml(text, cdata)]
@@ -9443,8 +9430,7 @@ impl DocumentElementContainer for OptionalInputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:whileExecutingInputRefs")]
 pub struct WhileExecutingInputRefs {
     #[xml(text, cdata)]
@@ -9460,8 +9446,7 @@ impl DocumentElementContainer for WhileExecutingInputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outputSetRefs")]
 pub struct OutputSetRefs {
     #[xml(text, cdata)]
@@ -9477,8 +9462,7 @@ impl DocumentElementContainer for OutputSetRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:flowNodeRef")]
 pub struct FlowNodeRef {
     #[xml(text, cdata)]
@@ -9494,8 +9478,7 @@ impl DocumentElementContainer for FlowNodeRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:source")]
 pub struct Source {
     #[xml(text, cdata)]
@@ -9511,8 +9494,7 @@ impl DocumentElementContainer for Source {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:target")]
 pub struct Target {
     #[xml(text, cdata)]
@@ -9528,8 +9510,7 @@ impl DocumentElementContainer for Target {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:operationRef")]
 pub struct OperationRef {
     #[xml(text, cdata)]
@@ -9545,8 +9526,7 @@ impl DocumentElementContainer for OperationRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:loopDataInputRef")]
 pub struct LoopDataInputRef {
     #[xml(text, cdata)]
@@ -9562,8 +9542,7 @@ impl DocumentElementContainer for LoopDataInputRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:loopDataOutputRef")]
 pub struct LoopDataOutputRef {
     #[xml(text, cdata)]
@@ -9579,8 +9558,7 @@ impl DocumentElementContainer for LoopDataOutputRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inMessageRef")]
 pub struct InMessageRef {
     #[xml(text, cdata)]
@@ -9596,8 +9574,7 @@ impl DocumentElementContainer for InMessageRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outMessageRef")]
 pub struct OutMessageRef {
     #[xml(text, cdata)]
@@ -9613,8 +9590,7 @@ impl DocumentElementContainer for OutMessageRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:errorRef")]
 pub struct ErrorRef {
     #[xml(text, cdata)]
@@ -9630,8 +9606,7 @@ impl DocumentElementContainer for ErrorRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:dataOutputRefs")]
 pub struct DataOutputRefs {
     #[xml(text, cdata)]
@@ -9647,8 +9622,7 @@ impl DocumentElementContainer for DataOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:optionalOutputRefs")]
 pub struct OptionalOutputRefs {
     #[xml(text, cdata)]
@@ -9664,8 +9638,7 @@ impl DocumentElementContainer for OptionalOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:whileExecutingOutputRefs")]
 pub struct WhileExecutingOutputRefs {
     #[xml(text, cdata)]
@@ -9681,8 +9654,7 @@ impl DocumentElementContainer for WhileExecutingOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:inputSetRefs")]
 pub struct InputSetRefs {
     #[xml(text, cdata)]
@@ -9698,8 +9670,7 @@ impl DocumentElementContainer for InputSetRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:interfaceRef")]
 pub struct InterfaceRef {
     #[xml(text, cdata)]
@@ -9715,8 +9686,7 @@ impl DocumentElementContainer for InterfaceRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:endPointRef")]
 pub struct EndPointRef {
     #[xml(text, cdata)]
@@ -9732,8 +9702,7 @@ impl DocumentElementContainer for EndPointRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:innerParticipantRef")]
 pub struct InnerParticipantRef {
     #[xml(text, cdata)]
@@ -9749,8 +9718,7 @@ impl DocumentElementContainer for InnerParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:outerParticipantRef")]
 pub struct OuterParticipantRef {
     #[xml(text, cdata)]
@@ -9766,8 +9734,7 @@ impl DocumentElementContainer for OuterParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:supports")]
 pub struct Supports {
     #[xml(text, cdata)]
@@ -9783,8 +9750,7 @@ impl DocumentElementContainer for Supports {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
-#[as_ref(forward)]
+#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:resourceRef")]
 pub struct ResourceRef {
     #[xml(text, cdata)]
