@@ -1,4 +1,5 @@
 // This file is generated from BPMN 2.0 schema using `codegen.sh` script
+use derive_more::AsRef;
 use strong_xml::XmlRead;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Element {
@@ -292,11 +293,7 @@ impl DocumentElement for Import {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Import {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Import {}
 // Traits
 
 //
@@ -2956,11 +2953,7 @@ impl DocumentElement for ExtensionElements {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for ExtensionElements {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for ExtensionElements {}
 // Traits
 
 //
@@ -5876,11 +5869,7 @@ impl DocumentElement for Script {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Script {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Script {}
 // Traits
 
 //
@@ -6732,11 +6721,7 @@ impl DocumentElement for Text {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Text {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Text {}
 // Traits
 
 //
@@ -7020,11 +7005,7 @@ impl DocumentElement for SupportedInterfaceRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for SupportedInterfaceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for SupportedInterfaceRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7041,11 +7022,7 @@ impl DocumentElement for EventDefinitionRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for EventDefinitionRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for EventDefinitionRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7062,11 +7039,7 @@ impl DocumentElement for ParticipantRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for ParticipantRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for ParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7083,11 +7056,7 @@ impl DocumentElement for MessageFlowRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for MessageFlowRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for MessageFlowRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7104,11 +7073,7 @@ impl DocumentElement for ChoreographyRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for ChoreographyRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for ChoreographyRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7125,11 +7090,7 @@ impl DocumentElement for CorrelationPropertyRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for CorrelationPropertyRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for CorrelationPropertyRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7146,11 +7107,7 @@ impl DocumentElement for SourceRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for SourceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for SourceRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7167,11 +7124,7 @@ impl DocumentElement for TargetRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for TargetRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for TargetRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7188,11 +7141,7 @@ impl DocumentElement for CategoryValueRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for CategoryValueRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for CategoryValueRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7209,11 +7158,7 @@ impl DocumentElement for Incoming {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Incoming {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Incoming {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7230,11 +7175,7 @@ impl DocumentElement for Outgoing {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Outgoing {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Outgoing {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7251,11 +7192,7 @@ impl DocumentElement for DataInputRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for DataInputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for DataInputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7272,11 +7209,7 @@ impl DocumentElement for OptionalInputRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for OptionalInputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for OptionalInputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7293,11 +7226,7 @@ impl DocumentElement for WhileExecutingInputRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for WhileExecutingInputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for WhileExecutingInputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7314,11 +7243,7 @@ impl DocumentElement for OutputSetRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for OutputSetRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for OutputSetRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7335,11 +7260,7 @@ impl DocumentElement for FlowNodeRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for FlowNodeRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for FlowNodeRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7356,11 +7277,7 @@ impl DocumentElement for Source {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Source {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Source {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7377,11 +7294,7 @@ impl DocumentElement for Target {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Target {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Target {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7398,11 +7311,7 @@ impl DocumentElement for OperationRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for OperationRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for OperationRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7419,11 +7328,7 @@ impl DocumentElement for LoopDataInputRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for LoopDataInputRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for LoopDataInputRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7440,11 +7345,7 @@ impl DocumentElement for LoopDataOutputRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for LoopDataOutputRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for LoopDataOutputRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7461,11 +7362,7 @@ impl DocumentElement for InMessageRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for InMessageRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for InMessageRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7482,11 +7379,7 @@ impl DocumentElement for OutMessageRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for OutMessageRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for OutMessageRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7503,11 +7396,7 @@ impl DocumentElement for ErrorRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for ErrorRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for ErrorRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7524,11 +7413,7 @@ impl DocumentElement for DataOutputRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for DataOutputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for DataOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7545,11 +7430,7 @@ impl DocumentElement for OptionalOutputRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for OptionalOutputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for OptionalOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7566,11 +7447,7 @@ impl DocumentElement for WhileExecutingOutputRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for WhileExecutingOutputRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for WhileExecutingOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7587,11 +7464,7 @@ impl DocumentElement for InputSetRefs {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for InputSetRefs {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for InputSetRefs {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7608,11 +7481,7 @@ impl DocumentElement for InterfaceRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for InterfaceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for InterfaceRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7629,11 +7498,7 @@ impl DocumentElement for EndPointRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for EndPointRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for EndPointRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7650,11 +7515,7 @@ impl DocumentElement for InnerParticipantRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for InnerParticipantRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for InnerParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7671,11 +7532,7 @@ impl DocumentElement for OuterParticipantRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for OuterParticipantRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for OuterParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7692,11 +7549,7 @@ impl DocumentElement for Supports {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for Supports {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for Supports {}
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
@@ -7713,8 +7566,4 @@ impl DocumentElement for ResourceRef {
     }
 }
 #[allow(unused_variables)]
-impl DocumentElementContainer for ResourceRef {
-    fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
-        None
-    }
-}
+impl DocumentElementContainer for ResourceRef {}

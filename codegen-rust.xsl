@@ -390,36 +390,45 @@
         <xsl:param name="typeName" required="yes"/>
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
-        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
+        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+        <xsl:choose>
+            <!-- use default implementation -->
+            <xsl:when test="empty($elements) and not($id)">{}</xsl:when>
+            <xsl:otherwise>
+                
+                <xsl:text> {
             fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
         </xsl:text>
-        
-        <xsl:if test="$id = true()">
-            <xsl:text>
+                
+                <xsl:if test="$id = true()">
+                    <xsl:text>
                 if let Some(ref id_) = self.id {
                 if id_ == id {
                 return Some(self);
                 }
                 }
             </xsl:text>
-        </xsl:if>
-        
-        <xsl:for-each select="$elements">
-            <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
-            
-            <xsl:text> if let Some(e) = self.</xsl:text>
-            <xsl:choose> 
-                <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
-                <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
-            </xsl:choose>
-            <xsl:text>.find_by_id(id) {
+                </xsl:if>
+                
+                <xsl:for-each select="$elements">
+                    <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
+                    
+                    <xsl:text> if let Some(e) = self.</xsl:text>
+                    <xsl:choose> 
+                        <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:text>.find_by_id(id) {
                 return Some(e);
                 }</xsl:text>
-        </xsl:for-each>
-        <xsl:text>
+                </xsl:for-each>
+                <xsl:text>
             None
             }
             }</xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+        
     </xsl:template>
     
 </xsl:stylesheet>

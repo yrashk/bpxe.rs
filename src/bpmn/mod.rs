@@ -14,7 +14,9 @@ pub mod schema {
     use downcast_rs::{impl_downcast, Downcast};
 
     pub(crate) trait DocumentElementContainer: Downcast {
-        fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement>;
+        fn find_by_id(&self, _id: &str) -> Option<&dyn DocumentElement> {
+            None
+        }
     }
     impl_downcast!(DocumentElementContainer);
 
