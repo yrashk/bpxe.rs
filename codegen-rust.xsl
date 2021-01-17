@@ -108,6 +108,7 @@
         <xsl:text>
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
             use strong_xml::XmlRead;
+            use derive_more::AsRef;
         </xsl:text>
         
         <!-- Generate enum with all elements -->
@@ -135,7 +136,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text>#[derive(Hash, Default, Clone, XmlRead, PartialEq, Debug)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                <xsl:text>#[derive(AsRef, Hash, Default, Clone, XmlRead, PartialEq, Debug)]#[as_ref(forward)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
                 <xsl:text xml:space="preserve"> {</xsl:text>
@@ -149,7 +150,6 @@
                     <xsl:with-param name="elements" select="()"></xsl:with-param>
                     <xsl:with-param name="id" select="false()"></xsl:with-param>
                 </xsl:call-template>
-                
                 
             </xsl:if>
         </xsl:for-each-group>
