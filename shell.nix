@@ -5,6 +5,6 @@
 pkgs.stdenv.mkDerivation rec {
   name = "bpxe-shell";
 
-  buildInputs = with pkgs; [ saxon-he ];
+  buildInputs = with pkgs; [ saxon-he rustc cargo clippy ];
 
 }
