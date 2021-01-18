@@ -152,7 +152,7 @@
         <xsl:text>
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
             use strong_xml::XmlRead;
-            use derive_more::Deref;
+            use derive_more::{Deref, From};
             use std::fmt::Debug;
             use dyn_clone::DynClone;
             use tia::Tia;
@@ -183,7 +183,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text>#[derive(Deref, Hash, Default, Clone, XmlRead, PartialEq, Debug)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                <xsl:text>#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug)]#[from(forward)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
                 <xsl:text xml:space="preserve"> {</xsl:text>
@@ -249,7 +249,7 @@
                     }</xsl:text>
                 
                 <xsl:text xml:space="preserve">
-                     /// Schema for `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                     /// Access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
                     pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
                 <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
@@ -262,8 +262,27 @@
                       <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 <xsl:text>}</xsl:text>
+                
                 <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
                 <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
+                
+                <xsl:text xml:space="preserve">
+                     /// Mutable access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">TypeMut </xsl:text>
+                <xsl:text>:</xsl:text>
+                <xsl:if test="exists($type//xs:extension)">
+                    <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
+                    <xsl:value-of select="local:struct-case($extTypeName)"/>
+                    <xsl:text>TypeMut + </xsl:text>
+                </xsl:if>
+                <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
+                <xsl:call-template name="mutTraitFns">
+                    <xsl:with-param name="type" select="$type"/>
+                </xsl:call-template>
+                <xsl:text>}</xsl:text>
+                
+                <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
+                <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>                
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text xml:space="preserve">
@@ -309,7 +328,7 @@
                 
                 
                 <xsl:text xml:space="preserve">
-                    /// Schema for `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                    /// Access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
                     pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
                 <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
@@ -325,6 +344,23 @@
                 <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
                 <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
                 
+                <xsl:text xml:space="preserve">
+                    /// Mutable access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">TypeMut </xsl:text>
+                <xsl:text>:</xsl:text>
+                <xsl:if test="exists($type//xs:extension)">
+                    <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
+                    <xsl:value-of select="local:struct-case($extTypeName)"/>
+                    <xsl:text>TypeMut +</xsl:text>
+                </xsl:if>
+                <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
+                <xsl:call-template name="mutTraitFns">
+                    <xsl:with-param name="type" select="$type"/>
+                </xsl:call-template>
+                <xsl:text>}</xsl:text>
+                <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
+                <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
+                
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -339,6 +375,10 @@
                 <xsl:text xml:space="preserve">impl </xsl:text>
                 <xsl:value-of select="local:struct-case($extTypeName)"/>
                 <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text>{}</xsl:text>
+                <xsl:text xml:space="preserve">impl </xsl:text>
+                <xsl:value-of select="local:struct-case($extTypeName)"/>
+                <xsl:text xml:space="preserve">TypeMut for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{}</xsl:text>
             </xsl:if>
             
@@ -368,7 +408,7 @@
         <xsl:for-each select="$type//xs:attribute">
             <xsl:text>#[xml(attr = "</xsl:text><xsl:value-of select="@name"/><xsl:text>")]</xsl:text>
             <xsl:text>#[tia("</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>Type",rg*="</xsl:text><xsl:value-of select="local:underscoreCase(@name)"/>
-            <xsl:text>")]</xsl:text>
+            <xsl:text>","</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>TypeMut",s)]</xsl:text>
             <xsl:text xml:space="preserve">pub </xsl:text>
             <xsl:value-of select="local:underscoreCase(@name)"/>
             <xsl:text>:</xsl:text>
@@ -395,7 +435,7 @@
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:text>#[tia("</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>Type",rg*="</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/>
-            <xsl:text>")]</xsl:text>
+            <xsl:text>","</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>TypeMut",s,rmg*="</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>_mut")]</xsl:text>
             <xsl:text xml:space="preserve">pub </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/>
             <xsl:text>:</xsl:text>
             
@@ -484,7 +524,6 @@
             <xsl:text>/// Get value of attribute `</xsl:text><xsl:value-of select="./@name"/><xsl:text xml:space="preserve">`
                       fn </xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
             <xsl:value-of select="local:attributeType(.)"/><xsl:text>;</xsl:text>
-            
         </xsl:for-each>
         <xsl:for-each select="local:elements($type)">
             <xsl:text>
@@ -493,5 +532,26 @@
             <xsl:value-of select="local:elementType(.)"/><xsl:text>;</xsl:text>
         </xsl:for-each>
     </xsl:template>
+    <xsl:template name="mutTraitFns">
+        <xsl:param name="type"/>
+        <xsl:for-each select="local:attributes($type)">
+          
+            <xsl:text>/// Set value of attribute `</xsl:text><xsl:value-of select="./@name"/><xsl:text xml:space="preserve">`
+                      fn set_</xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp;mut self, value: </xsl:text><xsl:value-of select="local:attributeType(.)"/><xsl:text>);</xsl:text>
+        </xsl:for-each>
+        <xsl:for-each select="local:elements($type)">
+ 
+            <xsl:text>
+                      /// Get a mutable value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
+                      fn </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text xml:space="preserve">_mut(&amp;mut self) -> &amp;mut </xsl:text>
+            <xsl:value-of select="local:elementType(.)"/><xsl:text>;</xsl:text>
+            <xsl:text>
+                      /// Set value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
+                      fn set_</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>(&amp;mut self, value: </xsl:text><xsl:value-of select="local:elementType(.)"/><xsl:text>);</xsl:text>
+            
+        </xsl:for-each>
+    </xsl:template>
+    
+
     
 </xsl:stylesheet>
