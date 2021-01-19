@@ -13,7 +13,7 @@ pub type Int = i32;
 
 use downcast_rs::{impl_downcast, Downcast};
 
-pub(crate) trait DocumentElementContainer: Downcast {
+pub trait DocumentElementContainer: Downcast {
     fn find_by_id(&self, _id: &str) -> Option<&dyn DocumentElement> {
         None
     }
@@ -46,7 +46,7 @@ where
     }
 }
 
-pub(crate) trait DocumentElement: DocumentElementContainer + Send {
+pub trait DocumentElement: DocumentElementContainer + Send {
     fn element(&self) -> Element;
 }
 

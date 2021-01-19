@@ -405,12 +405,22 @@ impl_downcast!(ImportTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:activity")]
 pub enum Activity {}
+impl Activity {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for Activity {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for Activity {
+    fn element(&self) -> Element {
+        Element::Activity
     }
 }
 /// Access to `activity`
@@ -659,6 +669,15 @@ pub enum Artifact {
     #[xml(tag = "bpmn:textAnnotation")]
     TextAnnotation(TextAnnotation),
 }
+impl Artifact {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {
+            Artifact::Association(e) => Box::new(e) as Box<dyn DocumentElement>,
+            Artifact::Group(e) => Box::new(e) as Box<dyn DocumentElement>,
+            Artifact::TextAnnotation(e) => Box::new(e) as Box<dyn DocumentElement>,
+        }
+    }
+}
 impl DocumentElementContainer for Artifact {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
@@ -669,6 +688,11 @@ impl DocumentElementContainer for Artifact {
 
             _ => None,
         }
+    }
+}
+impl DocumentElement for Artifact {
+    fn element(&self) -> Element {
+        Element::Artifact
     }
 }
 /// Access to `artifact`
@@ -869,12 +893,22 @@ impl_downcast!(AuditingTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:baseElement")]
 pub enum BaseElement {}
+impl BaseElement {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for BaseElement {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for BaseElement {
+    fn element(&self) -> Element {
+        Element::BaseElement
     }
 }
 /// Access to `baseElement`
@@ -909,12 +943,22 @@ impl_downcast!(BaseElementTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:baseElementWithMixedContent")]
 pub enum BaseElementWithMixedContent {}
+impl BaseElementWithMixedContent {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for BaseElementWithMixedContent {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for BaseElementWithMixedContent {
+    fn element(&self) -> Element {
+        Element::BaseElementWithMixedContent
     }
 }
 /// Access to `baseElementWithMixedContent`
@@ -1593,12 +1637,22 @@ impl_downcast!(CancelEventDefinitionTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:catchEvent")]
 pub enum CatchEvent {}
+impl CatchEvent {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for CatchEvent {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for CatchEvent {
+    fn element(&self) -> Element {
+        Element::CatchEvent
     }
 }
 /// Access to `catchEvent`
@@ -1906,12 +1960,22 @@ impl_downcast!(ChoreographyTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:choreographyActivity")]
 pub enum ChoreographyActivity {}
+impl ChoreographyActivity {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for ChoreographyActivity {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for ChoreographyActivity {
+    fn element(&self) -> Element {
+        Element::ChoreographyActivity
     }
 }
 /// Access to `choreographyActivity`
@@ -2726,6 +2790,15 @@ pub enum ConversationNode {
     #[xml(tag = "bpmn:subConversation")]
     SubConversation(SubConversation),
 }
+impl ConversationNode {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {
+            ConversationNode::CallConversation(e) => Box::new(e) as Box<dyn DocumentElement>,
+            ConversationNode::Conversation(e) => Box::new(e) as Box<dyn DocumentElement>,
+            ConversationNode::SubConversation(e) => Box::new(e) as Box<dyn DocumentElement>,
+        }
+    }
+}
 impl DocumentElementContainer for ConversationNode {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
@@ -2736,6 +2809,11 @@ impl DocumentElementContainer for ConversationNode {
 
             _ => None,
         }
+    }
+}
+impl DocumentElement for ConversationNode {
+    fn element(&self) -> Element {
+        Element::ConversationNode
     }
 }
 /// Access to `conversationNode`
@@ -4360,12 +4438,22 @@ impl_downcast!(EscalationEventDefinitionTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:event")]
 pub enum Event {}
+impl Event {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for Event {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for Event {
+    fn element(&self) -> Element {
+        Element::Event
     }
 }
 /// Access to `event`
@@ -4493,6 +4581,28 @@ pub enum EventDefinition {
     #[xml(tag = "bpmn:timerEventDefinition")]
     TimerEventDefinition(TimerEventDefinition),
 }
+impl EventDefinition {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {
+            EventDefinition::CancelEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            EventDefinition::CompensateEventDefinition(e) => {
+                Box::new(e) as Box<dyn DocumentElement>
+            }
+            EventDefinition::ConditionalEventDefinition(e) => {
+                Box::new(e) as Box<dyn DocumentElement>
+            }
+            EventDefinition::ErrorEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            EventDefinition::EscalationEventDefinition(e) => {
+                Box::new(e) as Box<dyn DocumentElement>
+            }
+            EventDefinition::LinkEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            EventDefinition::MessageEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            EventDefinition::SignalEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            EventDefinition::TerminateEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            EventDefinition::TimerEventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+        }
+    }
+}
 impl DocumentElementContainer for EventDefinition {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
@@ -4510,6 +4620,11 @@ impl DocumentElementContainer for EventDefinition {
 
             _ => None,
         }
+    }
+}
+impl DocumentElement for EventDefinition {
+    fn element(&self) -> Element {
+        Element::EventDefinition
     }
 }
 /// Access to `eventDefinition`
@@ -4801,6 +4916,43 @@ pub enum FlowElement {
     #[xml(tag = "bpmn:userTask")]
     UserTask(UserTask),
 }
+impl FlowElement {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {
+            FlowElement::AdHocSubProcess(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::BoundaryEvent(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::BusinessRuleTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::CallActivity(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::CallChoreography(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ChoreographyTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ComplexGateway(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::DataObject(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::DataObjectReference(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::DataStoreReference(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::EndEvent(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::Event(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::EventBasedGateway(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ExclusiveGateway(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ImplicitThrowEvent(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::InclusiveGateway(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::IntermediateCatchEvent(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::IntermediateThrowEvent(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ManualTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ParallelGateway(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ReceiveTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ScriptTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::SendTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::SequenceFlow(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::ServiceTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::StartEvent(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::SubChoreography(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::SubProcess(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::Task(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::Transaction(e) => Box::new(e) as Box<dyn DocumentElement>,
+            FlowElement::UserTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+        }
+    }
+}
 impl DocumentElementContainer for FlowElement {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
@@ -4841,6 +4993,11 @@ impl DocumentElementContainer for FlowElement {
         }
     }
 }
+impl DocumentElement for FlowElement {
+    fn element(&self) -> Element {
+        Element::FlowElement
+    }
+}
 /// Access to `flowElement`
 pub trait FlowElementType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of attribute `name`
@@ -4879,12 +5036,22 @@ impl_downcast!(FlowElementTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:flowNode")]
 pub enum FlowNode {}
+impl FlowNode {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for FlowNode {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for FlowNode {
+    fn element(&self) -> Element {
+        Element::FlowNode
     }
 }
 /// Access to `flowNode`
@@ -6783,6 +6950,18 @@ pub enum LoopCharacteristics {
     #[xml(tag = "bpmn:standardLoopCharacteristics")]
     StandardLoopCharacteristics(StandardLoopCharacteristics),
 }
+impl LoopCharacteristics {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {
+            LoopCharacteristics::MultiInstanceLoopCharacteristics(e) => {
+                Box::new(e) as Box<dyn DocumentElement>
+            }
+            LoopCharacteristics::StandardLoopCharacteristics(e) => {
+                Box::new(e) as Box<dyn DocumentElement>
+            }
+        }
+    }
+}
 impl DocumentElementContainer for LoopCharacteristics {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
@@ -6792,6 +6971,11 @@ impl DocumentElementContainer for LoopCharacteristics {
 
             _ => None,
         }
+    }
+}
+impl DocumentElement for LoopCharacteristics {
+    fn element(&self) -> Element {
+        Element::LoopCharacteristics
     }
 }
 /// Access to `loopCharacteristics`
@@ -9094,6 +9278,33 @@ pub enum RootElement {
     #[xml(tag = "bpmn:signal")]
     Signal(Signal),
 }
+impl RootElement {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {
+            RootElement::Category(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Collaboration(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::CorrelationProperty(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::DataStore(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::EndPoint(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Error(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Escalation(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::EventDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::GlobalBusinessRuleTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::GlobalManualTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::GlobalScriptTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::GlobalTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::GlobalUserTask(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Interface(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::ItemDefinition(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Message(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::PartnerEntity(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::PartnerRole(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Process(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Resource(e) => Box::new(e) as Box<dyn DocumentElement>,
+            RootElement::Signal(e) => Box::new(e) as Box<dyn DocumentElement>,
+        }
+    }
+}
 impl DocumentElementContainer for RootElement {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
@@ -9122,6 +9333,11 @@ impl DocumentElementContainer for RootElement {
 
             _ => None,
         }
+    }
+}
+impl DocumentElement for RootElement {
+    fn element(&self) -> Element {
+        Element::RootElement
     }
 }
 /// Access to `rootElement`
@@ -10547,12 +10763,22 @@ impl_downcast!(TextTypeMut);
 #[derive(Hash, XmlRead, Clone, PartialEq, Debug)]
 #[xml(tag = "bpmn:throwEvent")]
 pub enum ThrowEvent {}
+impl ThrowEvent {
+    pub fn into_inner(self) -> Box<dyn DocumentElement> {
+        match self {}
+    }
+}
 impl DocumentElementContainer for ThrowEvent {
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
             _ => None,
         }
+    }
+}
+impl DocumentElement for ThrowEvent {
+    fn element(&self) -> Element {
+        Element::ThrowEvent
     }
 }
 /// Access to `throwEvent`

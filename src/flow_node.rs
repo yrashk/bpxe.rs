@@ -1,14 +1,12 @@
 //! # Flow Node
 use crate::bpmn::schema::{
-    DocumentElement, DocumentElementContainer, Element, EndEvent, FlowNodeType, SequenceFlow,
-    SequenceFlowType as _, StartEvent,
+    DocumentElement, Element, EndEvent, FlowNodeType, SequenceFlow, StartEvent,
 };
 use crate::event::{end_event, start_event};
-use crate::process::{self, Log};
-use futures::future::{BoxFuture, FutureExt};
-use futures::stream::{Stream, StreamExt};
+use crate::process::{self};
+use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
-use tokio::task;
+use smallvec::SmallVec;
 
 use thiserror::Error;
 
@@ -33,19 +31,23 @@ pub enum StateError {
     InvalidVariant,
 }
 
+pub type IncomingIndex = usize;
+pub type OutgoingIndex = usize;
+
 /// Determination of next action by flow nodes
 #[derive(Debug)]
 pub enum Action {
-    /// Start or continue processing outgoing sequence flows
-    Flow,
-    /// Stop processing outgoing sequence flows
-    Done,
-}
-
-impl Default for Action {
-    fn default() -> Self {
-        Self::Flow
-    }
+    /// Check whether given outputs will flow
+    ///
+    /// This is useful if the flow node needs to know whether certain outputs
+    /// *will flow.
+    ProbeOutgoingSequenceFlows(SmallVec<[OutgoingIndex; 8]>),
+    /// Enact flow through given outputs
+    ///
+    /// This action will still check whether given outputs *can* flow.
+    Flow(SmallVec<[OutgoingIndex; 8]>),
+    /// Mark flow node as complete, no further action necessary.
+    Complete,
 }
 
 /// Flow node
@@ -78,65 +80,25 @@ pub trait FlowNode: Stream<Item = Action> + Send + Unpin {
     ///
     /// Default implementation does nothing.
     #[allow(unused_variables)]
-    fn sequence_flow(&mut self, sequence_flow: &SequenceFlow, condition_result: bool) {}
-}
-
-pub(crate) fn spawn(
-    node: Box<dyn FlowNodeType>,
-    mut flow_node: Box<dyn FlowNode>,
-    process: process::Handle,
-) -> BoxFuture<'static, Action> {
-    flow_node.set_process(process.clone());
-    let log_broadcast = process.log_broadcast();
-    let definitions = process.model().definitions();
-    let _ = log_broadcast.send(Log::FlowNodeSelected { node: node.clone() });
-    async move {
-        let result = flow_node.next().await;
-        match result {
-            Some(Action::Flow) => {
-                let outgoings = node.outgoings();
-                for outgoing in outgoings {
-                    let process_clone = process.clone();
-                    let sequence_flow = outgoing
-                        .as_ref()
-                        .and_then(|id| definitions.find_by_id(id))
-                        .map(move |seq_flow| Box::new(&(*seq_flow)))
-                        .and_then(move |seq_flow| seq_flow.downcast_ref::<SequenceFlow>());
-
-                    match sequence_flow {
-                        None => unimplemented!(),
-                        Some(seq_flow) => {
-                            flow_node.sequence_flow(&seq_flow, true);
-                            let result = flow_node.next().await;
-                            match result {
-                                Some(Action::Done) | None => break,
-                                Some(Action::Flow) => {
-                                    definitions
-                                        .find_by_id(seq_flow.target_ref())
-                                        .and_then(new)
-                                        .map(|(node, flow_element)| {
-                                            task::spawn(async move {
-                                                spawn(flow_element, node, process_clone).await
-                                            })
-                                        });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Some(Action::Done) => {}
-            None => {}
-        }
-        let _ = log_broadcast.send(Log::FlowNodeCompleted { node: node.clone() });
-        Default::default()
+    fn sequence_flow(
+        &mut self,
+        output: OutgoingIndex,
+        sequence_flow: &SequenceFlow,
+        condition_result: bool,
+    ) {
     }
-    .boxed()
+
+    /// Reports incoming sequence flow
+    ///
+    /// Default implementation does nothing.
+    #[allow(unused_variables)]
+    fn incoming(&mut self, index: IncomingIndex) {}
+
+    /// Returns a flow element
+    fn element(&self) -> Box<dyn FlowNodeType>;
 }
 
-pub(crate) fn new(
-    element: &dyn DocumentElement,
-) -> Option<(Box<dyn FlowNode>, Box<dyn FlowNodeType>)> {
+pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
     match element.element() {
         Element::StartEvent => make::<StartEvent, start_event::StartEvent>(element),
         Element::EndEvent => make::<EndEvent, end_event::EndEvent>(element),
@@ -144,18 +106,12 @@ pub(crate) fn new(
     }
 }
 
-pub(crate) fn make<E, F>(
-    element: &dyn DocumentElement,
-) -> Option<(Box<dyn FlowNode>, Box<dyn FlowNodeType>)>
+fn make<E, F>(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>>
 where
     E: DocumentElement + FlowNodeType + Clone + Default,
     F: 'static + From<E> + FlowNode,
 {
-    element.downcast_ref::<E>().map(|e| {
-        let mut node: E = Default::default();
-        node.clone_from(e);
-        let element: Box<dyn FlowNodeType> = Box::new(node);
-        let node: Box<dyn FlowNode> = Box::new(F::from(e.clone()));
-        (node, element)
-    })
+    element
+        .downcast_ref::<E>()
+        .map(|e| Box::new(F::from(e.clone())) as Box<dyn FlowNode>)
 }

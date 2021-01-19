@@ -196,6 +196,7 @@
                     <xsl:with-param name="typeName" select="$name"></xsl:with-param>
                     <xsl:with-param name="elements" select="()"></xsl:with-param>
                     <xsl:with-param name="id" select="false()"></xsl:with-param>
+                    <xsl:with-param name="skipContainer" select="false()"/>
                 </xsl:call-template>
                 
             </xsl:if>
@@ -233,6 +234,16 @@
                 
                 <xsl:text>}</xsl:text>
                 
+                <xsl:text xml:space="preserve">impl </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {</xsl:text>
+                <xsl:text >pub fn into_inner(self) -> Box&lt;dyn DocumentElement&gt; { 
+                    match self {
+                </xsl:text>
+                <xsl:for-each select="$elements[@substitutionGroup = $name]">
+                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>
+                    <xsl:text xml:space="preserve">(e) => Box::new(e) as Box&lt;dyn DocumentElement&gt;,</xsl:text>
+                </xsl:for-each>
+                <xsl:text>}}}</xsl:text>
+                
                 <xsl:text xml:space="preserve">
                     impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
                         #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
@@ -247,10 +258,18 @@
                     }
                     }
                     }</xsl:text>
+                  
+                    <xsl:call-template name="documentElementTrait">
+                    <xsl:with-param name="name" select="$name"></xsl:with-param>
+                    <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
+                    <xsl:with-param name="elements" select="()"></xsl:with-param>
+                    <xsl:with-param name="id" select="false()"></xsl:with-param>
+                    <xsl:with-param name="skipContainer" select="true()"/>
+                    </xsl:call-template>
                 
                 <xsl:text xml:space="preserve">
-                     /// Access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
-                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                    /// Access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                        pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
                 <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
@@ -258,17 +277,17 @@
                     <xsl:text>Type + </xsl:text>
                 </xsl:if>
                 <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
-                  <xsl:call-template name="traitFns">
-                      <xsl:with-param name="type" select="$type"/>
-                  </xsl:call-template>
+                <xsl:call-template name="traitFns">
+                    <xsl:with-param name="type" select="$type"/>
+                </xsl:call-template>
                 <xsl:text>}</xsl:text>
                 
                 <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
                 <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type);</xsl:text>
                 
                 <xsl:text xml:space="preserve">
-                     /// Mutable access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
-                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">TypeMut </xsl:text>
+                    /// Mutable access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
+                        pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">TypeMut </xsl:text>
                 <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
@@ -310,6 +329,7 @@
                     <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
                     <xsl:with-param name="elements" select="local:elements($type)"></xsl:with-param>
                     <xsl:with-param name="id" select="local:hasId($type)"></xsl:with-param>
+                    <xsl:with-param name="skipContainer" select="false()"/>
                 </xsl:call-template>
                 
                 
@@ -329,7 +349,7 @@
                 
                 <xsl:text xml:space="preserve">
                     /// Access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
-                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
+                        pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">Type </xsl:text>
                 <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
@@ -346,7 +366,7 @@
                 
                 <xsl:text xml:space="preserve">
                     /// Mutable access to `</xsl:text><xsl:value-of select="$name"/><xsl:text>`
-                    pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">TypeMut </xsl:text>
+                        pub trait </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve">TypeMut </xsl:text>
                 <xsl:text>:</xsl:text>
                 <xsl:if test="exists($type//xs:extension)">
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
@@ -459,17 +479,20 @@
         <xsl:param name="typeName" required="yes"/>
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
+        <xsl:param name="skipContainer" required="yes" />
         <xsl:text xml:space="preserve">impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
             fn element(&amp;self) -> Element {
             Element::</xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text>
                 }
                 }</xsl:text>
-        <xsl:call-template name="documentElementContainerTrait">
-            <xsl:with-param name="name" select="$name"></xsl:with-param>
-            <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
-            <xsl:with-param name="elements" select="$elements"></xsl:with-param>
-            <xsl:with-param name="id" select="$id"></xsl:with-param>
-        </xsl:call-template>
+        <xsl:if test="not($skipContainer)">
+            <xsl:call-template name="documentElementContainerTrait">
+                <xsl:with-param name="name" select="$name"></xsl:with-param>
+                <xsl:with-param name="typeName" select="$typeName"></xsl:with-param>
+                <xsl:with-param name="elements" select="$elements"></xsl:with-param>
+                <xsl:with-param name="id" select="$id"></xsl:with-param>
+            </xsl:call-template>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template name="documentElementContainerTrait">
@@ -522,36 +545,36 @@
         <xsl:param name="type"/>
         <xsl:for-each select="local:attributes($type)">
             <xsl:text>/// Get value of attribute `</xsl:text><xsl:value-of select="./@name"/><xsl:text xml:space="preserve">`
-                      fn </xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
+                fn </xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
             <xsl:value-of select="local:attributeType(.)"/><xsl:text>;</xsl:text>
         </xsl:for-each>
         <xsl:for-each select="local:elements($type)">
             <xsl:text>
-                      /// Get value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
-                      fn </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
+                /// Get value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
+                    fn </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>(&amp; self) -> &amp;</xsl:text>
             <xsl:value-of select="local:elementType(.)"/><xsl:text>;</xsl:text>
         </xsl:for-each>
     </xsl:template>
     <xsl:template name="mutTraitFns">
         <xsl:param name="type"/>
         <xsl:for-each select="local:attributes($type)">
-          
+            
             <xsl:text>/// Set value of attribute `</xsl:text><xsl:value-of select="./@name"/><xsl:text xml:space="preserve">`
-                      fn set_</xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp;mut self, value: </xsl:text><xsl:value-of select="local:attributeType(.)"/><xsl:text>);</xsl:text>
+                fn set_</xsl:text><xsl:value-of select="local:underscoreCase(./@name)"/><xsl:text>(&amp;mut self, value: </xsl:text><xsl:value-of select="local:attributeType(.)"/><xsl:text>);</xsl:text>
         </xsl:for-each>
         <xsl:for-each select="local:elements($type)">
- 
+            
             <xsl:text>
-                      /// Get a mutable value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
-                      fn </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text xml:space="preserve">_mut(&amp;mut self) -> &amp;mut </xsl:text>
+                /// Get a mutable value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
+                    fn </xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text xml:space="preserve">_mut(&amp;mut self) -> &amp;mut </xsl:text>
             <xsl:value-of select="local:elementType(.)"/><xsl:text>;</xsl:text>
             <xsl:text>
-                      /// Set value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
-                      fn set_</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>(&amp;mut self, value: </xsl:text><xsl:value-of select="local:elementType(.)"/><xsl:text>);</xsl:text>
+                /// Set value of `</xsl:text><xsl:value-of select="local:elementName(.)"/><xsl:text xml:space="preserve">` child
+                    fn set_</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/><xsl:text>(&amp;mut self, value: </xsl:text><xsl:value-of select="local:elementType(.)"/><xsl:text>);</xsl:text>
             
         </xsl:for-each>
     </xsl:template>
     
-
+    
     
 </xsl:stylesheet>

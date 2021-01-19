@@ -40,7 +40,6 @@ pub struct Handle {
 #[derive(Clone, Debug)]
 pub enum Log {}
 
-#[derive(Debug)]
 enum Request {
     JoinHandle(JoinHandle<()>),
     Terminate(oneshot::Sender<Option<JoinHandle<()>>>),
