@@ -1,8 +1,10 @@
 //! # Flow Node
 use crate::bpmn::schema::{
-    DocumentElement, Element, EndEvent, FlowNodeType, SequenceFlow, StartEvent,
+    DocumentElement, Element, EndEvent, FlowNodeType, IntermediateThrowEvent, ParallelGateway,
+    SequenceFlow, StartEvent,
 };
-use crate::event::{end_event, start_event};
+use crate::event::{end_event, intermediate_throw_event, start_event};
+use crate::gateway;
 use crate::process::{self};
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
@@ -21,6 +23,8 @@ use thiserror::Error;
 pub enum State {
     StartEvent(start_event::State),
     EndEvent(end_event::State),
+    ParallelGateway(gateway::parallel::State),
+    IntermediateThrowEvent(intermediate_throw_event::State),
 }
 
 /// State handling errors
@@ -102,6 +106,11 @@ pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
     match element.element() {
         Element::StartEvent => make::<StartEvent, start_event::StartEvent>(element),
         Element::EndEvent => make::<EndEvent, end_event::EndEvent>(element),
+        Element::ParallelGateway => make::<ParallelGateway, gateway::parallel::Gateway>(element),
+        Element::IntermediateThrowEvent => make::<
+            IntermediateThrowEvent,
+            intermediate_throw_event::IntermediateThrowEvent,
+        >(element),
         _ => None,
     }
 }

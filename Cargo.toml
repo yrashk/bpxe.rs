@@ -21,7 +21,7 @@ tia = "1.0.0"
 tokio = { version = "1.0", features = ["full"] }
 futures = "0.3.12"
 serde = { version = "1.0.119", features = ["derive"] }
-smallvec = "1.6.1"
+smallvec = { version = "1.6.1", features = ["serde"] }
 
 [dev-dependencies]
 async-trait = "0.1"
