@@ -33,12 +33,12 @@ pub struct Model {
 pub struct Handle {
     definitions: Arc<Definitions>,
     sender: mpsc::Sender<Request>,
-    event_broadcast: broadcast::Sender<Event>,
+    log_broadcast: broadcast::Sender<Log>,
 }
 
 /// Model events
 #[derive(Clone, Debug)]
-pub enum Event {}
+pub enum Log {}
 
 #[derive(Debug)]
 enum Request {
@@ -61,18 +61,18 @@ impl Model {
     /// Spawns model operation task
     pub async fn spawn(self) -> Handle {
         let (sender, receiver) = mpsc::channel(1);
-        let (event_broadcast, _) = broadcast::channel(128);
-        let event_sender = event_broadcast.clone();
+        let (log_broadcast, _) = broadcast::channel(128);
+        let log_sender = log_broadcast.clone();
         let handle = Handle {
             definitions: self.definitions.clone(),
             sender: sender.clone(),
-            event_broadcast,
+            log_broadcast,
         };
 
         let handle_clone = handle.clone();
 
         let join_handle =
-            task::spawn(async move { self.runner(receiver, handle_clone, event_sender).await });
+            task::spawn(async move { self.runner(receiver, handle_clone, log_sender).await });
         let _ = sender.send(Request::JoinHandle(join_handle)).await;
 
         handle
@@ -83,7 +83,7 @@ impl Model {
         mut self,
         mut receiver: mpsc::Receiver<Request>,
         handle: Handle,
-        _event_broadcast: broadcast::Sender<Event>,
+        _log_broadcast: broadcast::Sender<Log>,
     ) {
         // We save our own join handle as we want to return it
         // exclusively to the termination requester
@@ -136,8 +136,8 @@ impl Handle {
     }
 
     /// Returns event receiver
-    pub fn event_receiver(&self) -> broadcast::Receiver<Event> {
-        self.event_broadcast.subscribe()
+    pub fn log_receiver(&self) -> broadcast::Receiver<Log> {
+        self.log_broadcast.subscribe()
     }
 
     /// Asynchronously returns all processes

@@ -4,7 +4,7 @@ use crate::bpmn::schema::{
     SequenceFlowType as _, StartEvent,
 };
 use crate::event::{end_event, start_event};
-use crate::process::{self, Event};
+use crate::process::{self, Log};
 use futures::future::{BoxFuture, FutureExt};
 use futures::stream::{Stream, StreamExt};
 use serde::{Deserialize, Serialize};
@@ -87,9 +87,9 @@ pub(crate) fn spawn(
     process: process::Handle,
 ) -> BoxFuture<'static, Action> {
     flow_node.set_process(process.clone());
-    let event_broadcast = process.event_broadcast();
+    let log_broadcast = process.log_broadcast();
     let definitions = process.model().definitions();
-    let _ = event_broadcast.send(Event::FlowNodeSelected { node: node.clone() });
+    let _ = log_broadcast.send(Log::FlowNodeSelected { node: node.clone() });
     async move {
         let result = flow_node.next().await;
         match result {
@@ -128,7 +128,7 @@ pub(crate) fn spawn(
             Some(Action::Done) => {}
             None => {}
         }
-        let _ = event_broadcast.send(Event::FlowNodeCompleted { node: node.clone() });
+        let _ = log_broadcast.send(Log::FlowNodeCompleted { node: node.clone() });
         Default::default()
     }
     .boxed()

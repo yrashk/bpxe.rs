@@ -73,7 +73,7 @@ impl Stream for StartEvent {
 mod tests {
     use crate::bpmn::schema::*;
     use crate::model;
-    use crate::process::{Event, Process as P};
+    use crate::process::{Log, Process as P};
     use crate::test::Mailbox;
 
     #[tokio::test]
@@ -100,12 +100,12 @@ mod tests {
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = P::new(proc1, model).spawn().await;
-        let mut mailbox = Mailbox::new(handle.event_receiver());
+        let mut mailbox = Mailbox::new(handle.log_receiver());
         assert!(handle.start().await.is_ok());
 
         assert!(
             mailbox
-                .receive(|e| if let Event::FlowNodeCompleted { node } = e {
+                .receive(|e| if let Log::FlowNodeCompleted { node } = e {
                     matches!(node.downcast_ref::<StartEvent>(),
                     Some(start_event) if start_event.id().as_ref().unwrap() == "start")
                 } else {
@@ -116,7 +116,7 @@ mod tests {
 
         assert!(
             mailbox
-                .receive(|e| if let Event::FlowNodeCompleted { node } = e {
+                .receive(|e| if let Log::FlowNodeCompleted { node } = e {
                     matches!(node.downcast_ref::<EndEvent>(),
                     Some(end_event) if end_event.id().as_ref().unwrap() == "end")
                 } else {

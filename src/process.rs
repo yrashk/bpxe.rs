@@ -32,7 +32,7 @@ pub struct Handle {
     model: model::Handle,
     element: Arc<Element>,
     sender: mpsc::Sender<Request>,
-    event_broadcast: broadcast::Sender<Event>,
+    log_broadcast: broadcast::Sender<Log>,
 }
 
 #[derive(Debug)]
@@ -44,7 +44,7 @@ enum Request {
 
 /// Process events
 #[derive(Clone, Debug)]
-pub enum Event {
+pub enum Log {
     /// Flow node has been selected for execution
     FlowNodeSelected { node: Box<dyn FlowNodeType> },
     /// Flow node execution has been completed
@@ -63,12 +63,12 @@ impl Process {
     /// Spawns process task
     pub async fn spawn(self) -> Handle {
         let (sender, receiver) = mpsc::channel(1);
-        let (event_broadcast, _) = broadcast::channel(128);
+        let (log_broadcast, _) = broadcast::channel(128);
         let element = self.element.clone();
         let handle = Handle {
             sender: sender.clone(),
             model: self.model.clone(),
-            event_broadcast,
+            log_broadcast,
             element,
         };
 
@@ -165,13 +165,13 @@ impl Handle {
     }
 
     /// Returns event receiver
-    pub fn event_receiver(&self) -> broadcast::Receiver<Event> {
-        self.event_broadcast.subscribe()
+    pub fn log_receiver(&self) -> broadcast::Receiver<Log> {
+        self.log_broadcast.subscribe()
     }
 
     /// Returns event broadcaster
-    pub(crate) fn event_broadcast(&self) -> broadcast::Sender<Event> {
-        self.event_broadcast.clone()
+    pub(crate) fn log_broadcast(&self) -> broadcast::Sender<Log> {
+        self.log_broadcast.clone()
     }
 
     /// Returns `process` element
@@ -182,7 +182,7 @@ impl Handle {
 
 #[cfg(test)]
 mod tests {
-    use super::{Event, Process as P, StartError};
+    use super::{Log, Process as P, StartError};
     use crate::bpmn::schema::*;
     use crate::model;
     use crate::test::*;
@@ -216,11 +216,11 @@ mod tests {
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = P::new(proc1, model).spawn().await;
-        let mut mailbox = Mailbox::new(handle.event_receiver());
+        let mut mailbox = Mailbox::new(handle.log_receiver());
         assert!(handle.start().await.is_ok());
         assert!(
             mailbox
-                .receive(|e| if let Event::FlowNodeCompleted { node } = e {
+                .receive(|e| if let Log::FlowNodeCompleted { node } = e {
                     matches!(node.downcast_ref::<StartEvent>(),
                     Some(start_event) if start_event.id().as_ref().unwrap() == "start")
                 } else {
@@ -255,12 +255,12 @@ mod tests {
 
         let handle = P::new(proc1, model).spawn().await;
 
-        let mut mailbox = Mailbox::new(handle.event_receiver());
+        let mut mailbox = Mailbox::new(handle.log_receiver());
         assert!(handle.start().await.is_ok());
 
         assert!(
             mailbox
-                .receive(|e| if let Event::FlowNodeCompleted { node } = e {
+                .receive(|e| if let Log::FlowNodeCompleted { node } = e {
                     matches!(node.downcast_ref::<StartEvent>(),
                     Some(start_event) if start_event.id().as_ref().unwrap() == "start1")
                 } else {
@@ -271,7 +271,7 @@ mod tests {
 
         assert!(
             mailbox
-                .receive(|e| if let Event::FlowNodeCompleted { node } = e {
+                .receive(|e| if let Log::FlowNodeCompleted { node } = e {
                     matches!(node.downcast_ref::<StartEvent>(),
                     Some(start_event) if start_event.id().as_ref().unwrap() == "start2")
                 } else {
