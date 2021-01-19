@@ -7,4 +7,9 @@ pkgs.stdenv.mkDerivation rec {
 
   buildInputs = with pkgs; [ saxon-he rustc cargo clippy rustfmt ];
 
+  shellHook = ''
+    # Useful for ensuring cargo tools are available (like cargo-do, for example)
+    export PATH=$PATH:$HOME/.cargo/bin
+  '';
+
 }
