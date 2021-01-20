@@ -9,6 +9,12 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+defaults:
+  strategy:
+    fail-fast: false
+    matrix:
+      toolchain: ['1.48.0', '1.49.0', 'stable', 'nightly']
+
 jobs:
   check:
     name: Check
@@ -17,11 +23,11 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install stable toolchain
+      - name: Install ${{matrix.toolchain}} toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{matrix.toolchain}}
           override: true
 
       - name: Run cargo check
@@ -36,11 +42,11 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install stable toolchain
+      - name: Install ${{matrix.toolchain}} toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{matrix.toolchain}}
           override: true
 
       - name: Run cargo test
@@ -55,11 +61,11 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install stable toolchain
+      - name: Install ${{matrix.toolchain}} toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{matrix.toolchain}}
           override: true
           components: rustfmt, clippy
 
