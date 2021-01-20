@@ -310,12 +310,14 @@ mod tests {
 
     #[tokio::test]
     async fn no_start_event() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
-        let mut definitions: Definitions = Default::default();
-        definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
+        let definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
         let model = model::Model::new(definitions).spawn().await;
         let handle = model.processes().await.unwrap().pop().unwrap();
         assert_eq!(handle.start().await, Err::<(), _>(StartError::NoStartEvent));
@@ -323,19 +325,21 @@ mod tests {
 
     #[tokio::test]
     async fn single_start_event() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
-        let mut start_event: StartEvent = Default::default();
-        start_event.id = Some("start".into());
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event));
-        let mut definitions: Definitions = Default::default();
-        definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
-        let model = model::Model::new(definitions).spawn().await;
+        let definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![StartEvent {
+                    id: Some("start".into()),
+                    ..Default::default()
+                }
+                .into()],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
 
+        let model = model::Model::new(definitions).spawn().await;
         let handle = model.processes().await.unwrap().pop().unwrap();
         let mut mailbox = Mailbox::new(handle.log_receiver());
         assert!(handle.start().await.is_ok());
@@ -353,25 +357,26 @@ mod tests {
 
     #[tokio::test]
     async fn multiple_start_events() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
-        let mut start_event1: StartEvent = Default::default();
-        start_event1.id = Some("start1".into());
-        let mut start_event2: StartEvent = Default::default();
-        start_event2.id = Some("start2".into());
-
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event1));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event2));
-
-        let mut definitions: Definitions = Default::default();
-        definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
+        let definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![
+                    StartEvent {
+                        id: Some("start1".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    StartEvent {
+                        id: Some("start2".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                ],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

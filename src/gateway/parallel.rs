@@ -113,58 +113,58 @@ mod tests {
 
     #[tokio::test]
     async fn fork() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
+        let mut definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![
+                    StartEvent {
+                        id: Some("start".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    ParallelGateway {
+                        id: Some("fork".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f1".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f2".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    EndEvent {
+                        id: Some("end".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                ],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
 
-        let mut start_event: StartEvent = Default::default();
-        start_event.id = Some("start".into());
-
-        let mut fork: ParallelGateway = Default::default();
-        fork.id = Some("fork".into());
-
-        let mut f1: IntermediateThrowEvent = Default::default();
-        f1.id = Some("f1".into());
-        let mut f2: IntermediateThrowEvent = Default::default();
-        f2.id = Some("f2".into());
-
-        let mut end_event: EndEvent = Default::default();
-        end_event.id = Some("end".into());
-
-        let mut seq_flows = vec![];
-
-        seq_flows.push(establish_sequence_flow(&mut start_event, &mut fork, "s1").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut fork, &mut f1, "f1s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut fork, &mut f2, "f2s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f1, &mut end_event, "e1").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f2, &mut end_event, "e2").unwrap());
-
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event));
-
-        proc1.flow_elements.push(FlowElement::ParallelGateway(fork));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f1));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f2));
-
-        proc1.flow_elements.push(FlowElement::EndEvent(end_event));
-
-        proc1.flow_elements.append(
-            &mut seq_flows
-                .into_iter()
-                .map(FlowElement::SequenceFlow)
-                .collect(),
-        );
-
-        let mut definitions: Definitions = Default::default();
         definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
+            .find_by_id_mut("proc1")
+            .unwrap()
+            .downcast_mut::<Process>()
+            .unwrap()
+            .establish_sequence_flow("start", "fork", "s1")
+            .unwrap()
+            .establish_sequence_flow("fork", "f1", "f1s")
+            .unwrap()
+            .establish_sequence_flow("fork", "f2", "f2s")
+            .unwrap()
+            .establish_sequence_flow("f1", "end", "e1")
+            .unwrap()
+            .establish_sequence_flow("f2", "end", "e2")
+            .unwrap();
+
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -184,71 +184,72 @@ mod tests {
 
     #[tokio::test]
     async fn join() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
+        let mut definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![
+                    StartEvent {
+                        id: Some("start".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    ParallelGateway {
+                        id: Some("fork".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f1".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f2".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    ParallelGateway {
+                        id: Some("join".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f3".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    EndEvent {
+                        id: Some("end".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                ],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
 
-        let mut start_event: StartEvent = Default::default();
-        start_event.id = Some("start".into());
-
-        let mut fork: ParallelGateway = Default::default();
-        fork.id = Some("fork".into());
-
-        let mut f1: IntermediateThrowEvent = Default::default();
-        f1.id = Some("f1".into());
-        let mut f2: IntermediateThrowEvent = Default::default();
-        f2.id = Some("f2".into());
-
-        let mut join: ParallelGateway = Default::default();
-        join.id = Some("join".into());
-
-        let mut f3: IntermediateThrowEvent = Default::default();
-        f3.id = Some("f3".into());
-
-        let mut end_event: EndEvent = Default::default();
-        end_event.id = Some("end".into());
-
-        let mut seq_flows = vec![];
-
-        seq_flows.push(establish_sequence_flow(&mut start_event, &mut fork, "s1").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut fork, &mut f1, "f1s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut fork, &mut f2, "f2s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f1, &mut join, "j1s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f2, &mut join, "j2s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut join, &mut f3, "f3s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f3, &mut end_event, "e").unwrap());
-
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event));
-
-        proc1.flow_elements.push(FlowElement::ParallelGateway(fork));
-        proc1.flow_elements.push(FlowElement::ParallelGateway(join));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f1));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f2));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f3));
-
-        proc1.flow_elements.push(FlowElement::EndEvent(end_event));
-
-        proc1.flow_elements.append(
-            &mut seq_flows
-                .into_iter()
-                .map(FlowElement::SequenceFlow)
-                .collect(),
-        );
-
-        let mut definitions: Definitions = Default::default();
         definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
+            .find_by_id_mut("proc1")
+            .unwrap()
+            .downcast_mut::<Process>()
+            .unwrap()
+            .establish_sequence_flow("start", "fork", "s1")
+            .unwrap()
+            .establish_sequence_flow("fork", "f1", "f1s")
+            .unwrap()
+            .establish_sequence_flow("fork", "f2", "f2s")
+            .unwrap()
+            .establish_sequence_flow("f1", "join", "j1s")
+            .unwrap()
+            .establish_sequence_flow("f2", "join", "j2s")
+            .unwrap()
+            .establish_sequence_flow("join", "f3", "f3s")
+            .unwrap()
+            .establish_sequence_flow("f3", "end", "e")
+            .unwrap();
+
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -268,79 +269,80 @@ mod tests {
 
     #[tokio::test]
     async fn not_enough_to_join() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
+        let mut definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![
+                    StartEvent {
+                        id: Some("start".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    ParallelGateway {
+                        id: Some("fork".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f1".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f2".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    ParallelGateway {
+                        id: Some("join".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    IntermediateThrowEvent {
+                        id: Some("f3".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    EndEvent {
+                        id: Some("end".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    EndEvent {
+                        id: Some("alt_end".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                ],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
 
-        let mut start_event: StartEvent = Default::default();
-        start_event.id = Some("start".into());
-
-        let mut fork: ParallelGateway = Default::default();
-        fork.id = Some("fork".into());
-
-        let mut f1: IntermediateThrowEvent = Default::default();
-        f1.id = Some("f1".into());
-        let mut f2: IntermediateThrowEvent = Default::default();
-        f2.id = Some("f2".into());
-
-        let mut join: ParallelGateway = Default::default();
-        join.id = Some("join".into());
-
-        let mut f3: IntermediateThrowEvent = Default::default();
-        f3.id = Some("f3".into());
-
-        let mut end_event: EndEvent = Default::default();
-        end_event.id = Some("end".into());
-
-        let mut alt_end_event: EndEvent = Default::default();
-        alt_end_event.id = Some("alt_end".into());
-
-        let mut seq_flows = vec![];
-
-        seq_flows.push(establish_sequence_flow(&mut start_event, &mut fork, "s1").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut fork, &mut f1, "f1s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut fork, &mut f2, "f2s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f1, &mut join, "j1s").unwrap());
-        // EndEvent should not flow
-        seq_flows.push(establish_sequence_flow(&mut f2, &mut alt_end_event, "j2e").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut alt_end_event, &mut join, "j2es").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut join, &mut f3, "f3s").unwrap());
-        seq_flows.push(establish_sequence_flow(&mut f3, &mut end_event, "e").unwrap());
-
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event));
-
-        proc1.flow_elements.push(FlowElement::ParallelGateway(fork));
-        proc1.flow_elements.push(FlowElement::ParallelGateway(join));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f1));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f2));
-
-        proc1
-            .flow_elements
-            .push(FlowElement::IntermediateThrowEvent(f3));
-
-        proc1.flow_elements.push(FlowElement::EndEvent(end_event));
-        proc1
-            .flow_elements
-            .push(FlowElement::EndEvent(alt_end_event));
-
-        proc1.flow_elements.append(
-            &mut seq_flows
-                .into_iter()
-                .map(FlowElement::SequenceFlow)
-                .collect(),
-        );
-
-        let mut definitions: Definitions = Default::default();
         definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
+            .find_by_id_mut("proc1")
+            .unwrap()
+            .downcast_mut::<Process>()
+            .unwrap()
+            .establish_sequence_flow("start", "fork", "s1")
+            .unwrap()
+            .establish_sequence_flow("fork", "f1", "f1s")
+            .unwrap()
+            .establish_sequence_flow("fork", "f2", "f2s")
+            .unwrap()
+            .establish_sequence_flow("f1", "join", "j1s")
+            .unwrap()
+            .establish_sequence_flow("f2", "alt_end", "j2e")
+            .unwrap()
+            // EndEvent will not flow, so the join won't succeeed
+            .establish_sequence_flow("alt_end", "join", "j2es")
+            .unwrap()
+            .establish_sequence_flow("join", "f3", "f3s")
+            .unwrap()
+            .establish_sequence_flow("f3", "end", "e")
+            .unwrap();
+
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

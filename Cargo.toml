@@ -15,6 +15,10 @@ thiserror = "1.0"
 num-bigint = "0.3.1"
 # Used for schema traversals
 downcast-rs = "1.2"
+# Used for casting between traits
+intertrait = "0.2"
+# Used for intertrait
+linkme = "0.2"
 derive_more = "0.99.11"
 dyn-clone = "1.0.4"
 tia = "1.0.0"

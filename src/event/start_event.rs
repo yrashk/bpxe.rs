@@ -165,25 +165,35 @@ mod tests {
 
     #[tokio::test]
     async fn start_flows() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
-        let mut start_event: StartEvent = Default::default();
-        start_event.id = Some("start".into());
-        let mut end_event: EndEvent = Default::default();
-        end_event.id = Some("end".into());
-        let seq_flow = establish_sequence_flow(&mut start_event, &mut end_event, "s1").unwrap();
-        proc1
-            .flow_elements
-            .push(FlowElement::StartEvent(start_event));
-        proc1.flow_elements.push(FlowElement::EndEvent(end_event));
-        proc1
-            .flow_elements
-            .push(FlowElement::SequenceFlow(seq_flow));
+        let mut definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![
+                    StartEvent {
+                        id: Some("start".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    EndEvent {
+                        id: Some("end".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                ],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
 
-        let mut definitions: Definitions = Default::default();
         definitions
-            .root_elements
-            .push(RootElement::Process(proc1.clone()));
+            .find_by_id_mut("proc1")
+            .unwrap()
+            .downcast_mut::<Process>()
+            .unwrap()
+            .establish_sequence_flow("start", "end", "s1")
+            .unwrap();
+
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

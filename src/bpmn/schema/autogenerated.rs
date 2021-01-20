@@ -256,13 +256,36 @@ pub struct Definitions {
     #[tia("DefinitionsType",rg*="relationships","DefinitionsTypeMut",s,rmg*="relationships_mut")]
     pub relationships: Vec<Relationship>,
 }
+#[cast_to]
 impl DocumentElement for Definitions {
     fn element(&self) -> Element {
         Element::Definitions
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Definitions {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.imports.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.extensions.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.root_elements.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.relationships.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -316,7 +339,7 @@ pub trait DefinitionsType: Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DefinitionsType);
 impl_downcast!(DefinitionsType);
 /// Mutable access to `definitions`
-pub trait DefinitionsTypeMut: Downcast + Debug + Send + DynClone {
+pub trait DefinitionsTypeMut: Downcast + Debug + Send + DynClone + DefinitionsType {
     /// Set value of attribute `id`
     fn set_id(&mut self, value: Option<Id>);
     /// Set value of attribute `name`
@@ -366,12 +389,14 @@ pub struct Import {
     #[tia("ImportType",rg*="import_type","ImportTypeMut",s)]
     pub import_type: URI,
 }
+#[cast_to]
 impl DocumentElement for Import {
     fn element(&self) -> Element {
         Element::Import
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Import {}
 // Traits
 
@@ -389,7 +414,7 @@ pub trait ImportType: Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ImportType);
 impl_downcast!(ImportType);
 /// Mutable access to `import`
-pub trait ImportTypeMut: Downcast + Debug + Send + DynClone {
+pub trait ImportTypeMut: Downcast + Debug + Send + DynClone + ImportType {
     /// Set value of attribute `namespace`
     fn set_namespace(&mut self, value: URI);
     /// Set value of attribute `location`
@@ -410,7 +435,15 @@ impl Activity {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for Activity {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -418,6 +451,7 @@ impl DocumentElementContainer for Activity {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for Activity {
     fn element(&self) -> Element {
         Element::Activity
@@ -449,7 +483,9 @@ pub trait ActivityType: FlowNodeType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ActivityType);
 impl_downcast!(ActivityType);
 /// Mutable access to `activity`
-pub trait ActivityTypeMut: FlowNodeTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ActivityTypeMut:
+    FlowNodeTypeMut + Downcast + Debug + Send + DynClone + ActivityType
+{
     /// Set value of attribute `isForCompensation`
     fn set_is_for_compensation(&mut self, value: Option<bool>);
     /// Set value of attribute `startQuantity`
@@ -609,13 +645,27 @@ pub struct AdHocSubProcess {
     #[tia("AdHocSubProcessType",rg*="completion_condition","AdHocSubProcessTypeMut",s,rmg*="completion_condition_mut")]
     pub completion_condition: Option<Expression>,
 }
+#[cast_to]
 impl DocumentElement for AdHocSubProcess {
     fn element(&self) -> Element {
         Element::AdHocSubProcess
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for AdHocSubProcess {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.completion_condition.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -629,7 +679,11 @@ impl DocumentElementContainer for AdHocSubProcess {
     }
 }
 // Traits
-
+castable_to! {AdHocSubProcess => SubProcessType,SubProcessTypeMut}
+castable_to! {AdHocSubProcess => ActivityType,ActivityTypeMut}
+castable_to! {AdHocSubProcess => FlowNodeType,FlowNodeTypeMut}
+castable_to! {AdHocSubProcess => FlowElementType,FlowElementTypeMut}
+castable_to! {AdHocSubProcess => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `adHocSubProcess`
@@ -644,7 +698,9 @@ pub trait AdHocSubProcessType: SubProcessType + Downcast + Debug + Send + DynClo
 dyn_clone::clone_trait_object!(AdHocSubProcessType);
 impl_downcast!(AdHocSubProcessType);
 /// Mutable access to `adHocSubProcess`
-pub trait AdHocSubProcessTypeMut: SubProcessTypeMut + Downcast + Debug + Send + DynClone {
+pub trait AdHocSubProcessTypeMut:
+    SubProcessTypeMut + Downcast + Debug + Send + DynClone + AdHocSubProcessType
+{
     /// Set value of attribute `cancelRemainingInstances`
     fn set_cancel_remaining_instances(&mut self, value: Option<bool>);
     /// Set value of attribute `ordering`
@@ -669,6 +725,21 @@ pub enum Artifact {
     #[xml(tag = "bpmn:textAnnotation")]
     TextAnnotation(TextAnnotation),
 }
+impl From<Association> for Artifact {
+    fn from(element: Association) -> Self {
+        Self::Association(element)
+    }
+}
+impl From<Group> for Artifact {
+    fn from(element: Group) -> Self {
+        Self::Group(element)
+    }
+}
+impl From<TextAnnotation> for Artifact {
+    fn from(element: TextAnnotation) -> Self {
+        Self::TextAnnotation(element)
+    }
+}
 impl Artifact {
     pub fn into_inner(self) -> Box<dyn DocumentElement> {
         match self {
@@ -678,7 +749,19 @@ impl Artifact {
         }
     }
 }
+#[cast_to]
 impl DocumentElementContainer for Artifact {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            Artifact::Association(e) => e.find_by_id_mut(id),
+            Artifact::Group(e) => e.find_by_id_mut(id),
+            Artifact::TextAnnotation(e) => e.find_by_id_mut(id),
+
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -690,6 +773,7 @@ impl DocumentElementContainer for Artifact {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for Artifact {
     fn element(&self) -> Element {
         Element::Artifact
@@ -700,7 +784,10 @@ pub trait ArtifactType: BaseElementType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(ArtifactType);
 impl_downcast!(ArtifactType);
 /// Mutable access to `artifact`
-pub trait ArtifactTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait ArtifactTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ArtifactType
+{
+}
 dyn_clone::clone_trait_object!(ArtifactTypeMut);
 impl_downcast!(ArtifactTypeMut);
 /// Auto-generated from BPNM schema
@@ -725,13 +812,30 @@ pub struct Assignment {
     #[tia("AssignmentType",rg*="to","AssignmentTypeMut",s,rmg*="to_mut")]
     pub to: Expression,
 }
+#[cast_to]
 impl DocumentElement for Assignment {
     fn element(&self) -> Element {
         Element::Assignment
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Assignment {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.from.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.to.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -748,7 +852,7 @@ impl DocumentElementContainer for Assignment {
     }
 }
 // Traits
-
+castable_to! {Assignment => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `assignment`
@@ -761,7 +865,9 @@ pub trait AssignmentType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(AssignmentType);
 impl_downcast!(AssignmentType);
 /// Mutable access to `assignment`
-pub trait AssignmentTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait AssignmentTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + AssignmentType
+{
     /// Get a mutable value of `from` child
     fn from_mut(&mut self) -> &mut Expression;
     /// Set value of `from` child
@@ -798,13 +904,25 @@ pub struct Association {
     #[tia("AssociationType",rg*="association_direction","AssociationTypeMut",s)]
     pub association_direction: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Association {
     fn element(&self) -> Element {
         Element::Association
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Association {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -816,8 +934,13 @@ impl DocumentElementContainer for Association {
     }
 }
 // Traits
+#[cast_to]
 impl ArtifactType for Association {}
+#[cast_to]
 impl ArtifactTypeMut for Association {}
+castable_to! {Association => PartialEq<Association> }
+castable_to! {Association => ArtifactType,ArtifactTypeMut}
+castable_to! {Association => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `association`
@@ -832,7 +955,9 @@ pub trait AssociationType: ArtifactType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(AssociationType);
 impl_downcast!(AssociationType);
 /// Mutable access to `association`
-pub trait AssociationTypeMut: ArtifactTypeMut + Downcast + Debug + Send + DynClone {
+pub trait AssociationTypeMut:
+    ArtifactTypeMut + Downcast + Debug + Send + DynClone + AssociationType
+{
     /// Set value of attribute `sourceRef`
     fn set_source_ref(&mut self, value: String);
     /// Set value of attribute `targetRef`
@@ -858,13 +983,25 @@ pub struct Auditing {
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for Auditing {
     fn element(&self) -> Element {
         Element::Auditing
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Auditing {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -876,7 +1013,7 @@ impl DocumentElementContainer for Auditing {
     }
 }
 // Traits
-
+castable_to! {Auditing => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `auditing`
@@ -884,7 +1021,10 @@ pub trait AuditingType: BaseElementType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(AuditingType);
 impl_downcast!(AuditingType);
 /// Mutable access to `auditing`
-pub trait AuditingTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait AuditingTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + AuditingType
+{
+}
 dyn_clone::clone_trait_object!(AuditingTypeMut);
 impl_downcast!(AuditingTypeMut);
 /// Auto-generated from BPNM schema
@@ -898,7 +1038,15 @@ impl BaseElement {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for BaseElement {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -906,6 +1054,7 @@ impl DocumentElementContainer for BaseElement {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for BaseElement {
     fn element(&self) -> Element {
         Element::BaseElement
@@ -923,7 +1072,7 @@ pub trait BaseElementType: Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(BaseElementType);
 impl_downcast!(BaseElementType);
 /// Mutable access to `baseElement`
-pub trait BaseElementTypeMut: Downcast + Debug + Send + DynClone {
+pub trait BaseElementTypeMut: Downcast + Debug + Send + DynClone + BaseElementType {
     /// Set value of attribute `id`
     fn set_id(&mut self, value: Option<Id>);
     /// Get a mutable value of `documentation` child
@@ -948,7 +1097,15 @@ impl BaseElementWithMixedContent {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for BaseElementWithMixedContent {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -956,6 +1113,7 @@ impl DocumentElementContainer for BaseElementWithMixedContent {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for BaseElementWithMixedContent {
     fn element(&self) -> Element {
         Element::BaseElementWithMixedContent
@@ -973,7 +1131,9 @@ pub trait BaseElementWithMixedContentType: Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(BaseElementWithMixedContentType);
 impl_downcast!(BaseElementWithMixedContentType);
 /// Mutable access to `baseElementWithMixedContent`
-pub trait BaseElementWithMixedContentTypeMut: Downcast + Debug + Send + DynClone {
+pub trait BaseElementWithMixedContentTypeMut:
+    Downcast + Debug + Send + DynClone + BaseElementWithMixedContentType
+{
     /// Set value of attribute `id`
     fn set_id(&mut self, value: Option<Id>);
     /// Get a mutable value of `documentation` child
@@ -1059,13 +1219,25 @@ pub struct BoundaryEvent {
     #[tia("BoundaryEventType",rg*="attached_toref","BoundaryEventTypeMut",s)]
     pub attached_toref: String,
 }
+#[cast_to]
 impl DocumentElement for BoundaryEvent {
     fn element(&self) -> Element {
         Element::BoundaryEvent
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for BoundaryEvent {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1077,7 +1249,11 @@ impl DocumentElementContainer for BoundaryEvent {
     }
 }
 // Traits
-
+castable_to! {BoundaryEvent => CatchEventType,CatchEventTypeMut}
+castable_to! {BoundaryEvent => EventType,EventTypeMut}
+castable_to! {BoundaryEvent => FlowNodeType,FlowNodeTypeMut}
+castable_to! {BoundaryEvent => FlowElementType,FlowElementTypeMut}
+castable_to! {BoundaryEvent => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `boundaryEvent`
@@ -1090,7 +1266,9 @@ pub trait BoundaryEventType: CatchEventType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(BoundaryEventType);
 impl_downcast!(BoundaryEventType);
 /// Mutable access to `boundaryEvent`
-pub trait BoundaryEventTypeMut: CatchEventTypeMut + Downcast + Debug + Send + DynClone {
+pub trait BoundaryEventTypeMut:
+    CatchEventTypeMut + Downcast + Debug + Send + DynClone + BoundaryEventType
+{
     /// Set value of attribute `cancelActivity`
     fn set_cancel_activity(&mut self, value: Option<bool>);
     /// Set value of attribute `attachedToRef`
@@ -1168,13 +1346,25 @@ pub struct BusinessRuleTask {
     #[tia("BusinessRuleTaskType",rg*="implementation","BusinessRuleTaskTypeMut",s)]
     pub implementation: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for BusinessRuleTask {
     fn element(&self) -> Element {
         Element::BusinessRuleTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for BusinessRuleTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1186,8 +1376,16 @@ impl DocumentElementContainer for BusinessRuleTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for BusinessRuleTask {}
+#[cast_to]
 impl TaskTypeMut for BusinessRuleTask {}
+castable_to! {BusinessRuleTask => PartialEq<BusinessRuleTask> }
+castable_to! {BusinessRuleTask => TaskType,TaskTypeMut}
+castable_to! {BusinessRuleTask => ActivityType,ActivityTypeMut}
+castable_to! {BusinessRuleTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {BusinessRuleTask => FlowElementType,FlowElementTypeMut}
+castable_to! {BusinessRuleTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `businessRuleTask`
@@ -1198,7 +1396,9 @@ pub trait BusinessRuleTaskType: TaskType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(BusinessRuleTaskType);
 impl_downcast!(BusinessRuleTaskType);
 /// Mutable access to `businessRuleTask`
-pub trait BusinessRuleTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait BusinessRuleTaskTypeMut:
+    TaskTypeMut + Downcast + Debug + Send + DynClone + BusinessRuleTaskType
+{
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
 }
@@ -1232,13 +1432,33 @@ pub struct CallableElement {
     #[tia("CallableElementType",rg*="io_bindings","CallableElementTypeMut",s,rmg*="io_bindings_mut")]
     pub io_bindings: Vec<InputOutputBinding>,
 }
+#[cast_to]
 impl DocumentElement for CallableElement {
     fn element(&self) -> Element {
         Element::CallableElement
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CallableElement {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.supported_interface_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.io_specification.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.io_bindings.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1258,8 +1478,13 @@ impl DocumentElementContainer for CallableElement {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for CallableElement {}
+#[cast_to]
 impl RootElementTypeMut for CallableElement {}
+castable_to! {CallableElement => PartialEq<CallableElement> }
+castable_to! {CallableElement => RootElementType,RootElementTypeMut}
+castable_to! {CallableElement => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `callableElement`
@@ -1276,7 +1501,9 @@ pub trait CallableElementType: RootElementType + Downcast + Debug + Send + DynCl
 dyn_clone::clone_trait_object!(CallableElementType);
 impl_downcast!(CallableElementType);
 /// Mutable access to `callableElement`
-pub trait CallableElementTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CallableElementTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + CallableElementType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `supportedInterfaceRef` child
@@ -1364,13 +1591,25 @@ pub struct CallActivity {
     #[tia("CallActivityType",rg*="called_element","CallActivityTypeMut",s)]
     pub called_element: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for CallActivity {
     fn element(&self) -> Element {
         Element::CallActivity
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CallActivity {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1382,7 +1621,10 @@ impl DocumentElementContainer for CallActivity {
     }
 }
 // Traits
-
+castable_to! {CallActivity => ActivityType,ActivityTypeMut}
+castable_to! {CallActivity => FlowNodeType,FlowNodeTypeMut}
+castable_to! {CallActivity => FlowElementType,FlowElementTypeMut}
+castable_to! {CallActivity => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `callActivity`
@@ -1393,7 +1635,9 @@ pub trait CallActivityType: ActivityType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(CallActivityType);
 impl_downcast!(CallActivityType);
 /// Mutable access to `callActivity`
-pub trait CallActivityTypeMut: ActivityTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CallActivityTypeMut:
+    ActivityTypeMut + Downcast + Debug + Send + DynClone + CallActivityType
+{
     /// Set value of attribute `calledElement`
     fn set_called_element(&mut self, value: Option<String>);
 }
@@ -1451,13 +1695,27 @@ pub struct CallChoreography {
     #[tia("CallChoreographyType",rg*="participant_associations","CallChoreographyTypeMut",s,rmg*="participant_associations_mut")]
     pub participant_associations: Vec<ParticipantAssociation>,
 }
+#[cast_to]
 impl DocumentElement for CallChoreography {
     fn element(&self) -> Element {
         Element::CallChoreography
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CallChoreography {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.participant_associations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1471,7 +1729,10 @@ impl DocumentElementContainer for CallChoreography {
     }
 }
 // Traits
-
+castable_to! {CallChoreography => ChoreographyActivityType,ChoreographyActivityTypeMut}
+castable_to! {CallChoreography => FlowNodeType,FlowNodeTypeMut}
+castable_to! {CallChoreography => FlowElementType,FlowElementTypeMut}
+castable_to! {CallChoreography => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `callChoreography`
@@ -1487,7 +1748,7 @@ dyn_clone::clone_trait_object!(CallChoreographyType);
 impl_downcast!(CallChoreographyType);
 /// Mutable access to `callChoreography`
 pub trait CallChoreographyTypeMut:
-    ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone
+    ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone + CallChoreographyType
 {
     /// Set value of attribute `calledChoreographyRef`
     fn set_called_choreography_ref(&mut self, value: Option<String>);
@@ -1532,13 +1793,27 @@ pub struct CallConversation {
     #[tia("CallConversationType",rg*="participant_associations","CallConversationTypeMut",s,rmg*="participant_associations_mut")]
     pub participant_associations: Vec<ParticipantAssociation>,
 }
+#[cast_to]
 impl DocumentElement for CallConversation {
     fn element(&self) -> Element {
         Element::CallConversation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CallConversation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.participant_associations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1552,7 +1827,8 @@ impl DocumentElementContainer for CallConversation {
     }
 }
 // Traits
-
+castable_to! {CallConversation => ConversationNodeType,ConversationNodeTypeMut}
+castable_to! {CallConversation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `callConversation`
@@ -1566,7 +1842,7 @@ dyn_clone::clone_trait_object!(CallConversationType);
 impl_downcast!(CallConversationType);
 /// Mutable access to `callConversation`
 pub trait CallConversationTypeMut:
-    ConversationNodeTypeMut + Downcast + Debug + Send + DynClone
+    ConversationNodeTypeMut + Downcast + Debug + Send + DynClone + CallConversationType
 {
     /// Set value of attribute `calledCollaborationRef`
     fn set_called_collaboration_ref(&mut self, value: Option<String>);
@@ -1593,13 +1869,25 @@ pub struct CancelEventDefinition {
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for CancelEventDefinition {
     fn element(&self) -> Element {
         Element::CancelEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CancelEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1611,10 +1899,19 @@ impl DocumentElementContainer for CancelEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for CancelEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for CancelEventDefinition {}
+castable_to! {CancelEventDefinition => PartialEq<CancelEventDefinition> }
+castable_to! {CancelEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for CancelEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for CancelEventDefinition {}
+castable_to! {CancelEventDefinition => PartialEq<CancelEventDefinition> }
+castable_to! {CancelEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {CancelEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `cancelEventDefinition`
@@ -1626,7 +1923,7 @@ dyn_clone::clone_trait_object!(CancelEventDefinitionType);
 impl_downcast!(CancelEventDefinitionType);
 /// Mutable access to `cancelEventDefinition`
 pub trait CancelEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + CancelEventDefinitionType
 {
 }
 dyn_clone::clone_trait_object!(CancelEventDefinitionTypeMut);
@@ -1642,7 +1939,15 @@ impl CatchEvent {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for CatchEvent {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -1650,6 +1955,7 @@ impl DocumentElementContainer for CatchEvent {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for CatchEvent {
     fn element(&self) -> Element {
         Element::CatchEvent
@@ -1673,7 +1979,9 @@ pub trait CatchEventType: EventType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(CatchEventType);
 impl_downcast!(CatchEventType);
 /// Mutable access to `catchEvent`
-pub trait CatchEventTypeMut: EventTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CatchEventTypeMut:
+    EventTypeMut + Downcast + Debug + Send + DynClone + CatchEventType
+{
     /// Set value of attribute `parallelMultiple`
     fn set_parallel_multiple(&mut self, value: Option<bool>);
     /// Get a mutable value of `dataOutput` child
@@ -1721,13 +2029,27 @@ pub struct Category {
     #[tia("CategoryType",rg*="category_values","CategoryTypeMut",s,rmg*="category_values_mut")]
     pub category_values: Vec<CategoryValue>,
 }
+#[cast_to]
 impl DocumentElement for Category {
     fn element(&self) -> Element {
         Element::Category
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Category {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.category_values.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1741,8 +2063,13 @@ impl DocumentElementContainer for Category {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Category {}
+#[cast_to]
 impl RootElementTypeMut for Category {}
+castable_to! {Category => PartialEq<Category> }
+castable_to! {Category => RootElementType,RootElementTypeMut}
+castable_to! {Category => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `category`
@@ -1755,7 +2082,9 @@ pub trait CategoryType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(CategoryType);
 impl_downcast!(CategoryType);
 /// Mutable access to `category`
-pub trait CategoryTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CategoryTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + CategoryType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `categoryValue` child
@@ -1784,13 +2113,25 @@ pub struct CategoryValue {
     #[tia("CategoryValueType",rg*="value","CategoryValueTypeMut",s)]
     pub value: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for CategoryValue {
     fn element(&self) -> Element {
         Element::CategoryValue
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CategoryValue {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1802,7 +2143,7 @@ impl DocumentElementContainer for CategoryValue {
     }
 }
 // Traits
-
+castable_to! {CategoryValue => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `categoryValue`
@@ -1813,7 +2154,9 @@ pub trait CategoryValueType: BaseElementType + Downcast + Debug + Send + DynClon
 dyn_clone::clone_trait_object!(CategoryValueType);
 impl_downcast!(CategoryValueType);
 /// Mutable access to `categoryValue`
-pub trait CategoryValueTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CategoryValueTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + CategoryValueType
+{
     /// Set value of attribute `value`
     fn set_value(&mut self, value: Option<String>);
 }
@@ -1914,13 +2257,27 @@ pub struct Choreography {
     #[tia("ChoreographyType",rg*="flow_elements","ChoreographyTypeMut",s,rmg*="flow_elements_mut")]
     pub flow_elements: Vec<FlowElement>,
 }
+#[cast_to]
 impl DocumentElement for Choreography {
     fn element(&self) -> Element {
         Element::Choreography
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Choreography {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.flow_elements.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -1934,8 +2291,14 @@ impl DocumentElementContainer for Choreography {
     }
 }
 // Traits
+castable_to! {Choreography => CollaborationType,CollaborationTypeMut}
+#[cast_to]
 impl RootElementType for Choreography {}
+#[cast_to]
 impl RootElementTypeMut for Choreography {}
+castable_to! {Choreography => PartialEq<Choreography> }
+castable_to! {Choreography => RootElementType,RootElementTypeMut}
+castable_to! {Choreography => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `choreography`
@@ -1946,7 +2309,9 @@ pub trait ChoreographyType: CollaborationType + Downcast + Debug + Send + DynClo
 dyn_clone::clone_trait_object!(ChoreographyType);
 impl_downcast!(ChoreographyType);
 /// Mutable access to `choreography`
-pub trait ChoreographyTypeMut: CollaborationTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ChoreographyTypeMut:
+    CollaborationTypeMut + Downcast + Debug + Send + DynClone + ChoreographyType
+{
     /// Get a mutable value of `flowElement` child
     fn flow_elements_mut(&mut self) -> &mut Vec<FlowElement>;
     /// Set value of `flowElement` child
@@ -1965,7 +2330,15 @@ impl ChoreographyActivity {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for ChoreographyActivity {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -1973,6 +2346,7 @@ impl DocumentElementContainer for ChoreographyActivity {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for ChoreographyActivity {
     fn element(&self) -> Element {
         Element::ChoreographyActivity
@@ -1993,7 +2367,7 @@ dyn_clone::clone_trait_object!(ChoreographyActivityType);
 impl_downcast!(ChoreographyActivityType);
 /// Mutable access to `choreographyActivity`
 pub trait ChoreographyActivityTypeMut:
-    FlowNodeTypeMut + Downcast + Debug + Send + DynClone
+    FlowNodeTypeMut + Downcast + Debug + Send + DynClone + ChoreographyActivityType
 {
     /// Set value of attribute `initiatingParticipantRef`
     fn set_initiating_participant_ref(&mut self, value: String);
@@ -2059,13 +2433,27 @@ pub struct ChoreographyTask {
     #[tia("ChoreographyTaskType",rg*="message_flow_ref","ChoreographyTaskTypeMut",s,rmg*="message_flow_ref_mut")]
     pub message_flow_ref: MessageFlowRef,
 }
+#[cast_to]
 impl DocumentElement for ChoreographyTask {
     fn element(&self) -> Element {
         Element::ChoreographyTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ChoreographyTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.message_flow_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2079,7 +2467,10 @@ impl DocumentElementContainer for ChoreographyTask {
     }
 }
 // Traits
-
+castable_to! {ChoreographyTask => ChoreographyActivityType,ChoreographyActivityTypeMut}
+castable_to! {ChoreographyTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ChoreographyTask => FlowElementType,FlowElementTypeMut}
+castable_to! {ChoreographyTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `choreographyTask`
@@ -2093,7 +2484,7 @@ dyn_clone::clone_trait_object!(ChoreographyTaskType);
 impl_downcast!(ChoreographyTaskType);
 /// Mutable access to `choreographyTask`
 pub trait ChoreographyTaskTypeMut:
-    ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone
+    ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone + ChoreographyTaskType
 {
     /// Get a mutable value of `messageFlowRef` child
     fn message_flow_ref_mut(&mut self) -> &mut MessageFlowRef;
@@ -2162,13 +2553,54 @@ pub struct Collaboration {
     #[tia("CollaborationType",rg*="conversation_links","CollaborationTypeMut",s,rmg*="conversation_links_mut")]
     pub conversation_links: Vec<ConversationLink>,
 }
+#[cast_to]
 impl DocumentElement for Collaboration {
     fn element(&self) -> Element {
         Element::Collaboration
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Collaboration {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.participants.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.message_flows.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.artifacts.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.conversation_nodes.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.conversation_associations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.participant_associations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.message_flow_associations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.correlation_keys.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.choreography_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.conversation_links.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2209,8 +2641,13 @@ impl DocumentElementContainer for Collaboration {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Collaboration {}
+#[cast_to]
 impl RootElementTypeMut for Collaboration {}
+castable_to! {Collaboration => PartialEq<Collaboration> }
+castable_to! {Collaboration => RootElementType,RootElementTypeMut}
+castable_to! {Collaboration => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `collaboration`
@@ -2243,7 +2680,9 @@ pub trait CollaborationType: RootElementType + Downcast + Debug + Send + DynClon
 dyn_clone::clone_trait_object!(CollaborationType);
 impl_downcast!(CollaborationType);
 /// Mutable access to `collaboration`
-pub trait CollaborationTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CollaborationTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + CollaborationType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `isClosed`
@@ -2313,13 +2752,25 @@ pub struct CompensateEventDefinition {
     #[tia("CompensateEventDefinitionType",rg*="activity_ref","CompensateEventDefinitionTypeMut",s)]
     pub activity_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for CompensateEventDefinition {
     fn element(&self) -> Element {
         Element::CompensateEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CompensateEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2331,10 +2782,19 @@ impl DocumentElementContainer for CompensateEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for CompensateEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for CompensateEventDefinition {}
+castable_to! {CompensateEventDefinition => PartialEq<CompensateEventDefinition> }
+castable_to! {CompensateEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for CompensateEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for CompensateEventDefinition {}
+castable_to! {CompensateEventDefinition => PartialEq<CompensateEventDefinition> }
+castable_to! {CompensateEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {CompensateEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `compensateEventDefinition`
@@ -2350,7 +2810,7 @@ dyn_clone::clone_trait_object!(CompensateEventDefinitionType);
 impl_downcast!(CompensateEventDefinitionType);
 /// Mutable access to `compensateEventDefinition`
 pub trait CompensateEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + CompensateEventDefinitionType
 {
     /// Set value of attribute `waitForCompletion`
     fn set_wait_for_completion(&mut self, value: Option<bool>);
@@ -2381,13 +2841,30 @@ pub struct ComplexBehaviorDefinition {
     #[tia("ComplexBehaviorDefinitionType",rg*="event","ComplexBehaviorDefinitionTypeMut",s,rmg*="event_mut")]
     pub event: Option<ImplicitThrowEvent>,
 }
+#[cast_to]
 impl DocumentElement for ComplexBehaviorDefinition {
     fn element(&self) -> Element {
         Element::ComplexBehaviorDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ComplexBehaviorDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.condition.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.event.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2404,7 +2881,7 @@ impl DocumentElementContainer for ComplexBehaviorDefinition {
     }
 }
 // Traits
-
+castable_to! {ComplexBehaviorDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `complexBehaviorDefinition`
@@ -2420,7 +2897,7 @@ dyn_clone::clone_trait_object!(ComplexBehaviorDefinitionType);
 impl_downcast!(ComplexBehaviorDefinitionType);
 /// Mutable access to `complexBehaviorDefinition`
 pub trait ComplexBehaviorDefinitionTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ComplexBehaviorDefinitionType
 {
     /// Get a mutable value of `condition` child
     fn condition_mut(&mut self) -> &mut FormalExpression;
@@ -2476,13 +2953,27 @@ pub struct ComplexGateway {
     #[tia("ComplexGatewayType",rg*="activation_condition","ComplexGatewayTypeMut",s,rmg*="activation_condition_mut")]
     pub activation_condition: Option<Expression>,
 }
+#[cast_to]
 impl DocumentElement for ComplexGateway {
     fn element(&self) -> Element {
         Element::ComplexGateway
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ComplexGateway {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.activation_condition.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2496,7 +2987,10 @@ impl DocumentElementContainer for ComplexGateway {
     }
 }
 // Traits
-
+castable_to! {ComplexGateway => GatewayType,GatewayTypeMut}
+castable_to! {ComplexGateway => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ComplexGateway => FlowElementType,FlowElementTypeMut}
+castable_to! {ComplexGateway => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `complexGateway`
@@ -2509,7 +3003,9 @@ pub trait ComplexGatewayType: GatewayType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ComplexGatewayType);
 impl_downcast!(ComplexGatewayType);
 /// Mutable access to `complexGateway`
-pub trait ComplexGatewayTypeMut: GatewayTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ComplexGatewayTypeMut:
+    GatewayTypeMut + Downcast + Debug + Send + DynClone + ComplexGatewayType
+{
     /// Set value of attribute `default`
     fn set_default(&mut self, value: Option<String>);
     /// Get a mutable value of `activationCondition` child
@@ -2538,13 +3034,27 @@ pub struct ConditionalEventDefinition {
     #[tia("ConditionalEventDefinitionType",rg*="condition","ConditionalEventDefinitionTypeMut",s,rmg*="condition_mut")]
     pub condition: Expression,
 }
+#[cast_to]
 impl DocumentElement for ConditionalEventDefinition {
     fn element(&self) -> Element {
         Element::ConditionalEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ConditionalEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.condition.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2558,10 +3068,19 @@ impl DocumentElementContainer for ConditionalEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for ConditionalEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for ConditionalEventDefinition {}
+castable_to! {ConditionalEventDefinition => PartialEq<ConditionalEventDefinition> }
+castable_to! {ConditionalEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for ConditionalEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for ConditionalEventDefinition {}
+castable_to! {ConditionalEventDefinition => PartialEq<ConditionalEventDefinition> }
+castable_to! {ConditionalEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {ConditionalEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `conditionalEventDefinition`
@@ -2575,7 +3094,7 @@ dyn_clone::clone_trait_object!(ConditionalEventDefinitionType);
 impl_downcast!(ConditionalEventDefinitionType);
 /// Mutable access to `conditionalEventDefinition`
 pub trait ConditionalEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + ConditionalEventDefinitionType
 {
     /// Get a mutable value of `condition` child
     fn condition_mut(&mut self) -> &mut Expression;
@@ -2612,13 +3131,25 @@ pub struct Conversation {
     #[tia("ConversationNodeType",rg*="correlation_keys","ConversationNodeTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
 }
+#[cast_to]
 impl DocumentElement for Conversation {
     fn element(&self) -> Element {
         Element::Conversation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Conversation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2630,7 +3161,8 @@ impl DocumentElementContainer for Conversation {
     }
 }
 // Traits
-
+castable_to! {Conversation => ConversationNodeType,ConversationNodeTypeMut}
+castable_to! {Conversation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `conversation`
@@ -2639,7 +3171,7 @@ dyn_clone::clone_trait_object!(ConversationType);
 impl_downcast!(ConversationType);
 /// Mutable access to `conversation`
 pub trait ConversationTypeMut:
-    ConversationNodeTypeMut + Downcast + Debug + Send + DynClone
+    ConversationNodeTypeMut + Downcast + Debug + Send + DynClone + ConversationType
 {
 }
 dyn_clone::clone_trait_object!(ConversationTypeMut);
@@ -2666,13 +3198,25 @@ pub struct ConversationAssociation {
     #[tia("ConversationAssociationType",rg*="outer_conversation_node_ref","ConversationAssociationTypeMut",s)]
     pub outer_conversation_node_ref: String,
 }
+#[cast_to]
 impl DocumentElement for ConversationAssociation {
     fn element(&self) -> Element {
         Element::ConversationAssociation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ConversationAssociation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2684,7 +3228,7 @@ impl DocumentElementContainer for ConversationAssociation {
     }
 }
 // Traits
-
+castable_to! {ConversationAssociation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `conversationAssociation`
@@ -2700,7 +3244,7 @@ dyn_clone::clone_trait_object!(ConversationAssociationType);
 impl_downcast!(ConversationAssociationType);
 /// Mutable access to `conversationAssociation`
 pub trait ConversationAssociationTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ConversationAssociationType
 {
     /// Set value of attribute `innerConversationNodeRef`
     fn set_inner_conversation_node_ref(&mut self, value: String);
@@ -2734,13 +3278,25 @@ pub struct ConversationLink {
     #[tia("ConversationLinkType",rg*="target_ref","ConversationLinkTypeMut",s)]
     pub target_ref: String,
 }
+#[cast_to]
 impl DocumentElement for ConversationLink {
     fn element(&self) -> Element {
         Element::ConversationLink
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ConversationLink {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2752,7 +3308,7 @@ impl DocumentElementContainer for ConversationLink {
     }
 }
 // Traits
-
+castable_to! {ConversationLink => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `conversationLink`
@@ -2767,7 +3323,9 @@ pub trait ConversationLinkType: BaseElementType + Downcast + Debug + Send + DynC
 dyn_clone::clone_trait_object!(ConversationLinkType);
 impl_downcast!(ConversationLinkType);
 /// Mutable access to `conversationLink`
-pub trait ConversationLinkTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ConversationLinkTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ConversationLinkType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `sourceRef`
@@ -2790,6 +3348,21 @@ pub enum ConversationNode {
     #[xml(tag = "bpmn:subConversation")]
     SubConversation(SubConversation),
 }
+impl From<CallConversation> for ConversationNode {
+    fn from(element: CallConversation) -> Self {
+        Self::CallConversation(element)
+    }
+}
+impl From<Conversation> for ConversationNode {
+    fn from(element: Conversation) -> Self {
+        Self::Conversation(element)
+    }
+}
+impl From<SubConversation> for ConversationNode {
+    fn from(element: SubConversation) -> Self {
+        Self::SubConversation(element)
+    }
+}
 impl ConversationNode {
     pub fn into_inner(self) -> Box<dyn DocumentElement> {
         match self {
@@ -2799,7 +3372,19 @@ impl ConversationNode {
         }
     }
 }
+#[cast_to]
 impl DocumentElementContainer for ConversationNode {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            ConversationNode::CallConversation(e) => e.find_by_id_mut(id),
+            ConversationNode::Conversation(e) => e.find_by_id_mut(id),
+            ConversationNode::SubConversation(e) => e.find_by_id_mut(id),
+
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -2811,6 +3396,7 @@ impl DocumentElementContainer for ConversationNode {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for ConversationNode {
     fn element(&self) -> Element {
         Element::ConversationNode
@@ -2830,7 +3416,9 @@ pub trait ConversationNodeType: BaseElementType + Downcast + Debug + Send + DynC
 dyn_clone::clone_trait_object!(ConversationNodeType);
 impl_downcast!(ConversationNodeType);
 /// Mutable access to `conversationNode`
-pub trait ConversationNodeTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ConversationNodeTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ConversationNodeType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
@@ -2870,13 +3458,27 @@ pub struct CorrelationKey {
     #[tia("CorrelationKeyType",rg*="correlation_property_refs","CorrelationKeyTypeMut",s,rmg*="correlation_property_refs_mut")]
     pub correlation_property_refs: Vec<CorrelationPropertyRef>,
 }
+#[cast_to]
 impl DocumentElement for CorrelationKey {
     fn element(&self) -> Element {
         Element::CorrelationKey
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CorrelationKey {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.correlation_property_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2890,7 +3492,7 @@ impl DocumentElementContainer for CorrelationKey {
     }
 }
 // Traits
-
+castable_to! {CorrelationKey => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `correlationKey`
@@ -2903,7 +3505,9 @@ pub trait CorrelationKeyType: BaseElementType + Downcast + Debug + Send + DynClo
 dyn_clone::clone_trait_object!(CorrelationKeyType);
 impl_downcast!(CorrelationKeyType);
 /// Mutable access to `correlationKey`
-pub trait CorrelationKeyTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait CorrelationKeyTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + CorrelationKeyType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `correlationPropertyRef` child
@@ -2938,13 +3542,30 @@ pub struct CorrelationProperty {
     #[tia("CorrelationPropertyType",rg*="correlation_property_retrieval_expressions","CorrelationPropertyTypeMut",s,rmg*="correlation_property_retrieval_expressions_mut")]
     pub correlation_property_retrieval_expressions: Vec<CorrelationPropertyRetrievalExpression>,
 }
+#[cast_to]
 impl DocumentElement for CorrelationProperty {
     fn element(&self) -> Element {
         Element::CorrelationProperty
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CorrelationProperty {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self
+            .correlation_property_retrieval_expressions
+            .find_by_id_mut(id)
+        {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -2961,8 +3582,13 @@ impl DocumentElementContainer for CorrelationProperty {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for CorrelationProperty {}
+#[cast_to]
 impl RootElementTypeMut for CorrelationProperty {}
+castable_to! {CorrelationProperty => PartialEq<CorrelationProperty> }
+castable_to! {CorrelationProperty => RootElementType,RootElementTypeMut}
+castable_to! {CorrelationProperty => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `correlationProperty`
@@ -2980,7 +3606,7 @@ dyn_clone::clone_trait_object!(CorrelationPropertyType);
 impl_downcast!(CorrelationPropertyType);
 /// Mutable access to `correlationProperty`
 pub trait CorrelationPropertyTypeMut:
-    RootElementTypeMut + Downcast + Debug + Send + DynClone
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + CorrelationPropertyType
 {
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
@@ -3020,13 +3646,27 @@ pub struct CorrelationPropertyBinding {
     #[tia("CorrelationPropertyBindingType",rg*="data_path","CorrelationPropertyBindingTypeMut",s,rmg*="data_path_mut")]
     pub data_path: FormalExpression,
 }
+#[cast_to]
 impl DocumentElement for CorrelationPropertyBinding {
     fn element(&self) -> Element {
         Element::CorrelationPropertyBinding
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CorrelationPropertyBinding {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_path.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3040,7 +3680,7 @@ impl DocumentElementContainer for CorrelationPropertyBinding {
     }
 }
 // Traits
-
+castable_to! {CorrelationPropertyBinding => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `correlationPropertyBinding`
@@ -3056,7 +3696,7 @@ dyn_clone::clone_trait_object!(CorrelationPropertyBindingType);
 impl_downcast!(CorrelationPropertyBindingType);
 /// Mutable access to `correlationPropertyBinding`
 pub trait CorrelationPropertyBindingTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + CorrelationPropertyBindingType
 {
     /// Set value of attribute `correlationPropertyRef`
     fn set_correlation_property_ref(&mut self, value: String);
@@ -3089,13 +3729,27 @@ pub struct CorrelationPropertyRetrievalExpression {
     #[tia("CorrelationPropertyRetrievalExpressionType",rg*="message_path","CorrelationPropertyRetrievalExpressionTypeMut",s,rmg*="message_path_mut")]
     pub message_path: FormalExpression,
 }
+#[cast_to]
 impl DocumentElement for CorrelationPropertyRetrievalExpression {
     fn element(&self) -> Element {
         Element::CorrelationPropertyRetrievalExpression
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CorrelationPropertyRetrievalExpression {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.message_path.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3109,7 +3763,7 @@ impl DocumentElementContainer for CorrelationPropertyRetrievalExpression {
     }
 }
 // Traits
-
+castable_to! {CorrelationPropertyRetrievalExpression => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `correlationPropertyRetrievalExpression`
@@ -3125,7 +3779,7 @@ dyn_clone::clone_trait_object!(CorrelationPropertyRetrievalExpressionType);
 impl_downcast!(CorrelationPropertyRetrievalExpressionType);
 /// Mutable access to `correlationPropertyRetrievalExpression`
 pub trait CorrelationPropertyRetrievalExpressionTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + CorrelationPropertyRetrievalExpressionType
 {
     /// Set value of attribute `messageRef`
     fn set_message_ref(&mut self, value: String);
@@ -3158,13 +3812,27 @@ pub struct CorrelationSubscription {
     #[tia("CorrelationSubscriptionType",rg*="correlation_property_bindings","CorrelationSubscriptionTypeMut",s,rmg*="correlation_property_bindings_mut")]
     pub correlation_property_bindings: Vec<CorrelationPropertyBinding>,
 }
+#[cast_to]
 impl DocumentElement for CorrelationSubscription {
     fn element(&self) -> Element {
         Element::CorrelationSubscription
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CorrelationSubscription {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.correlation_property_bindings.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3178,7 +3846,7 @@ impl DocumentElementContainer for CorrelationSubscription {
     }
 }
 // Traits
-
+castable_to! {CorrelationSubscription => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `correlationSubscription`
@@ -3194,7 +3862,7 @@ dyn_clone::clone_trait_object!(CorrelationSubscriptionType);
 impl_downcast!(CorrelationSubscriptionType);
 /// Mutable access to `correlationSubscription`
 pub trait CorrelationSubscriptionTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + CorrelationSubscriptionType
 {
     /// Set value of attribute `correlationKeyRef`
     fn set_correlation_key_ref(&mut self, value: String);
@@ -3233,13 +3901,36 @@ pub struct DataAssociation {
     #[tia("DataAssociationType",rg*="assignments","DataAssociationTypeMut",s,rmg*="assignments_mut")]
     pub assignments: Vec<Assignment>,
 }
+#[cast_to]
 impl DocumentElement for DataAssociation {
     fn element(&self) -> Element {
         Element::DataAssociation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataAssociation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.source_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.target_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.transformation.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.assignments.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3262,7 +3953,7 @@ impl DocumentElementContainer for DataAssociation {
     }
 }
 // Traits
-
+castable_to! {DataAssociation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataAssociation`
@@ -3279,7 +3970,9 @@ pub trait DataAssociationType: BaseElementType + Downcast + Debug + Send + DynCl
 dyn_clone::clone_trait_object!(DataAssociationType);
 impl_downcast!(DataAssociationType);
 /// Mutable access to `dataAssociation`
-pub trait DataAssociationTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait DataAssociationTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + DataAssociationType
+{
     /// Get a mutable value of `sourceRef` child
     fn source_refs_mut(&mut self) -> &mut Vec<SourceRef>;
     /// Set value of `sourceRef` child
@@ -3327,13 +4020,27 @@ pub struct DataInput {
     #[tia("DataInputType",rg*="data_state","DataInputTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for DataInput {
     fn element(&self) -> Element {
         Element::DataInput
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataInput {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3347,7 +4054,7 @@ impl DocumentElementContainer for DataInput {
     }
 }
 // Traits
-
+castable_to! {DataInput => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataInput`
@@ -3364,7 +4071,9 @@ pub trait DataInputType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DataInputType);
 impl_downcast!(DataInputType);
 /// Mutable access to `dataInput`
-pub trait DataInputTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait DataInputTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + DataInputType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `itemSubjectRef`
@@ -3406,13 +4115,25 @@ pub struct DataInputAssociation {
     #[tia("DataAssociationType",rg*="assignments","DataAssociationTypeMut",s,rmg*="assignments_mut")]
     pub assignments: Vec<Assignment>,
 }
+#[cast_to]
 impl DocumentElement for DataInputAssociation {
     fn element(&self) -> Element {
         Element::DataInputAssociation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataInputAssociation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3424,7 +4145,8 @@ impl DocumentElementContainer for DataInputAssociation {
     }
 }
 // Traits
-
+castable_to! {DataInputAssociation => DataAssociationType,DataAssociationTypeMut}
+castable_to! {DataInputAssociation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataInputAssociation`
@@ -3436,7 +4158,7 @@ dyn_clone::clone_trait_object!(DataInputAssociationType);
 impl_downcast!(DataInputAssociationType);
 /// Mutable access to `dataInputAssociation`
 pub trait DataInputAssociationTypeMut:
-    DataAssociationTypeMut + Downcast + Debug + Send + DynClone
+    DataAssociationTypeMut + Downcast + Debug + Send + DynClone + DataInputAssociationType
 {
 }
 dyn_clone::clone_trait_object!(DataInputAssociationTypeMut);
@@ -3478,13 +4200,27 @@ pub struct DataObject {
     #[tia("DataObjectType",rg*="data_state","DataObjectTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for DataObject {
     fn element(&self) -> Element {
         Element::DataObject
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataObject {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3498,7 +4234,8 @@ impl DocumentElementContainer for DataObject {
     }
 }
 // Traits
-
+castable_to! {DataObject => FlowElementType,FlowElementTypeMut}
+castable_to! {DataObject => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataObject`
@@ -3513,7 +4250,9 @@ pub trait DataObjectType: FlowElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DataObjectType);
 impl_downcast!(DataObjectType);
 /// Mutable access to `dataObject`
-pub trait DataObjectTypeMut: FlowElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait DataObjectTypeMut:
+    FlowElementTypeMut + Downcast + Debug + Send + DynClone + DataObjectType
+{
     /// Set value of attribute `itemSubjectRef`
     fn set_item_subject_ref(&mut self, value: Option<String>);
     /// Set value of attribute `isCollection`
@@ -3562,13 +4301,27 @@ pub struct DataObjectReference {
     #[tia("DataObjectReferenceType",rg*="data_state","DataObjectReferenceTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for DataObjectReference {
     fn element(&self) -> Element {
         Element::DataObjectReference
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataObjectReference {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3582,7 +4335,8 @@ impl DocumentElementContainer for DataObjectReference {
     }
 }
 // Traits
-
+castable_to! {DataObjectReference => FlowElementType,FlowElementTypeMut}
+castable_to! {DataObjectReference => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataObjectReference`
@@ -3598,7 +4352,7 @@ dyn_clone::clone_trait_object!(DataObjectReferenceType);
 impl_downcast!(DataObjectReferenceType);
 /// Mutable access to `dataObjectReference`
 pub trait DataObjectReferenceTypeMut:
-    FlowElementTypeMut + Downcast + Debug + Send + DynClone
+    FlowElementTypeMut + Downcast + Debug + Send + DynClone + DataObjectReferenceType
 {
     /// Set value of attribute `itemSubjectRef`
     fn set_item_subject_ref(&mut self, value: Option<String>);
@@ -3639,13 +4393,27 @@ pub struct DataOutput {
     #[tia("DataOutputType",rg*="data_state","DataOutputTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for DataOutput {
     fn element(&self) -> Element {
         Element::DataOutput
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataOutput {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3659,7 +4427,7 @@ impl DocumentElementContainer for DataOutput {
     }
 }
 // Traits
-
+castable_to! {DataOutput => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataOutput`
@@ -3676,7 +4444,9 @@ pub trait DataOutputType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DataOutputType);
 impl_downcast!(DataOutputType);
 /// Mutable access to `dataOutput`
-pub trait DataOutputTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait DataOutputTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + DataOutputType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `itemSubjectRef`
@@ -3718,13 +4488,25 @@ pub struct DataOutputAssociation {
     #[tia("DataAssociationType",rg*="assignments","DataAssociationTypeMut",s,rmg*="assignments_mut")]
     pub assignments: Vec<Assignment>,
 }
+#[cast_to]
 impl DocumentElement for DataOutputAssociation {
     fn element(&self) -> Element {
         Element::DataOutputAssociation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataOutputAssociation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3736,7 +4518,8 @@ impl DocumentElementContainer for DataOutputAssociation {
     }
 }
 // Traits
-
+castable_to! {DataOutputAssociation => DataAssociationType,DataAssociationTypeMut}
+castable_to! {DataOutputAssociation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataOutputAssociation`
@@ -3748,7 +4531,7 @@ dyn_clone::clone_trait_object!(DataOutputAssociationType);
 impl_downcast!(DataOutputAssociationType);
 /// Mutable access to `dataOutputAssociation`
 pub trait DataOutputAssociationTypeMut:
-    DataAssociationTypeMut + Downcast + Debug + Send + DynClone
+    DataAssociationTypeMut + Downcast + Debug + Send + DynClone + DataOutputAssociationType
 {
 }
 dyn_clone::clone_trait_object!(DataOutputAssociationTypeMut);
@@ -3772,13 +4555,25 @@ pub struct DataState {
     #[tia("DataStateType",rg*="name","DataStateTypeMut",s)]
     pub name: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for DataState {
     fn element(&self) -> Element {
         Element::DataState
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataState {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3790,7 +4585,7 @@ impl DocumentElementContainer for DataState {
     }
 }
 // Traits
-
+castable_to! {DataState => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataState`
@@ -3801,7 +4596,9 @@ pub trait DataStateType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DataStateType);
 impl_downcast!(DataStateType);
 /// Mutable access to `dataState`
-pub trait DataStateTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait DataStateTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + DataStateType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
 }
@@ -3838,13 +4635,27 @@ pub struct DataStore {
     #[tia("DataStoreType",rg*="data_state","DataStoreTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for DataStore {
     fn element(&self) -> Element {
         Element::DataStore
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataStore {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3858,8 +4669,13 @@ impl DocumentElementContainer for DataStore {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for DataStore {}
+#[cast_to]
 impl RootElementTypeMut for DataStore {}
+castable_to! {DataStore => PartialEq<DataStore> }
+castable_to! {DataStore => RootElementType,RootElementTypeMut}
+castable_to! {DataStore => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataStore`
@@ -3878,7 +4694,9 @@ pub trait DataStoreType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DataStoreType);
 impl_downcast!(DataStoreType);
 /// Mutable access to `dataStore`
-pub trait DataStoreTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait DataStoreTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + DataStoreType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `capacity`
@@ -3931,13 +4749,27 @@ pub struct DataStoreReference {
     #[tia("DataStoreReferenceType",rg*="data_state","DataStoreReferenceTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for DataStoreReference {
     fn element(&self) -> Element {
         Element::DataStoreReference
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataStoreReference {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -3951,7 +4783,8 @@ impl DocumentElementContainer for DataStoreReference {
     }
 }
 // Traits
-
+castable_to! {DataStoreReference => FlowElementType,FlowElementTypeMut}
+castable_to! {DataStoreReference => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `dataStoreReference`
@@ -3967,7 +4800,7 @@ dyn_clone::clone_trait_object!(DataStoreReferenceType);
 impl_downcast!(DataStoreReferenceType);
 /// Mutable access to `dataStoreReference`
 pub trait DataStoreReferenceTypeMut:
-    FlowElementTypeMut + Downcast + Debug + Send + DynClone
+    FlowElementTypeMut + Downcast + Debug + Send + DynClone + DataStoreReferenceType
 {
     /// Set value of attribute `itemSubjectRef`
     fn set_item_subject_ref(&mut self, value: Option<String>);
@@ -3995,13 +4828,25 @@ pub struct Documentation {
     #[xml(text, cdata)]
     content: String,
 }
+#[cast_to]
 impl DocumentElement for Documentation {
     fn element(&self) -> Element {
         Element::Documentation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Documentation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4026,7 +4871,7 @@ pub trait DocumentationType: Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(DocumentationType);
 impl_downcast!(DocumentationType);
 /// Mutable access to `documentation`
-pub trait DocumentationTypeMut: Downcast + Debug + Send + DynClone {
+pub trait DocumentationTypeMut: Downcast + Debug + Send + DynClone + DocumentationType {
     /// Set value of attribute `id`
     fn set_id(&mut self, value: Option<Id>);
     /// Set value of attribute `textFormat`
@@ -4097,13 +4942,25 @@ pub struct EndEvent {
     #[tia("ThrowEventType",rg*="event_definition_refs","ThrowEventTypeMut",s,rmg*="event_definition_refs_mut")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
+#[cast_to]
 impl DocumentElement for EndEvent {
     fn element(&self) -> Element {
         Element::EndEvent
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for EndEvent {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4115,7 +4972,11 @@ impl DocumentElementContainer for EndEvent {
     }
 }
 // Traits
-
+castable_to! {EndEvent => ThrowEventType,ThrowEventTypeMut}
+castable_to! {EndEvent => EventType,EventTypeMut}
+castable_to! {EndEvent => FlowNodeType,FlowNodeTypeMut}
+castable_to! {EndEvent => FlowElementType,FlowElementTypeMut}
+castable_to! {EndEvent => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `endEvent`
@@ -4123,7 +4984,10 @@ pub trait EndEventType: ThrowEventType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(EndEventType);
 impl_downcast!(EndEventType);
 /// Mutable access to `endEvent`
-pub trait EndEventTypeMut: ThrowEventTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait EndEventTypeMut:
+    ThrowEventTypeMut + Downcast + Debug + Send + DynClone + EndEventType
+{
+}
 dyn_clone::clone_trait_object!(EndEventTypeMut);
 impl_downcast!(EndEventTypeMut);
 /// Auto-generated from BPNM schema
@@ -4142,13 +5006,25 @@ pub struct EndPoint {
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for EndPoint {
     fn element(&self) -> Element {
         Element::EndPoint
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for EndPoint {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4160,8 +5036,13 @@ impl DocumentElementContainer for EndPoint {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for EndPoint {}
+#[cast_to]
 impl RootElementTypeMut for EndPoint {}
+castable_to! {EndPoint => PartialEq<EndPoint> }
+castable_to! {EndPoint => RootElementType,RootElementTypeMut}
+castable_to! {EndPoint => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `endPoint`
@@ -4169,7 +5050,10 @@ pub trait EndPointType: RootElementType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(EndPointType);
 impl_downcast!(EndPointType);
 /// Mutable access to `endPoint`
-pub trait EndPointTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait EndPointTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + EndPointType
+{
+}
 dyn_clone::clone_trait_object!(EndPointTypeMut);
 impl_downcast!(EndPointTypeMut);
 /// Auto-generated from BPNM schema
@@ -4197,13 +5081,25 @@ pub struct Error {
     #[tia("ErrorType",rg*="structure_ref","ErrorTypeMut",s)]
     pub structure_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Error {
     fn element(&self) -> Element {
         Element::Error
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Error {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4215,8 +5111,13 @@ impl DocumentElementContainer for Error {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Error {}
+#[cast_to]
 impl RootElementTypeMut for Error {}
+castable_to! {Error => PartialEq<Error> }
+castable_to! {Error => RootElementType,RootElementTypeMut}
+castable_to! {Error => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `error`
@@ -4231,7 +5132,9 @@ pub trait ErrorType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ErrorType);
 impl_downcast!(ErrorType);
 /// Mutable access to `error`
-pub trait ErrorTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ErrorTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + ErrorType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `errorCode`
@@ -4260,13 +5163,25 @@ pub struct ErrorEventDefinition {
     #[tia("ErrorEventDefinitionType",rg*="error_ref","ErrorEventDefinitionTypeMut",s)]
     pub error_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ErrorEventDefinition {
     fn element(&self) -> Element {
         Element::ErrorEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ErrorEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4278,10 +5193,19 @@ impl DocumentElementContainer for ErrorEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for ErrorEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for ErrorEventDefinition {}
+castable_to! {ErrorEventDefinition => PartialEq<ErrorEventDefinition> }
+castable_to! {ErrorEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for ErrorEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for ErrorEventDefinition {}
+castable_to! {ErrorEventDefinition => PartialEq<ErrorEventDefinition> }
+castable_to! {ErrorEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {ErrorEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `errorEventDefinition`
@@ -4295,7 +5219,7 @@ dyn_clone::clone_trait_object!(ErrorEventDefinitionType);
 impl_downcast!(ErrorEventDefinitionType);
 /// Mutable access to `errorEventDefinition`
 pub trait ErrorEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + ErrorEventDefinitionType
 {
     /// Set value of attribute `errorRef`
     fn set_error_ref(&mut self, value: Option<String>);
@@ -4327,13 +5251,25 @@ pub struct Escalation {
     #[tia("EscalationType",rg*="structure_ref","EscalationTypeMut",s)]
     pub structure_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Escalation {
     fn element(&self) -> Element {
         Element::Escalation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Escalation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4345,8 +5281,13 @@ impl DocumentElementContainer for Escalation {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Escalation {}
+#[cast_to]
 impl RootElementTypeMut for Escalation {}
+castable_to! {Escalation => PartialEq<Escalation> }
+castable_to! {Escalation => RootElementType,RootElementTypeMut}
+castable_to! {Escalation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `escalation`
@@ -4361,7 +5302,9 @@ pub trait EscalationType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(EscalationType);
 impl_downcast!(EscalationType);
 /// Mutable access to `escalation`
-pub trait EscalationTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait EscalationTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + EscalationType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `escalationCode`
@@ -4390,13 +5333,25 @@ pub struct EscalationEventDefinition {
     #[tia("EscalationEventDefinitionType",rg*="escalation_ref","EscalationEventDefinitionTypeMut",s)]
     pub escalation_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for EscalationEventDefinition {
     fn element(&self) -> Element {
         Element::EscalationEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for EscalationEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4408,10 +5363,19 @@ impl DocumentElementContainer for EscalationEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for EscalationEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for EscalationEventDefinition {}
+castable_to! {EscalationEventDefinition => PartialEq<EscalationEventDefinition> }
+castable_to! {EscalationEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for EscalationEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for EscalationEventDefinition {}
+castable_to! {EscalationEventDefinition => PartialEq<EscalationEventDefinition> }
+castable_to! {EscalationEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {EscalationEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `escalationEventDefinition`
@@ -4425,7 +5389,7 @@ dyn_clone::clone_trait_object!(EscalationEventDefinitionType);
 impl_downcast!(EscalationEventDefinitionType);
 /// Mutable access to `escalationEventDefinition`
 pub trait EscalationEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + EscalationEventDefinitionType
 {
     /// Set value of attribute `escalationRef`
     fn set_escalation_ref(&mut self, value: Option<String>);
@@ -4443,7 +5407,15 @@ impl Event {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for Event {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -4451,6 +5423,7 @@ impl DocumentElementContainer for Event {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for Event {
     fn element(&self) -> Element {
         Element::Event
@@ -4464,7 +5437,7 @@ pub trait EventType: FlowNodeType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(EventType);
 impl_downcast!(EventType);
 /// Mutable access to `event`
-pub trait EventTypeMut: FlowNodeTypeMut + Downcast + Debug + Send + DynClone {
+pub trait EventTypeMut: FlowNodeTypeMut + Downcast + Debug + Send + DynClone + EventType {
     /// Get a mutable value of `property` child
     fn properies_mut(&mut self) -> &mut Vec<Property>;
     /// Set value of `property` child
@@ -4515,13 +5488,25 @@ pub struct EventBasedGateway {
     #[tia("EventBasedGatewayType",rg*="event_gateway_type","EventBasedGatewayTypeMut",s)]
     pub event_gateway_type: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for EventBasedGateway {
     fn element(&self) -> Element {
         Element::EventBasedGateway
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for EventBasedGateway {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4533,7 +5518,10 @@ impl DocumentElementContainer for EventBasedGateway {
     }
 }
 // Traits
-
+castable_to! {EventBasedGateway => GatewayType,GatewayTypeMut}
+castable_to! {EventBasedGateway => FlowNodeType,FlowNodeTypeMut}
+castable_to! {EventBasedGateway => FlowElementType,FlowElementTypeMut}
+castable_to! {EventBasedGateway => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `eventBasedGateway`
@@ -4546,7 +5534,9 @@ pub trait EventBasedGatewayType: GatewayType + Downcast + Debug + Send + DynClon
 dyn_clone::clone_trait_object!(EventBasedGatewayType);
 impl_downcast!(EventBasedGatewayType);
 /// Mutable access to `eventBasedGateway`
-pub trait EventBasedGatewayTypeMut: GatewayTypeMut + Downcast + Debug + Send + DynClone {
+pub trait EventBasedGatewayTypeMut:
+    GatewayTypeMut + Downcast + Debug + Send + DynClone + EventBasedGatewayType
+{
     /// Set value of attribute `instantiate`
     fn set_instantiate(&mut self, value: Option<bool>);
     /// Set value of attribute `eventGatewayType`
@@ -4581,6 +5571,56 @@ pub enum EventDefinition {
     #[xml(tag = "bpmn:timerEventDefinition")]
     TimerEventDefinition(TimerEventDefinition),
 }
+impl From<CancelEventDefinition> for EventDefinition {
+    fn from(element: CancelEventDefinition) -> Self {
+        Self::CancelEventDefinition(element)
+    }
+}
+impl From<CompensateEventDefinition> for EventDefinition {
+    fn from(element: CompensateEventDefinition) -> Self {
+        Self::CompensateEventDefinition(element)
+    }
+}
+impl From<ConditionalEventDefinition> for EventDefinition {
+    fn from(element: ConditionalEventDefinition) -> Self {
+        Self::ConditionalEventDefinition(element)
+    }
+}
+impl From<ErrorEventDefinition> for EventDefinition {
+    fn from(element: ErrorEventDefinition) -> Self {
+        Self::ErrorEventDefinition(element)
+    }
+}
+impl From<EscalationEventDefinition> for EventDefinition {
+    fn from(element: EscalationEventDefinition) -> Self {
+        Self::EscalationEventDefinition(element)
+    }
+}
+impl From<LinkEventDefinition> for EventDefinition {
+    fn from(element: LinkEventDefinition) -> Self {
+        Self::LinkEventDefinition(element)
+    }
+}
+impl From<MessageEventDefinition> for EventDefinition {
+    fn from(element: MessageEventDefinition) -> Self {
+        Self::MessageEventDefinition(element)
+    }
+}
+impl From<SignalEventDefinition> for EventDefinition {
+    fn from(element: SignalEventDefinition) -> Self {
+        Self::SignalEventDefinition(element)
+    }
+}
+impl From<TerminateEventDefinition> for EventDefinition {
+    fn from(element: TerminateEventDefinition) -> Self {
+        Self::TerminateEventDefinition(element)
+    }
+}
+impl From<TimerEventDefinition> for EventDefinition {
+    fn from(element: TimerEventDefinition) -> Self {
+        Self::TimerEventDefinition(element)
+    }
+}
 impl EventDefinition {
     pub fn into_inner(self) -> Box<dyn DocumentElement> {
         match self {
@@ -4603,7 +5643,26 @@ impl EventDefinition {
         }
     }
 }
+#[cast_to]
 impl DocumentElementContainer for EventDefinition {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            EventDefinition::CancelEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::CompensateEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::ConditionalEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::ErrorEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::EscalationEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::LinkEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::MessageEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::SignalEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::TerminateEventDefinition(e) => e.find_by_id_mut(id),
+            EventDefinition::TimerEventDefinition(e) => e.find_by_id_mut(id),
+
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -4622,6 +5681,7 @@ impl DocumentElementContainer for EventDefinition {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for EventDefinition {
     fn element(&self) -> Element {
         Element::EventDefinition
@@ -4632,7 +5692,10 @@ pub trait EventDefinitionType: RootElementType + Downcast + Debug + Send + DynCl
 dyn_clone::clone_trait_object!(EventDefinitionType);
 impl_downcast!(EventDefinitionType);
 /// Mutable access to `eventDefinition`
-pub trait EventDefinitionTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait EventDefinitionTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + EventDefinitionType
+{
+}
 dyn_clone::clone_trait_object!(EventDefinitionTypeMut);
 impl_downcast!(EventDefinitionTypeMut);
 /// Auto-generated from BPNM schema
@@ -4675,13 +5738,25 @@ pub struct ExclusiveGateway {
     #[tia("ExclusiveGatewayType",rg*="default","ExclusiveGatewayTypeMut",s)]
     pub default: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ExclusiveGateway {
     fn element(&self) -> Element {
         Element::ExclusiveGateway
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ExclusiveGateway {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4693,7 +5768,10 @@ impl DocumentElementContainer for ExclusiveGateway {
     }
 }
 // Traits
-
+castable_to! {ExclusiveGateway => GatewayType,GatewayTypeMut}
+castable_to! {ExclusiveGateway => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ExclusiveGateway => FlowElementType,FlowElementTypeMut}
+castable_to! {ExclusiveGateway => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `exclusiveGateway`
@@ -4704,7 +5782,9 @@ pub trait ExclusiveGatewayType: GatewayType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(ExclusiveGatewayType);
 impl_downcast!(ExclusiveGatewayType);
 /// Mutable access to `exclusiveGateway`
-pub trait ExclusiveGatewayTypeMut: GatewayTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ExclusiveGatewayTypeMut:
+    GatewayTypeMut + Downcast + Debug + Send + DynClone + ExclusiveGatewayType
+{
     /// Set value of attribute `default`
     fn set_default(&mut self, value: Option<String>);
 }
@@ -4726,13 +5806,25 @@ pub struct Expression {
     #[tia("BaseElementWithMixedContentType",rg*="extension_elements","BaseElementWithMixedContentTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for Expression {
     fn element(&self) -> Element {
         Element::Expression
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Expression {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -4744,7 +5836,7 @@ impl DocumentElementContainer for Expression {
     }
 }
 // Traits
-
+castable_to! {Expression => BaseElementWithMixedContentType,BaseElementWithMixedContentTypeMut}
 //
 
 /// Access to `expression`
@@ -4756,7 +5848,7 @@ dyn_clone::clone_trait_object!(ExpressionType);
 impl_downcast!(ExpressionType);
 /// Mutable access to `expression`
 pub trait ExpressionTypeMut:
-    BaseElementWithMixedContentTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementWithMixedContentTypeMut + Downcast + Debug + Send + DynClone + ExpressionType
 {
 }
 dyn_clone::clone_trait_object!(ExpressionTypeMut);
@@ -4777,13 +5869,22 @@ pub struct Extension {
     #[tia("ExtensionType",rg*="documentations","ExtensionTypeMut",s,rmg*="documentations_mut")]
     pub documentations: Vec<Documentation>,
 }
+#[cast_to]
 impl DocumentElement for Extension {
     fn element(&self) -> Element {
         Element::Extension
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Extension {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(e) = self.documentations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(e) = self.documentations.find_by_id(id) {
             return Some(e);
@@ -4807,7 +5908,7 @@ pub trait ExtensionType: Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ExtensionType);
 impl_downcast!(ExtensionType);
 /// Mutable access to `extension`
-pub trait ExtensionTypeMut: Downcast + Debug + Send + DynClone {
+pub trait ExtensionTypeMut: Downcast + Debug + Send + DynClone + ExtensionType {
     /// Set value of attribute `definition`
     fn set_definition(&mut self, value: Option<String>);
     /// Set value of attribute `mustUnderstand`
@@ -4828,12 +5929,14 @@ pub struct ExtensionElements {
     #[xml(text, cdata)]
     content: String,
 }
+#[cast_to]
 impl DocumentElement for ExtensionElements {
     fn element(&self) -> Element {
         Element::ExtensionElements
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ExtensionElements {}
 // Traits
 
@@ -4844,7 +5947,10 @@ pub trait ExtensionElementsType: Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(ExtensionElementsType);
 impl_downcast!(ExtensionElementsType);
 /// Mutable access to `extensionElements`
-pub trait ExtensionElementsTypeMut: Downcast + Debug + Send + DynClone {}
+pub trait ExtensionElementsTypeMut:
+    Downcast + Debug + Send + DynClone + ExtensionElementsType
+{
+}
 dyn_clone::clone_trait_object!(ExtensionElementsTypeMut);
 impl_downcast!(ExtensionElementsTypeMut);
 /// Auto-generated from BPNM schema
@@ -4916,6 +6022,161 @@ pub enum FlowElement {
     #[xml(tag = "bpmn:userTask")]
     UserTask(UserTask),
 }
+impl From<AdHocSubProcess> for FlowElement {
+    fn from(element: AdHocSubProcess) -> Self {
+        Self::AdHocSubProcess(element)
+    }
+}
+impl From<BoundaryEvent> for FlowElement {
+    fn from(element: BoundaryEvent) -> Self {
+        Self::BoundaryEvent(element)
+    }
+}
+impl From<BusinessRuleTask> for FlowElement {
+    fn from(element: BusinessRuleTask) -> Self {
+        Self::BusinessRuleTask(element)
+    }
+}
+impl From<CallActivity> for FlowElement {
+    fn from(element: CallActivity) -> Self {
+        Self::CallActivity(element)
+    }
+}
+impl From<CallChoreography> for FlowElement {
+    fn from(element: CallChoreography) -> Self {
+        Self::CallChoreography(element)
+    }
+}
+impl From<ChoreographyTask> for FlowElement {
+    fn from(element: ChoreographyTask) -> Self {
+        Self::ChoreographyTask(element)
+    }
+}
+impl From<ComplexGateway> for FlowElement {
+    fn from(element: ComplexGateway) -> Self {
+        Self::ComplexGateway(element)
+    }
+}
+impl From<DataObject> for FlowElement {
+    fn from(element: DataObject) -> Self {
+        Self::DataObject(element)
+    }
+}
+impl From<DataObjectReference> for FlowElement {
+    fn from(element: DataObjectReference) -> Self {
+        Self::DataObjectReference(element)
+    }
+}
+impl From<DataStoreReference> for FlowElement {
+    fn from(element: DataStoreReference) -> Self {
+        Self::DataStoreReference(element)
+    }
+}
+impl From<EndEvent> for FlowElement {
+    fn from(element: EndEvent) -> Self {
+        Self::EndEvent(element)
+    }
+}
+impl From<Event> for FlowElement {
+    fn from(element: Event) -> Self {
+        Self::Event(element)
+    }
+}
+impl From<EventBasedGateway> for FlowElement {
+    fn from(element: EventBasedGateway) -> Self {
+        Self::EventBasedGateway(element)
+    }
+}
+impl From<ExclusiveGateway> for FlowElement {
+    fn from(element: ExclusiveGateway) -> Self {
+        Self::ExclusiveGateway(element)
+    }
+}
+impl From<ImplicitThrowEvent> for FlowElement {
+    fn from(element: ImplicitThrowEvent) -> Self {
+        Self::ImplicitThrowEvent(element)
+    }
+}
+impl From<InclusiveGateway> for FlowElement {
+    fn from(element: InclusiveGateway) -> Self {
+        Self::InclusiveGateway(element)
+    }
+}
+impl From<IntermediateCatchEvent> for FlowElement {
+    fn from(element: IntermediateCatchEvent) -> Self {
+        Self::IntermediateCatchEvent(element)
+    }
+}
+impl From<IntermediateThrowEvent> for FlowElement {
+    fn from(element: IntermediateThrowEvent) -> Self {
+        Self::IntermediateThrowEvent(element)
+    }
+}
+impl From<ManualTask> for FlowElement {
+    fn from(element: ManualTask) -> Self {
+        Self::ManualTask(element)
+    }
+}
+impl From<ParallelGateway> for FlowElement {
+    fn from(element: ParallelGateway) -> Self {
+        Self::ParallelGateway(element)
+    }
+}
+impl From<ReceiveTask> for FlowElement {
+    fn from(element: ReceiveTask) -> Self {
+        Self::ReceiveTask(element)
+    }
+}
+impl From<ScriptTask> for FlowElement {
+    fn from(element: ScriptTask) -> Self {
+        Self::ScriptTask(element)
+    }
+}
+impl From<SendTask> for FlowElement {
+    fn from(element: SendTask) -> Self {
+        Self::SendTask(element)
+    }
+}
+impl From<SequenceFlow> for FlowElement {
+    fn from(element: SequenceFlow) -> Self {
+        Self::SequenceFlow(element)
+    }
+}
+impl From<ServiceTask> for FlowElement {
+    fn from(element: ServiceTask) -> Self {
+        Self::ServiceTask(element)
+    }
+}
+impl From<StartEvent> for FlowElement {
+    fn from(element: StartEvent) -> Self {
+        Self::StartEvent(element)
+    }
+}
+impl From<SubChoreography> for FlowElement {
+    fn from(element: SubChoreography) -> Self {
+        Self::SubChoreography(element)
+    }
+}
+impl From<SubProcess> for FlowElement {
+    fn from(element: SubProcess) -> Self {
+        Self::SubProcess(element)
+    }
+}
+impl From<Task> for FlowElement {
+    fn from(element: Task) -> Self {
+        Self::Task(element)
+    }
+}
+impl From<Transaction> for FlowElement {
+    fn from(element: Transaction) -> Self {
+        Self::Transaction(element)
+    }
+}
+impl From<UserTask> for FlowElement {
+    fn from(element: UserTask) -> Self {
+        Self::UserTask(element)
+    }
+}
 impl FlowElement {
     pub fn into_inner(self) -> Box<dyn DocumentElement> {
         match self {
@@ -4953,7 +6214,47 @@ impl FlowElement {
         }
     }
 }
+#[cast_to]
 impl DocumentElementContainer for FlowElement {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            FlowElement::AdHocSubProcess(e) => e.find_by_id_mut(id),
+            FlowElement::BoundaryEvent(e) => e.find_by_id_mut(id),
+            FlowElement::BusinessRuleTask(e) => e.find_by_id_mut(id),
+            FlowElement::CallActivity(e) => e.find_by_id_mut(id),
+            FlowElement::CallChoreography(e) => e.find_by_id_mut(id),
+            FlowElement::ChoreographyTask(e) => e.find_by_id_mut(id),
+            FlowElement::ComplexGateway(e) => e.find_by_id_mut(id),
+            FlowElement::DataObject(e) => e.find_by_id_mut(id),
+            FlowElement::DataObjectReference(e) => e.find_by_id_mut(id),
+            FlowElement::DataStoreReference(e) => e.find_by_id_mut(id),
+            FlowElement::EndEvent(e) => e.find_by_id_mut(id),
+            FlowElement::Event(e) => e.find_by_id_mut(id),
+            FlowElement::EventBasedGateway(e) => e.find_by_id_mut(id),
+            FlowElement::ExclusiveGateway(e) => e.find_by_id_mut(id),
+            FlowElement::ImplicitThrowEvent(e) => e.find_by_id_mut(id),
+            FlowElement::InclusiveGateway(e) => e.find_by_id_mut(id),
+            FlowElement::IntermediateCatchEvent(e) => e.find_by_id_mut(id),
+            FlowElement::IntermediateThrowEvent(e) => e.find_by_id_mut(id),
+            FlowElement::ManualTask(e) => e.find_by_id_mut(id),
+            FlowElement::ParallelGateway(e) => e.find_by_id_mut(id),
+            FlowElement::ReceiveTask(e) => e.find_by_id_mut(id),
+            FlowElement::ScriptTask(e) => e.find_by_id_mut(id),
+            FlowElement::SendTask(e) => e.find_by_id_mut(id),
+            FlowElement::SequenceFlow(e) => e.find_by_id_mut(id),
+            FlowElement::ServiceTask(e) => e.find_by_id_mut(id),
+            FlowElement::StartEvent(e) => e.find_by_id_mut(id),
+            FlowElement::SubChoreography(e) => e.find_by_id_mut(id),
+            FlowElement::SubProcess(e) => e.find_by_id_mut(id),
+            FlowElement::Task(e) => e.find_by_id_mut(id),
+            FlowElement::Transaction(e) => e.find_by_id_mut(id),
+            FlowElement::UserTask(e) => e.find_by_id_mut(id),
+
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -4993,6 +6294,7 @@ impl DocumentElementContainer for FlowElement {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for FlowElement {
     fn element(&self) -> Element {
         Element::FlowElement
@@ -5012,7 +6314,9 @@ pub trait FlowElementType: BaseElementType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(FlowElementType);
 impl_downcast!(FlowElementType);
 /// Mutable access to `flowElement`
-pub trait FlowElementTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait FlowElementTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + FlowElementType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `auditing` child
@@ -5041,7 +6345,15 @@ impl FlowNode {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for FlowNode {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -5049,6 +6361,7 @@ impl DocumentElementContainer for FlowNode {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for FlowNode {
     fn element(&self) -> Element {
         Element::FlowNode
@@ -5064,7 +6377,9 @@ pub trait FlowNodeType: FlowElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(FlowNodeType);
 impl_downcast!(FlowNodeType);
 /// Mutable access to `flowNode`
-pub trait FlowNodeTypeMut: FlowElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait FlowNodeTypeMut:
+    FlowElementTypeMut + Downcast + Debug + Send + DynClone + FlowNodeType
+{
     /// Get a mutable value of `incoming` child
     fn incomings_mut(&mut self) -> &mut Vec<Incoming>;
     /// Set value of `incoming` child
@@ -5098,13 +6413,25 @@ pub struct FormalExpression {
     #[tia("FormalExpressionType",rg*="evaluates_totype_ref","FormalExpressionTypeMut",s)]
     pub evaluates_totype_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for FormalExpression {
     fn element(&self) -> Element {
         Element::FormalExpression
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for FormalExpression {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5116,8 +6443,13 @@ impl DocumentElementContainer for FormalExpression {
     }
 }
 // Traits
+#[cast_to]
 impl ExpressionType for FormalExpression {}
+#[cast_to]
 impl ExpressionTypeMut for FormalExpression {}
+castable_to! {FormalExpression => PartialEq<FormalExpression> }
+castable_to! {FormalExpression => ExpressionType,ExpressionTypeMut}
+castable_to! {FormalExpression => BaseElementWithMixedContentType,BaseElementWithMixedContentTypeMut}
 //
 
 /// Access to `formalExpression`
@@ -5130,7 +6462,9 @@ pub trait FormalExpressionType: ExpressionType + Downcast + Debug + Send + DynCl
 dyn_clone::clone_trait_object!(FormalExpressionType);
 impl_downcast!(FormalExpressionType);
 /// Mutable access to `formalExpression`
-pub trait FormalExpressionTypeMut: ExpressionTypeMut + Downcast + Debug + Send + DynClone {
+pub trait FormalExpressionTypeMut:
+    ExpressionTypeMut + Downcast + Debug + Send + DynClone + FormalExpressionType
+{
     /// Set value of attribute `language`
     fn set_language(&mut self, value: Option<URI>);
     /// Set value of attribute `evaluatesToTypeRef`
@@ -5175,13 +6509,25 @@ pub struct Gateway {
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Gateway {
     fn element(&self) -> Element {
         Element::Gateway
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Gateway {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5193,7 +6539,9 @@ impl DocumentElementContainer for Gateway {
     }
 }
 // Traits
-
+castable_to! {Gateway => FlowNodeType,FlowNodeTypeMut}
+castable_to! {Gateway => FlowElementType,FlowElementTypeMut}
+castable_to! {Gateway => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `gateway`
@@ -5204,7 +6552,9 @@ pub trait GatewayType: FlowNodeType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(GatewayType);
 impl_downcast!(GatewayType);
 /// Mutable access to `gateway`
-pub trait GatewayTypeMut: FlowNodeTypeMut + Downcast + Debug + Send + DynClone {
+pub trait GatewayTypeMut:
+    FlowNodeTypeMut + Downcast + Debug + Send + DynClone + GatewayType
+{
     /// Set value of attribute `gatewayDirection`
     fn set_gateway_direction(&mut self, value: Option<String>);
 }
@@ -5244,13 +6594,25 @@ pub struct GlobalBusinessRuleTask {
     #[tia("GlobalBusinessRuleTaskType",rg*="implementation","GlobalBusinessRuleTaskTypeMut",s)]
     pub implementation: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for GlobalBusinessRuleTask {
     fn element(&self) -> Element {
         Element::GlobalBusinessRuleTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalBusinessRuleTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5262,8 +6624,15 @@ impl DocumentElementContainer for GlobalBusinessRuleTask {
     }
 }
 // Traits
+castable_to! {GlobalBusinessRuleTask => GlobalTaskType,GlobalTaskTypeMut}
+castable_to! {GlobalBusinessRuleTask => CallableElementType,CallableElementTypeMut}
+#[cast_to]
 impl RootElementType for GlobalBusinessRuleTask {}
+#[cast_to]
 impl RootElementTypeMut for GlobalBusinessRuleTask {}
+castable_to! {GlobalBusinessRuleTask => PartialEq<GlobalBusinessRuleTask> }
+castable_to! {GlobalBusinessRuleTask => RootElementType,RootElementTypeMut}
+castable_to! {GlobalBusinessRuleTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalBusinessRuleTask`
@@ -5275,7 +6644,7 @@ dyn_clone::clone_trait_object!(GlobalBusinessRuleTaskType);
 impl_downcast!(GlobalBusinessRuleTaskType);
 /// Mutable access to `globalBusinessRuleTask`
 pub trait GlobalBusinessRuleTaskTypeMut:
-    GlobalTaskTypeMut + Downcast + Debug + Send + DynClone
+    GlobalTaskTypeMut + Downcast + Debug + Send + DynClone + GlobalBusinessRuleTaskType
 {
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
@@ -5380,13 +6749,25 @@ pub struct GlobalChoreographyTask {
     #[tia("GlobalChoreographyTaskType",rg*="initiating_participant_ref","GlobalChoreographyTaskTypeMut",s)]
     pub initiating_participant_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for GlobalChoreographyTask {
     fn element(&self) -> Element {
         Element::GlobalChoreographyTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalChoreographyTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5398,8 +6779,15 @@ impl DocumentElementContainer for GlobalChoreographyTask {
     }
 }
 // Traits
+castable_to! {GlobalChoreographyTask => ChoreographyType,ChoreographyTypeMut}
+castable_to! {GlobalChoreographyTask => CollaborationType,CollaborationTypeMut}
+#[cast_to]
 impl RootElementType for GlobalChoreographyTask {}
+#[cast_to]
 impl RootElementTypeMut for GlobalChoreographyTask {}
+castable_to! {GlobalChoreographyTask => PartialEq<GlobalChoreographyTask> }
+castable_to! {GlobalChoreographyTask => RootElementType,RootElementTypeMut}
+castable_to! {GlobalChoreographyTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalChoreographyTask`
@@ -5413,7 +6801,7 @@ dyn_clone::clone_trait_object!(GlobalChoreographyTaskType);
 impl_downcast!(GlobalChoreographyTaskType);
 /// Mutable access to `globalChoreographyTask`
 pub trait GlobalChoreographyTaskTypeMut:
-    ChoreographyTypeMut + Downcast + Debug + Send + DynClone
+    ChoreographyTypeMut + Downcast + Debug + Send + DynClone + GlobalChoreographyTaskType
 {
     /// Set value of attribute `initiatingParticipantRef`
     fn set_initiating_participant_ref(&mut self, value: Option<String>);
@@ -5480,13 +6868,25 @@ pub struct GlobalConversation {
     #[tia("CollaborationType",rg*="conversation_links","CollaborationTypeMut",s,rmg*="conversation_links_mut")]
     pub conversation_links: Vec<ConversationLink>,
 }
+#[cast_to]
 impl DocumentElement for GlobalConversation {
     fn element(&self) -> Element {
         Element::GlobalConversation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalConversation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5498,8 +6898,14 @@ impl DocumentElementContainer for GlobalConversation {
     }
 }
 // Traits
+castable_to! {GlobalConversation => CollaborationType,CollaborationTypeMut}
+#[cast_to]
 impl RootElementType for GlobalConversation {}
+#[cast_to]
 impl RootElementTypeMut for GlobalConversation {}
+castable_to! {GlobalConversation => PartialEq<GlobalConversation> }
+castable_to! {GlobalConversation => RootElementType,RootElementTypeMut}
+castable_to! {GlobalConversation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalConversation`
@@ -5508,7 +6914,7 @@ dyn_clone::clone_trait_object!(GlobalConversationType);
 impl_downcast!(GlobalConversationType);
 /// Mutable access to `globalConversation`
 pub trait GlobalConversationTypeMut:
-    CollaborationTypeMut + Downcast + Debug + Send + DynClone
+    CollaborationTypeMut + Downcast + Debug + Send + DynClone + GlobalConversationType
 {
 }
 dyn_clone::clone_trait_object!(GlobalConversationTypeMut);
@@ -5544,13 +6950,25 @@ pub struct GlobalManualTask {
     #[tia("GlobalTaskType",rg*="resource_roles","GlobalTaskTypeMut",s,rmg*="resource_roles_mut")]
     pub resource_roles: Vec<ResourceRole>,
 }
+#[cast_to]
 impl DocumentElement for GlobalManualTask {
     fn element(&self) -> Element {
         Element::GlobalManualTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalManualTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5562,8 +6980,15 @@ impl DocumentElementContainer for GlobalManualTask {
     }
 }
 // Traits
+castable_to! {GlobalManualTask => GlobalTaskType,GlobalTaskTypeMut}
+castable_to! {GlobalManualTask => CallableElementType,CallableElementTypeMut}
+#[cast_to]
 impl RootElementType for GlobalManualTask {}
+#[cast_to]
 impl RootElementTypeMut for GlobalManualTask {}
+castable_to! {GlobalManualTask => PartialEq<GlobalManualTask> }
+castable_to! {GlobalManualTask => RootElementType,RootElementTypeMut}
+castable_to! {GlobalManualTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalManualTask`
@@ -5571,7 +6996,10 @@ pub trait GlobalManualTaskType: GlobalTaskType + Downcast + Debug + Send + DynCl
 dyn_clone::clone_trait_object!(GlobalManualTaskType);
 impl_downcast!(GlobalManualTaskType);
 /// Mutable access to `globalManualTask`
-pub trait GlobalManualTaskTypeMut: GlobalTaskTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait GlobalManualTaskTypeMut:
+    GlobalTaskTypeMut + Downcast + Debug + Send + DynClone + GlobalManualTaskType
+{
+}
 dyn_clone::clone_trait_object!(GlobalManualTaskTypeMut);
 impl_downcast!(GlobalManualTaskTypeMut);
 /// Auto-generated from BPNM schema
@@ -5611,13 +7039,27 @@ pub struct GlobalScriptTask {
     #[tia("GlobalScriptTaskType",rg*="script","GlobalScriptTaskTypeMut",s,rmg*="script_mut")]
     pub script: Option<Script>,
 }
+#[cast_to]
 impl DocumentElement for GlobalScriptTask {
     fn element(&self) -> Element {
         Element::GlobalScriptTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalScriptTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.script.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5631,8 +7073,15 @@ impl DocumentElementContainer for GlobalScriptTask {
     }
 }
 // Traits
+castable_to! {GlobalScriptTask => GlobalTaskType,GlobalTaskTypeMut}
+castable_to! {GlobalScriptTask => CallableElementType,CallableElementTypeMut}
+#[cast_to]
 impl RootElementType for GlobalScriptTask {}
+#[cast_to]
 impl RootElementTypeMut for GlobalScriptTask {}
+castable_to! {GlobalScriptTask => PartialEq<GlobalScriptTask> }
+castable_to! {GlobalScriptTask => RootElementType,RootElementTypeMut}
+castable_to! {GlobalScriptTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalScriptTask`
@@ -5645,7 +7094,9 @@ pub trait GlobalScriptTaskType: GlobalTaskType + Downcast + Debug + Send + DynCl
 dyn_clone::clone_trait_object!(GlobalScriptTaskType);
 impl_downcast!(GlobalScriptTaskType);
 /// Mutable access to `globalScriptTask`
-pub trait GlobalScriptTaskTypeMut: GlobalTaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait GlobalScriptTaskTypeMut:
+    GlobalTaskTypeMut + Downcast + Debug + Send + DynClone + GlobalScriptTaskType
+{
     /// Set value of attribute `scriptLanguage`
     fn set_script_language(&mut self, value: Option<URI>);
     /// Get a mutable value of `script` child
@@ -5686,13 +7137,27 @@ pub struct GlobalTask {
     #[tia("GlobalTaskType",rg*="resource_roles","GlobalTaskTypeMut",s,rmg*="resource_roles_mut")]
     pub resource_roles: Vec<ResourceRole>,
 }
+#[cast_to]
 impl DocumentElement for GlobalTask {
     fn element(&self) -> Element {
         Element::GlobalTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.resource_roles.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5706,8 +7171,14 @@ impl DocumentElementContainer for GlobalTask {
     }
 }
 // Traits
+castable_to! {GlobalTask => CallableElementType,CallableElementTypeMut}
+#[cast_to]
 impl RootElementType for GlobalTask {}
+#[cast_to]
 impl RootElementTypeMut for GlobalTask {}
+castable_to! {GlobalTask => PartialEq<GlobalTask> }
+castable_to! {GlobalTask => RootElementType,RootElementTypeMut}
+castable_to! {GlobalTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalTask`
@@ -5718,7 +7189,9 @@ pub trait GlobalTaskType: CallableElementType + Downcast + Debug + Send + DynClo
 dyn_clone::clone_trait_object!(GlobalTaskType);
 impl_downcast!(GlobalTaskType);
 /// Mutable access to `globalTask`
-pub trait GlobalTaskTypeMut: CallableElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait GlobalTaskTypeMut:
+    CallableElementTypeMut + Downcast + Debug + Send + DynClone + GlobalTaskType
+{
     /// Get a mutable value of `resourceRole` child
     fn resource_roles_mut(&mut self) -> &mut Vec<ResourceRole>;
     /// Set value of `resourceRole` child
@@ -5763,13 +7236,27 @@ pub struct GlobalUserTask {
     #[tia("GlobalUserTaskType",rg*="renderings","GlobalUserTaskTypeMut",s,rmg*="renderings_mut")]
     pub renderings: Vec<Rendering>,
 }
+#[cast_to]
 impl DocumentElement for GlobalUserTask {
     fn element(&self) -> Element {
         Element::GlobalUserTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for GlobalUserTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.renderings.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5783,8 +7270,15 @@ impl DocumentElementContainer for GlobalUserTask {
     }
 }
 // Traits
+castable_to! {GlobalUserTask => GlobalTaskType,GlobalTaskTypeMut}
+castable_to! {GlobalUserTask => CallableElementType,CallableElementTypeMut}
+#[cast_to]
 impl RootElementType for GlobalUserTask {}
+#[cast_to]
 impl RootElementTypeMut for GlobalUserTask {}
+castable_to! {GlobalUserTask => PartialEq<GlobalUserTask> }
+castable_to! {GlobalUserTask => RootElementType,RootElementTypeMut}
+castable_to! {GlobalUserTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `globalUserTask`
@@ -5797,7 +7291,9 @@ pub trait GlobalUserTaskType: GlobalTaskType + Downcast + Debug + Send + DynClon
 dyn_clone::clone_trait_object!(GlobalUserTaskType);
 impl_downcast!(GlobalUserTaskType);
 /// Mutable access to `globalUserTask`
-pub trait GlobalUserTaskTypeMut: GlobalTaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait GlobalUserTaskTypeMut:
+    GlobalTaskTypeMut + Downcast + Debug + Send + DynClone + GlobalUserTaskType
+{
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
     /// Get a mutable value of `rendering` child
@@ -5826,13 +7322,25 @@ pub struct Group {
     #[tia("GroupType",rg*="category_value_ref","GroupTypeMut",s)]
     pub category_value_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Group {
     fn element(&self) -> Element {
         Element::Group
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Group {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5844,8 +7352,13 @@ impl DocumentElementContainer for Group {
     }
 }
 // Traits
+#[cast_to]
 impl ArtifactType for Group {}
+#[cast_to]
 impl ArtifactTypeMut for Group {}
+castable_to! {Group => PartialEq<Group> }
+castable_to! {Group => ArtifactType,ArtifactTypeMut}
+castable_to! {Group => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `group`
@@ -5856,7 +7369,7 @@ pub trait GroupType: ArtifactType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(GroupType);
 impl_downcast!(GroupType);
 /// Mutable access to `group`
-pub trait GroupTypeMut: ArtifactTypeMut + Downcast + Debug + Send + DynClone {
+pub trait GroupTypeMut: ArtifactTypeMut + Downcast + Debug + Send + DynClone + GroupType {
     /// Set value of attribute `categoryValueRef`
     fn set_category_value_ref(&mut self, value: Option<String>);
 }
@@ -5890,13 +7403,25 @@ pub struct HumanPerformer {
     #[tia("ResourceRoleType",rg*="resource_assignment_expression","ResourceRoleTypeMut",s,rmg*="resource_assignment_expression_mut")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
+#[cast_to]
 impl DocumentElement for HumanPerformer {
     fn element(&self) -> Element {
         Element::HumanPerformer
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for HumanPerformer {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -5908,8 +7433,14 @@ impl DocumentElementContainer for HumanPerformer {
     }
 }
 // Traits
+#[cast_to]
 impl PerformerType for HumanPerformer {}
+#[cast_to]
 impl PerformerTypeMut for HumanPerformer {}
+castable_to! {HumanPerformer => PartialEq<HumanPerformer> }
+castable_to! {HumanPerformer => PerformerType,PerformerTypeMut}
+castable_to! {HumanPerformer => ResourceRoleType,ResourceRoleTypeMut}
+castable_to! {HumanPerformer => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `humanPerformer`
@@ -5917,7 +7448,10 @@ pub trait HumanPerformerType: PerformerType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(HumanPerformerType);
 impl_downcast!(HumanPerformerType);
 /// Mutable access to `humanPerformer`
-pub trait HumanPerformerTypeMut: PerformerTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait HumanPerformerTypeMut:
+    PerformerTypeMut + Downcast + Debug + Send + DynClone + HumanPerformerType
+{
+}
 dyn_clone::clone_trait_object!(HumanPerformerTypeMut);
 impl_downcast!(HumanPerformerTypeMut);
 /// Auto-generated from BPNM schema
@@ -5983,13 +7517,25 @@ pub struct ImplicitThrowEvent {
     #[tia("ThrowEventType",rg*="event_definition_refs","ThrowEventTypeMut",s,rmg*="event_definition_refs_mut")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
+#[cast_to]
 impl DocumentElement for ImplicitThrowEvent {
     fn element(&self) -> Element {
         Element::ImplicitThrowEvent
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ImplicitThrowEvent {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6001,7 +7547,11 @@ impl DocumentElementContainer for ImplicitThrowEvent {
     }
 }
 // Traits
-
+castable_to! {ImplicitThrowEvent => ThrowEventType,ThrowEventTypeMut}
+castable_to! {ImplicitThrowEvent => EventType,EventTypeMut}
+castable_to! {ImplicitThrowEvent => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ImplicitThrowEvent => FlowElementType,FlowElementTypeMut}
+castable_to! {ImplicitThrowEvent => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `implicitThrowEvent`
@@ -6010,7 +7560,7 @@ dyn_clone::clone_trait_object!(ImplicitThrowEventType);
 impl_downcast!(ImplicitThrowEventType);
 /// Mutable access to `implicitThrowEvent`
 pub trait ImplicitThrowEventTypeMut:
-    ThrowEventTypeMut + Downcast + Debug + Send + DynClone
+    ThrowEventTypeMut + Downcast + Debug + Send + DynClone + ImplicitThrowEventType
 {
 }
 dyn_clone::clone_trait_object!(ImplicitThrowEventTypeMut);
@@ -6055,13 +7605,25 @@ pub struct InclusiveGateway {
     #[tia("InclusiveGatewayType",rg*="default","InclusiveGatewayTypeMut",s)]
     pub default: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for InclusiveGateway {
     fn element(&self) -> Element {
         Element::InclusiveGateway
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InclusiveGateway {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6073,7 +7635,10 @@ impl DocumentElementContainer for InclusiveGateway {
     }
 }
 // Traits
-
+castable_to! {InclusiveGateway => GatewayType,GatewayTypeMut}
+castable_to! {InclusiveGateway => FlowNodeType,FlowNodeTypeMut}
+castable_to! {InclusiveGateway => FlowElementType,FlowElementTypeMut}
+castable_to! {InclusiveGateway => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `inclusiveGateway`
@@ -6084,7 +7649,9 @@ pub trait InclusiveGatewayType: GatewayType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(InclusiveGatewayType);
 impl_downcast!(InclusiveGatewayType);
 /// Mutable access to `inclusiveGateway`
-pub trait InclusiveGatewayTypeMut: GatewayTypeMut + Downcast + Debug + Send + DynClone {
+pub trait InclusiveGatewayTypeMut:
+    GatewayTypeMut + Downcast + Debug + Send + DynClone + InclusiveGatewayType
+{
     /// Set value of attribute `default`
     fn set_default(&mut self, value: Option<String>);
 }
@@ -6121,13 +7688,36 @@ pub struct InputSet {
     #[tia("InputSetType",rg*="output_set_refss","InputSetTypeMut",s,rmg*="output_set_refss_mut")]
     pub output_set_refss: Vec<OutputSetRefs>,
 }
+#[cast_to]
 impl DocumentElement for InputSet {
     fn element(&self) -> Element {
         Element::InputSet
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InputSet {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_input_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.optional_input_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.while_executing_input_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.output_set_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6150,7 +7740,7 @@ impl DocumentElementContainer for InputSet {
     }
 }
 // Traits
-
+castable_to! {InputSet => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `inputSet`
@@ -6169,7 +7759,9 @@ pub trait InputSetType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(InputSetType);
 impl_downcast!(InputSetType);
 /// Mutable access to `inputSet`
-pub trait InputSetTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait InputSetTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + InputSetType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `dataInputRefs` child
@@ -6216,13 +7808,27 @@ pub struct Interface {
     #[tia("InterfaceType",rg*="operations","InterfaceTypeMut",s,rmg*="operations_mut")]
     pub operations: Vec<Operation>,
 }
+#[cast_to]
 impl DocumentElement for Interface {
     fn element(&self) -> Element {
         Element::Interface
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Interface {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.operations.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6236,8 +7842,13 @@ impl DocumentElementContainer for Interface {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Interface {}
+#[cast_to]
 impl RootElementTypeMut for Interface {}
+castable_to! {Interface => PartialEq<Interface> }
+castable_to! {Interface => RootElementType,RootElementTypeMut}
+castable_to! {Interface => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `interface`
@@ -6252,7 +7863,9 @@ pub trait InterfaceType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(InterfaceType);
 impl_downcast!(InterfaceType);
 /// Mutable access to `interface`
-pub trait InterfaceTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait InterfaceTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + InterfaceType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: String);
     /// Set value of attribute `implementationRef`
@@ -6330,13 +7943,25 @@ pub struct IntermediateCatchEvent {
     #[tia("CatchEventType",rg*="event_definition_refs","CatchEventTypeMut",s,rmg*="event_definition_refs_mut")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
+#[cast_to]
 impl DocumentElement for IntermediateCatchEvent {
     fn element(&self) -> Element {
         Element::IntermediateCatchEvent
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for IntermediateCatchEvent {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6348,7 +7973,11 @@ impl DocumentElementContainer for IntermediateCatchEvent {
     }
 }
 // Traits
-
+castable_to! {IntermediateCatchEvent => CatchEventType,CatchEventTypeMut}
+castable_to! {IntermediateCatchEvent => EventType,EventTypeMut}
+castable_to! {IntermediateCatchEvent => FlowNodeType,FlowNodeTypeMut}
+castable_to! {IntermediateCatchEvent => FlowElementType,FlowElementTypeMut}
+castable_to! {IntermediateCatchEvent => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `intermediateCatchEvent`
@@ -6357,7 +7986,7 @@ dyn_clone::clone_trait_object!(IntermediateCatchEventType);
 impl_downcast!(IntermediateCatchEventType);
 /// Mutable access to `intermediateCatchEvent`
 pub trait IntermediateCatchEventTypeMut:
-    CatchEventTypeMut + Downcast + Debug + Send + DynClone
+    CatchEventTypeMut + Downcast + Debug + Send + DynClone + IntermediateCatchEventType
 {
 }
 dyn_clone::clone_trait_object!(IntermediateCatchEventTypeMut);
@@ -6425,13 +8054,25 @@ pub struct IntermediateThrowEvent {
     #[tia("ThrowEventType",rg*="event_definition_refs","ThrowEventTypeMut",s,rmg*="event_definition_refs_mut")]
     pub event_definition_refs: Vec<EventDefinitionRef>,
 }
+#[cast_to]
 impl DocumentElement for IntermediateThrowEvent {
     fn element(&self) -> Element {
         Element::IntermediateThrowEvent
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for IntermediateThrowEvent {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6443,7 +8084,11 @@ impl DocumentElementContainer for IntermediateThrowEvent {
     }
 }
 // Traits
-
+castable_to! {IntermediateThrowEvent => ThrowEventType,ThrowEventTypeMut}
+castable_to! {IntermediateThrowEvent => EventType,EventTypeMut}
+castable_to! {IntermediateThrowEvent => FlowNodeType,FlowNodeTypeMut}
+castable_to! {IntermediateThrowEvent => FlowElementType,FlowElementTypeMut}
+castable_to! {IntermediateThrowEvent => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `intermediateThrowEvent`
@@ -6452,7 +8097,7 @@ dyn_clone::clone_trait_object!(IntermediateThrowEventType);
 impl_downcast!(IntermediateThrowEventType);
 /// Mutable access to `intermediateThrowEvent`
 pub trait IntermediateThrowEventTypeMut:
-    ThrowEventTypeMut + Downcast + Debug + Send + DynClone
+    ThrowEventTypeMut + Downcast + Debug + Send + DynClone + IntermediateThrowEventType
 {
 }
 dyn_clone::clone_trait_object!(IntermediateThrowEventTypeMut);
@@ -6482,13 +8127,25 @@ pub struct InputOutputBinding {
     #[tia("InputOutputBindingType",rg*="output_data_ref","InputOutputBindingTypeMut",s)]
     pub output_data_ref: String,
 }
+#[cast_to]
 impl DocumentElement for InputOutputBinding {
     fn element(&self) -> Element {
         Element::IoBinding
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InputOutputBinding {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6500,7 +8157,7 @@ impl DocumentElementContainer for InputOutputBinding {
     }
 }
 // Traits
-
+castable_to! {InputOutputBinding => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `ioBinding`
@@ -6516,7 +8173,7 @@ dyn_clone::clone_trait_object!(InputOutputBindingType);
 impl_downcast!(InputOutputBindingType);
 /// Mutable access to `ioBinding`
 pub trait InputOutputBindingTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + InputOutputBindingType
 {
     /// Set value of attribute `operationRef`
     fn set_operation_ref(&mut self, value: String);
@@ -6555,13 +8212,36 @@ pub struct InputOutputSpecification {
     #[tia("InputOutputSpecificationType",rg*="output_sets","InputOutputSpecificationTypeMut",s,rmg*="output_sets_mut")]
     pub output_sets: Vec<OutputSet>,
 }
+#[cast_to]
 impl DocumentElement for InputOutputSpecification {
     fn element(&self) -> Element {
         Element::IoSpecification
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InputOutputSpecification {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_inputs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.data_outputs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.input_sets.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.output_sets.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6584,7 +8264,7 @@ impl DocumentElementContainer for InputOutputSpecification {
     }
 }
 // Traits
-
+castable_to! {InputOutputSpecification => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `ioSpecification`
@@ -6604,7 +8284,7 @@ dyn_clone::clone_trait_object!(InputOutputSpecificationType);
 impl_downcast!(InputOutputSpecificationType);
 /// Mutable access to `ioSpecification`
 pub trait InputOutputSpecificationTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + InputOutputSpecificationType
 {
     /// Get a mutable value of `dataInput` child
     fn data_inputs_mut(&mut self) -> &mut Vec<DataInput>;
@@ -6650,13 +8330,25 @@ pub struct ItemDefinition {
     #[tia("ItemDefinitionType",rg*="item_kind","ItemDefinitionTypeMut",s)]
     pub item_kind: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ItemDefinition {
     fn element(&self) -> Element {
         Element::ItemDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ItemDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6668,8 +8360,13 @@ impl DocumentElementContainer for ItemDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for ItemDefinition {}
+#[cast_to]
 impl RootElementTypeMut for ItemDefinition {}
+castable_to! {ItemDefinition => PartialEq<ItemDefinition> }
+castable_to! {ItemDefinition => RootElementType,RootElementTypeMut}
+castable_to! {ItemDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `itemDefinition`
@@ -6684,7 +8381,9 @@ pub trait ItemDefinitionType: RootElementType + Downcast + Debug + Send + DynClo
 dyn_clone::clone_trait_object!(ItemDefinitionType);
 impl_downcast!(ItemDefinitionType);
 /// Mutable access to `itemDefinition`
-pub trait ItemDefinitionTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ItemDefinitionTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + ItemDefinitionType
+{
     /// Set value of attribute `structureRef`
     fn set_structure_ref(&mut self, value: Option<String>);
     /// Set value of attribute `isCollection`
@@ -6725,13 +8424,33 @@ pub struct Lane {
     #[tia("LaneType",rg*="child_lane_set","LaneTypeMut",s,rmg*="child_lane_set_mut")]
     pub child_lane_set: Option<LaneSet>,
 }
+#[cast_to]
 impl DocumentElement for Lane {
     fn element(&self) -> Element {
         Element::Lane
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Lane {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.partition_element.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.flow_node_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.child_lane_set.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6751,7 +8470,7 @@ impl DocumentElementContainer for Lane {
     }
 }
 // Traits
-
+castable_to! {Lane => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `lane`
@@ -6770,7 +8489,7 @@ pub trait LaneType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(LaneType);
 impl_downcast!(LaneType);
 /// Mutable access to `lane`
-pub trait LaneTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait LaneTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone + LaneType {
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `partitionElementRef`
@@ -6812,13 +8531,27 @@ pub struct LaneSet {
     #[tia("LaneSetType",rg*="lanes","LaneSetTypeMut",s,rmg*="lanes_mut")]
     pub lanes: Vec<Lane>,
 }
+#[cast_to]
 impl DocumentElement for LaneSet {
     fn element(&self) -> Element {
         Element::LaneSet
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for LaneSet {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.lanes.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6832,7 +8565,7 @@ impl DocumentElementContainer for LaneSet {
     }
 }
 // Traits
-
+castable_to! {LaneSet => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `laneSet`
@@ -6845,7 +8578,9 @@ pub trait LaneSetType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(LaneSetType);
 impl_downcast!(LaneSetType);
 /// Mutable access to `laneSet`
-pub trait LaneSetTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait LaneSetTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + LaneSetType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `lane` child
@@ -6880,13 +8615,30 @@ pub struct LinkEventDefinition {
     #[tia("LinkEventDefinitionType",rg*="target","LinkEventDefinitionTypeMut",s,rmg*="target_mut")]
     pub target: Option<Target>,
 }
+#[cast_to]
 impl DocumentElement for LinkEventDefinition {
     fn element(&self) -> Element {
         Element::LinkEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for LinkEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.sources.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.target.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -6903,10 +8655,19 @@ impl DocumentElementContainer for LinkEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for LinkEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for LinkEventDefinition {}
+castable_to! {LinkEventDefinition => PartialEq<LinkEventDefinition> }
+castable_to! {LinkEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for LinkEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for LinkEventDefinition {}
+castable_to! {LinkEventDefinition => PartialEq<LinkEventDefinition> }
+castable_to! {LinkEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {LinkEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `linkEventDefinition`
@@ -6924,7 +8685,7 @@ dyn_clone::clone_trait_object!(LinkEventDefinitionType);
 impl_downcast!(LinkEventDefinitionType);
 /// Mutable access to `linkEventDefinition`
 pub trait LinkEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + LinkEventDefinitionType
 {
     /// Set value of attribute `name`
     fn set_name(&mut self, value: String);
@@ -6950,6 +8711,16 @@ pub enum LoopCharacteristics {
     #[xml(tag = "bpmn:standardLoopCharacteristics")]
     StandardLoopCharacteristics(StandardLoopCharacteristics),
 }
+impl From<MultiInstanceLoopCharacteristics> for LoopCharacteristics {
+    fn from(element: MultiInstanceLoopCharacteristics) -> Self {
+        Self::MultiInstanceLoopCharacteristics(element)
+    }
+}
+impl From<StandardLoopCharacteristics> for LoopCharacteristics {
+    fn from(element: StandardLoopCharacteristics) -> Self {
+        Self::StandardLoopCharacteristics(element)
+    }
+}
 impl LoopCharacteristics {
     pub fn into_inner(self) -> Box<dyn DocumentElement> {
         match self {
@@ -6962,7 +8733,18 @@ impl LoopCharacteristics {
         }
     }
 }
+#[cast_to]
 impl DocumentElementContainer for LoopCharacteristics {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            LoopCharacteristics::MultiInstanceLoopCharacteristics(e) => e.find_by_id_mut(id),
+            LoopCharacteristics::StandardLoopCharacteristics(e) => e.find_by_id_mut(id),
+
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -6973,6 +8755,7 @@ impl DocumentElementContainer for LoopCharacteristics {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for LoopCharacteristics {
     fn element(&self) -> Element {
         Element::LoopCharacteristics
@@ -6984,7 +8767,7 @@ dyn_clone::clone_trait_object!(LoopCharacteristicsType);
 impl_downcast!(LoopCharacteristicsType);
 /// Mutable access to `loopCharacteristics`
 pub trait LoopCharacteristicsTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + LoopCharacteristicsType
 {
 }
 dyn_clone::clone_trait_object!(LoopCharacteristicsTypeMut);
@@ -7056,13 +8839,25 @@ pub struct ManualTask {
     #[tia("ActivityType",rg*="loop_characteristics","ActivityTypeMut",s,rmg*="loop_characteristics_mut")]
     pub loop_characteristics: Option<LoopCharacteristics>,
 }
+#[cast_to]
 impl DocumentElement for ManualTask {
     fn element(&self) -> Element {
         Element::ManualTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ManualTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7074,8 +8869,16 @@ impl DocumentElementContainer for ManualTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for ManualTask {}
+#[cast_to]
 impl TaskTypeMut for ManualTask {}
+castable_to! {ManualTask => PartialEq<ManualTask> }
+castable_to! {ManualTask => TaskType,TaskTypeMut}
+castable_to! {ManualTask => ActivityType,ActivityTypeMut}
+castable_to! {ManualTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ManualTask => FlowElementType,FlowElementTypeMut}
+castable_to! {ManualTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `manualTask`
@@ -7083,7 +8886,10 @@ pub trait ManualTaskType: TaskType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(ManualTaskType);
 impl_downcast!(ManualTaskType);
 /// Mutable access to `manualTask`
-pub trait ManualTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait ManualTaskTypeMut:
+    TaskTypeMut + Downcast + Debug + Send + DynClone + ManualTaskType
+{
+}
 dyn_clone::clone_trait_object!(ManualTaskTypeMut);
 impl_downcast!(ManualTaskTypeMut);
 /// Auto-generated from BPNM schema
@@ -7108,13 +8914,25 @@ pub struct Message {
     #[tia("MessageType",rg*="item_ref","MessageTypeMut",s)]
     pub item_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Message {
     fn element(&self) -> Element {
         Element::Message
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Message {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7126,8 +8944,13 @@ impl DocumentElementContainer for Message {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Message {}
+#[cast_to]
 impl RootElementTypeMut for Message {}
+castable_to! {Message => PartialEq<Message> }
+castable_to! {Message => RootElementType,RootElementTypeMut}
+castable_to! {Message => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `message`
@@ -7140,7 +8963,9 @@ pub trait MessageType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(MessageType);
 impl_downcast!(MessageType);
 /// Mutable access to `message`
-pub trait MessageTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait MessageTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + MessageType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `itemRef`
@@ -7170,13 +8995,27 @@ pub struct MessageEventDefinition {
     #[tia("MessageEventDefinitionType",rg*="operation_ref","MessageEventDefinitionTypeMut",s,rmg*="operation_ref_mut")]
     pub operation_ref: Option<OperationRef>,
 }
+#[cast_to]
 impl DocumentElement for MessageEventDefinition {
     fn element(&self) -> Element {
         Element::MessageEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for MessageEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.operation_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7190,10 +9029,19 @@ impl DocumentElementContainer for MessageEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for MessageEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for MessageEventDefinition {}
+castable_to! {MessageEventDefinition => PartialEq<MessageEventDefinition> }
+castable_to! {MessageEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for MessageEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for MessageEventDefinition {}
+castable_to! {MessageEventDefinition => PartialEq<MessageEventDefinition> }
+castable_to! {MessageEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {MessageEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `messageEventDefinition`
@@ -7209,7 +9057,7 @@ dyn_clone::clone_trait_object!(MessageEventDefinitionType);
 impl_downcast!(MessageEventDefinitionType);
 /// Mutable access to `messageEventDefinition`
 pub trait MessageEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + MessageEventDefinitionType
 {
     /// Set value of attribute `messageRef`
     fn set_message_ref(&mut self, value: Option<String>);
@@ -7248,13 +9096,25 @@ pub struct MessageFlow {
     #[tia("MessageFlowType",rg*="message_ref","MessageFlowTypeMut",s)]
     pub message_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for MessageFlow {
     fn element(&self) -> Element {
         Element::MessageFlow
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for MessageFlow {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7266,7 +9126,7 @@ impl DocumentElementContainer for MessageFlow {
     }
 }
 // Traits
-
+castable_to! {MessageFlow => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `messageFlow`
@@ -7283,7 +9143,9 @@ pub trait MessageFlowType: BaseElementType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(MessageFlowType);
 impl_downcast!(MessageFlowType);
 /// Mutable access to `messageFlow`
-pub trait MessageFlowTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait MessageFlowTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + MessageFlowType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `sourceRef`
@@ -7317,13 +9179,25 @@ pub struct MessageFlowAssociation {
     #[tia("MessageFlowAssociationType",rg*="outer_message_flow_ref","MessageFlowAssociationTypeMut",s)]
     pub outer_message_flow_ref: String,
 }
+#[cast_to]
 impl DocumentElement for MessageFlowAssociation {
     fn element(&self) -> Element {
         Element::MessageFlowAssociation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for MessageFlowAssociation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7335,7 +9209,7 @@ impl DocumentElementContainer for MessageFlowAssociation {
     }
 }
 // Traits
-
+castable_to! {MessageFlowAssociation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `messageFlowAssociation`
@@ -7349,7 +9223,7 @@ dyn_clone::clone_trait_object!(MessageFlowAssociationType);
 impl_downcast!(MessageFlowAssociationType);
 /// Mutable access to `messageFlowAssociation`
 pub trait MessageFlowAssociationTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + MessageFlowAssociationType
 {
     /// Set value of attribute `innerMessageFlowRef`
     fn set_inner_message_flow_ref(&mut self, value: String);
@@ -7374,13 +9248,25 @@ pub struct Monitoring {
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for Monitoring {
     fn element(&self) -> Element {
         Element::Monitoring
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Monitoring {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7392,7 +9278,7 @@ impl DocumentElementContainer for Monitoring {
     }
 }
 // Traits
-
+castable_to! {Monitoring => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `monitoring`
@@ -7400,7 +9286,10 @@ pub trait MonitoringType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(MonitoringType);
 impl_downcast!(MonitoringType);
 /// Mutable access to `monitoring`
-pub trait MonitoringTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait MonitoringTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + MonitoringType
+{
+}
 dyn_clone::clone_trait_object!(MonitoringTypeMut);
 impl_downcast!(MonitoringTypeMut);
 /// Auto-generated from BPNM schema
@@ -7452,13 +9341,45 @@ pub struct MultiInstanceLoopCharacteristics {
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="completion_condition","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="completion_condition_mut")]
     pub completion_condition: Option<Expression>,
 }
+#[cast_to]
 impl DocumentElement for MultiInstanceLoopCharacteristics {
     fn element(&self) -> Element {
         Element::MultiInstanceLoopCharacteristics
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.loop_cardinality.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.loop_data_input_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.loop_data_output_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.input_data_item.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.output_data_item.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.complex_behavior_definitions.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.completion_condition.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7490,8 +9411,13 @@ impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
     }
 }
 // Traits
+#[cast_to]
 impl LoopCharacteristicsType for MultiInstanceLoopCharacteristics {}
+#[cast_to]
 impl LoopCharacteristicsTypeMut for MultiInstanceLoopCharacteristics {}
+castable_to! {MultiInstanceLoopCharacteristics => PartialEq<MultiInstanceLoopCharacteristics> }
+castable_to! {MultiInstanceLoopCharacteristics => LoopCharacteristicsType,LoopCharacteristicsTypeMut}
+castable_to! {MultiInstanceLoopCharacteristics => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `multiInstanceLoopCharacteristics`
@@ -7525,7 +9451,12 @@ dyn_clone::clone_trait_object!(MultiInstanceLoopCharacteristicsType);
 impl_downcast!(MultiInstanceLoopCharacteristicsType);
 /// Mutable access to `multiInstanceLoopCharacteristics`
 pub trait MultiInstanceLoopCharacteristicsTypeMut:
-    LoopCharacteristicsTypeMut + Downcast + Debug + Send + DynClone
+    LoopCharacteristicsTypeMut
+    + Downcast
+    + Debug
+    + Send
+    + DynClone
+    + MultiInstanceLoopCharacteristicsType
 {
     /// Set value of attribute `isSequential`
     fn set_is_sequential(&mut self, value: Option<bool>);
@@ -7597,13 +9528,33 @@ pub struct Operation {
     #[tia("OperationType",rg*="error_refs","OperationTypeMut",s,rmg*="error_refs_mut")]
     pub error_refs: Vec<ErrorRef>,
 }
+#[cast_to]
 impl DocumentElement for Operation {
     fn element(&self) -> Element {
         Element::Operation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Operation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.in_message_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.out_message_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.error_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7623,7 +9574,7 @@ impl DocumentElementContainer for Operation {
     }
 }
 // Traits
-
+castable_to! {Operation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `operation`
@@ -7642,7 +9593,9 @@ pub trait OperationType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(OperationType);
 impl_downcast!(OperationType);
 /// Mutable access to `operation`
-pub trait OperationTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait OperationTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + OperationType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: String);
     /// Set value of attribute `implementationRef`
@@ -7693,13 +9646,36 @@ pub struct OutputSet {
     #[tia("OutputSetType",rg*="input_set_refss","OutputSetTypeMut",s,rmg*="input_set_refss_mut")]
     pub input_set_refss: Vec<InputSetRefs>,
 }
+#[cast_to]
 impl DocumentElement for OutputSet {
     fn element(&self) -> Element {
         Element::OutputSet
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OutputSet {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_output_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.optional_output_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.while_executing_output_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.input_set_refss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7722,7 +9698,7 @@ impl DocumentElementContainer for OutputSet {
     }
 }
 // Traits
-
+castable_to! {OutputSet => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `outputSet`
@@ -7741,7 +9717,9 @@ pub trait OutputSetType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(OutputSetType);
 impl_downcast!(OutputSetType);
 /// Mutable access to `outputSet`
-pub trait OutputSetTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait OutputSetTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + OutputSetType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `dataOutputRefs` child
@@ -7800,13 +9778,25 @@ pub struct ParallelGateway {
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ParallelGateway {
     fn element(&self) -> Element {
         Element::ParallelGateway
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ParallelGateway {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7818,7 +9808,10 @@ impl DocumentElementContainer for ParallelGateway {
     }
 }
 // Traits
-
+castable_to! {ParallelGateway => GatewayType,GatewayTypeMut}
+castable_to! {ParallelGateway => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ParallelGateway => FlowElementType,FlowElementTypeMut}
+castable_to! {ParallelGateway => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `parallelGateway`
@@ -7826,7 +9819,10 @@ pub trait ParallelGatewayType: GatewayType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(ParallelGatewayType);
 impl_downcast!(ParallelGatewayType);
 /// Mutable access to `parallelGateway`
-pub trait ParallelGatewayTypeMut: GatewayTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait ParallelGatewayTypeMut:
+    GatewayTypeMut + Downcast + Debug + Send + DynClone + ParallelGatewayType
+{
+}
 dyn_clone::clone_trait_object!(ParallelGatewayTypeMut);
 impl_downcast!(ParallelGatewayTypeMut);
 /// Auto-generated from BPNM schema
@@ -7860,13 +9856,33 @@ pub struct Participant {
     #[tia("ParticipantType",rg*="participant_multiplicity","ParticipantTypeMut",s,rmg*="participant_multiplicity_mut")]
     pub participant_multiplicity: Option<ParticipantMultiplicity>,
 }
+#[cast_to]
 impl DocumentElement for Participant {
     fn element(&self) -> Element {
         Element::Participant
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Participant {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.interface_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.end_point_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.participant_multiplicity.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7886,7 +9902,7 @@ impl DocumentElementContainer for Participant {
     }
 }
 // Traits
-
+castable_to! {Participant => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `participant`
@@ -7905,7 +9921,9 @@ pub trait ParticipantType: BaseElementType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(ParticipantType);
 impl_downcast!(ParticipantType);
 /// Mutable access to `participant`
-pub trait ParticipantTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ParticipantTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ParticipantType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `processRef`
@@ -7947,13 +9965,30 @@ pub struct ParticipantAssociation {
     #[tia("ParticipantAssociationType",rg*="outer_participant_ref","ParticipantAssociationTypeMut",s,rmg*="outer_participant_ref_mut")]
     pub outer_participant_ref: OuterParticipantRef,
 }
+#[cast_to]
 impl DocumentElement for ParticipantAssociation {
     fn element(&self) -> Element {
         Element::ParticipantAssociation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ParticipantAssociation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.inner_participant_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.outer_participant_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -7970,7 +10005,7 @@ impl DocumentElementContainer for ParticipantAssociation {
     }
 }
 // Traits
-
+castable_to! {ParticipantAssociation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `participantAssociation`
@@ -7984,7 +10019,7 @@ dyn_clone::clone_trait_object!(ParticipantAssociationType);
 impl_downcast!(ParticipantAssociationType);
 /// Mutable access to `participantAssociation`
 pub trait ParticipantAssociationTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ParticipantAssociationType
 {
     /// Get a mutable value of `innerParticipantRef` child
     fn inner_participant_ref_mut(&mut self) -> &mut InnerParticipantRef;
@@ -8019,13 +10054,25 @@ pub struct ParticipantMultiplicity {
     #[tia("ParticipantMultiplicityType",rg*="maximum","ParticipantMultiplicityTypeMut",s)]
     pub maximum: Option<Int>,
 }
+#[cast_to]
 impl DocumentElement for ParticipantMultiplicity {
     fn element(&self) -> Element {
         Element::ParticipantMultiplicity
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ParticipantMultiplicity {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8037,7 +10084,7 @@ impl DocumentElementContainer for ParticipantMultiplicity {
     }
 }
 // Traits
-
+castable_to! {ParticipantMultiplicity => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `participantMultiplicity`
@@ -8053,7 +10100,7 @@ dyn_clone::clone_trait_object!(ParticipantMultiplicityType);
 impl_downcast!(ParticipantMultiplicityType);
 /// Mutable access to `participantMultiplicity`
 pub trait ParticipantMultiplicityTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ParticipantMultiplicityType
 {
     /// Set value of attribute `minimum`
     fn set_minimum(&mut self, value: Option<Int>);
@@ -8084,13 +10131,27 @@ pub struct PartnerEntity {
     #[tia("PartnerEntityType",rg*="participant_refs","PartnerEntityTypeMut",s,rmg*="participant_refs_mut")]
     pub participant_refs: Vec<ParticipantRef>,
 }
+#[cast_to]
 impl DocumentElement for PartnerEntity {
     fn element(&self) -> Element {
         Element::PartnerEntity
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for PartnerEntity {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.participant_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8104,8 +10165,13 @@ impl DocumentElementContainer for PartnerEntity {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for PartnerEntity {}
+#[cast_to]
 impl RootElementTypeMut for PartnerEntity {}
+castable_to! {PartnerEntity => PartialEq<PartnerEntity> }
+castable_to! {PartnerEntity => RootElementType,RootElementTypeMut}
+castable_to! {PartnerEntity => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `partnerEntity`
@@ -8118,7 +10184,9 @@ pub trait PartnerEntityType: RootElementType + Downcast + Debug + Send + DynClon
 dyn_clone::clone_trait_object!(PartnerEntityType);
 impl_downcast!(PartnerEntityType);
 /// Mutable access to `partnerEntity`
-pub trait PartnerEntityTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait PartnerEntityTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + PartnerEntityType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
@@ -8150,13 +10218,27 @@ pub struct PartnerRole {
     #[tia("PartnerRoleType",rg*="participant_refs","PartnerRoleTypeMut",s,rmg*="participant_refs_mut")]
     pub participant_refs: Vec<ParticipantRef>,
 }
+#[cast_to]
 impl DocumentElement for PartnerRole {
     fn element(&self) -> Element {
         Element::PartnerRole
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for PartnerRole {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.participant_refs.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8170,8 +10252,13 @@ impl DocumentElementContainer for PartnerRole {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for PartnerRole {}
+#[cast_to]
 impl RootElementTypeMut for PartnerRole {}
+castable_to! {PartnerRole => PartialEq<PartnerRole> }
+castable_to! {PartnerRole => RootElementType,RootElementTypeMut}
+castable_to! {PartnerRole => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `partnerRole`
@@ -8184,7 +10271,9 @@ pub trait PartnerRoleType: RootElementType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(PartnerRoleType);
 impl_downcast!(PartnerRoleType);
 /// Mutable access to `partnerRole`
-pub trait PartnerRoleTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait PartnerRoleTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + PartnerRoleType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
@@ -8222,13 +10311,25 @@ pub struct Performer {
     #[tia("ResourceRoleType",rg*="resource_assignment_expression","ResourceRoleTypeMut",s,rmg*="resource_assignment_expression_mut")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
+#[cast_to]
 impl DocumentElement for Performer {
     fn element(&self) -> Element {
         Element::Performer
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Performer {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8240,7 +10341,8 @@ impl DocumentElementContainer for Performer {
     }
 }
 // Traits
-
+castable_to! {Performer => ResourceRoleType,ResourceRoleTypeMut}
+castable_to! {Performer => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `performer`
@@ -8248,7 +10350,10 @@ pub trait PerformerType: ResourceRoleType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(PerformerType);
 impl_downcast!(PerformerType);
 /// Mutable access to `performer`
-pub trait PerformerTypeMut: ResourceRoleTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait PerformerTypeMut:
+    ResourceRoleTypeMut + Downcast + Debug + Send + DynClone + PerformerType
+{
+}
 dyn_clone::clone_trait_object!(PerformerTypeMut);
 impl_downcast!(PerformerTypeMut);
 /// Auto-generated from BPNM schema
@@ -8279,13 +10384,25 @@ pub struct PotentialOwner {
     #[tia("ResourceRoleType",rg*="resource_assignment_expression","ResourceRoleTypeMut",s,rmg*="resource_assignment_expression_mut")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
+#[cast_to]
 impl DocumentElement for PotentialOwner {
     fn element(&self) -> Element {
         Element::PotentialOwner
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for PotentialOwner {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8297,10 +10414,20 @@ impl DocumentElementContainer for PotentialOwner {
     }
 }
 // Traits
+#[cast_to]
 impl HumanPerformerType for PotentialOwner {}
+#[cast_to]
 impl HumanPerformerTypeMut for PotentialOwner {}
+castable_to! {PotentialOwner => PartialEq<PotentialOwner> }
+castable_to! {PotentialOwner => HumanPerformerType,HumanPerformerTypeMut}
+#[cast_to]
 impl PerformerType for PotentialOwner {}
+#[cast_to]
 impl PerformerTypeMut for PotentialOwner {}
+castable_to! {PotentialOwner => PartialEq<PotentialOwner> }
+castable_to! {PotentialOwner => PerformerType,PerformerTypeMut}
+castable_to! {PotentialOwner => ResourceRoleType,ResourceRoleTypeMut}
+castable_to! {PotentialOwner => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `potentialOwner`
@@ -8309,7 +10436,7 @@ dyn_clone::clone_trait_object!(PotentialOwnerType);
 impl_downcast!(PotentialOwnerType);
 /// Mutable access to `potentialOwner`
 pub trait PotentialOwnerTypeMut:
-    HumanPerformerTypeMut + Downcast + Debug + Send + DynClone
+    HumanPerformerTypeMut + Downcast + Debug + Send + DynClone + PotentialOwnerType
 {
 }
 dyn_clone::clone_trait_object!(PotentialOwnerTypeMut);
@@ -8417,13 +10544,51 @@ pub struct Process {
     #[tia("ProcessType",rg*="supportss","ProcessTypeMut",s,rmg*="supportss_mut")]
     pub supportss: Vec<Supports>,
 }
+#[cast_to]
 impl DocumentElement for Process {
     fn element(&self) -> Element {
         Element::Process
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Process {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.auditing.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.monitoring.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.properies.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.lane_sets.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.flow_elements.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.artifacts.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.resource_roles.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.correlation_subscriptions.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.supportss.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8461,8 +10626,14 @@ impl DocumentElementContainer for Process {
     }
 }
 // Traits
+castable_to! {Process => CallableElementType,CallableElementTypeMut}
+#[cast_to]
 impl RootElementType for Process {}
+#[cast_to]
 impl RootElementTypeMut for Process {}
+castable_to! {Process => PartialEq<Process> }
+castable_to! {Process => RootElementType,RootElementTypeMut}
+castable_to! {Process => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `process`
@@ -8497,7 +10668,9 @@ pub trait ProcessType: CallableElementType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(ProcessType);
 impl_downcast!(ProcessType);
 /// Mutable access to `process`
-pub trait ProcessTypeMut: CallableElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ProcessTypeMut:
+    CallableElementTypeMut + Downcast + Debug + Send + DynClone + ProcessType
+{
     /// Set value of attribute `processType`
     fn set_process_type(&mut self, value: Option<String>);
     /// Set value of attribute `isClosed`
@@ -8570,13 +10743,27 @@ pub struct Property {
     #[tia("PropertyType",rg*="data_state","PropertyTypeMut",s,rmg*="data_state_mut")]
     pub data_state: Option<DataState>,
 }
+#[cast_to]
 impl DocumentElement for Property {
     fn element(&self) -> Element {
         Element::Property
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Property {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.data_state.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8590,7 +10777,7 @@ impl DocumentElementContainer for Property {
     }
 }
 // Traits
-
+castable_to! {Property => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `property`
@@ -8605,7 +10792,9 @@ pub trait PropertyType: BaseElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(PropertyType);
 impl_downcast!(PropertyType);
 /// Mutable access to `property`
-pub trait PropertyTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait PropertyTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + PropertyType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `itemSubjectRef`
@@ -8696,13 +10885,25 @@ pub struct ReceiveTask {
     #[tia("ReceiveTaskType",rg*="operation_ref","ReceiveTaskTypeMut",s)]
     pub operation_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ReceiveTask {
     fn element(&self) -> Element {
         Element::ReceiveTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ReceiveTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8714,8 +10915,16 @@ impl DocumentElementContainer for ReceiveTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for ReceiveTask {}
+#[cast_to]
 impl TaskTypeMut for ReceiveTask {}
+castable_to! {ReceiveTask => PartialEq<ReceiveTask> }
+castable_to! {ReceiveTask => TaskType,TaskTypeMut}
+castable_to! {ReceiveTask => ActivityType,ActivityTypeMut}
+castable_to! {ReceiveTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ReceiveTask => FlowElementType,FlowElementTypeMut}
+castable_to! {ReceiveTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `receiveTask`
@@ -8732,7 +10941,9 @@ pub trait ReceiveTaskType: TaskType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ReceiveTaskType);
 impl_downcast!(ReceiveTaskType);
 /// Mutable access to `receiveTask`
-pub trait ReceiveTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ReceiveTaskTypeMut:
+    TaskTypeMut + Downcast + Debug + Send + DynClone + ReceiveTaskType
+{
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
     /// Set value of attribute `instantiate`
@@ -8772,13 +10983,30 @@ pub struct Relationship {
     #[tia("RelationshipType",rg*="targets","RelationshipTypeMut",s,rmg*="targets_mut")]
     pub targets: Vec<Target>,
 }
+#[cast_to]
 impl DocumentElement for Relationship {
     fn element(&self) -> Element {
         Element::Relationship
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Relationship {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.sources.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.targets.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8795,7 +11023,7 @@ impl DocumentElementContainer for Relationship {
     }
 }
 // Traits
-
+castable_to! {Relationship => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `relationship`
@@ -8812,7 +11040,9 @@ pub trait RelationshipType: BaseElementType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(RelationshipType);
 impl_downcast!(RelationshipType);
 /// Mutable access to `relationship`
-pub trait RelationshipTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait RelationshipTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + RelationshipType
+{
     /// Set value of attribute `type`
     fn set_typ(&mut self, value: String);
     /// Set value of attribute `direction`
@@ -8844,13 +11074,25 @@ pub struct Rendering {
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for Rendering {
     fn element(&self) -> Element {
         Element::Rendering
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Rendering {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8862,7 +11104,7 @@ impl DocumentElementContainer for Rendering {
     }
 }
 // Traits
-
+castable_to! {Rendering => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `rendering`
@@ -8870,7 +11112,10 @@ pub trait RenderingType: BaseElementType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(RenderingType);
 impl_downcast!(RenderingType);
 /// Mutable access to `rendering`
-pub trait RenderingTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait RenderingTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + RenderingType
+{
+}
 dyn_clone::clone_trait_object!(RenderingTypeMut);
 impl_downcast!(RenderingTypeMut);
 /// Auto-generated from BPNM schema
@@ -8895,13 +11140,27 @@ pub struct Resource {
     #[tia("ResourceType",rg*="resource_parameters","ResourceTypeMut",s,rmg*="resource_parameters_mut")]
     pub resource_parameters: Vec<ResourceParameter>,
 }
+#[cast_to]
 impl DocumentElement for Resource {
     fn element(&self) -> Element {
         Element::Resource
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Resource {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.resource_parameters.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8915,8 +11174,13 @@ impl DocumentElementContainer for Resource {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Resource {}
+#[cast_to]
 impl RootElementTypeMut for Resource {}
+castable_to! {Resource => PartialEq<Resource> }
+castable_to! {Resource => RootElementType,RootElementTypeMut}
+castable_to! {Resource => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `resource`
@@ -8929,7 +11193,9 @@ pub trait ResourceType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ResourceType);
 impl_downcast!(ResourceType);
 /// Mutable access to `resource`
-pub trait ResourceTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ResourceTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + ResourceType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: String);
     /// Get a mutable value of `resourceParameter` child
@@ -8958,13 +11224,27 @@ pub struct ResourceAssignmentExpression {
     #[tia("ResourceAssignmentExpressionType",rg*="expression","ResourceAssignmentExpressionTypeMut",s,rmg*="expression_mut")]
     pub expression: Expression,
 }
+#[cast_to]
 impl DocumentElement for ResourceAssignmentExpression {
     fn element(&self) -> Element {
         Element::ResourceAssignmentExpression
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ResourceAssignmentExpression {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.expression.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -8978,7 +11258,7 @@ impl DocumentElementContainer for ResourceAssignmentExpression {
     }
 }
 // Traits
-
+castable_to! {ResourceAssignmentExpression => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `resourceAssignmentExpression`
@@ -8992,7 +11272,7 @@ dyn_clone::clone_trait_object!(ResourceAssignmentExpressionType);
 impl_downcast!(ResourceAssignmentExpressionType);
 /// Mutable access to `resourceAssignmentExpression`
 pub trait ResourceAssignmentExpressionTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ResourceAssignmentExpressionType
 {
     /// Get a mutable value of `expression` child
     fn expression_mut(&mut self) -> &mut Expression;
@@ -9026,13 +11306,25 @@ pub struct ResourceParameter {
     #[tia("ResourceParameterType",rg*="is_required","ResourceParameterTypeMut",s)]
     pub is_required: Option<bool>,
 }
+#[cast_to]
 impl DocumentElement for ResourceParameter {
     fn element(&self) -> Element {
         Element::ResourceParameter
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ResourceParameter {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9044,7 +11336,7 @@ impl DocumentElementContainer for ResourceParameter {
     }
 }
 // Traits
-
+castable_to! {ResourceParameter => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `resourceParameter`
@@ -9060,7 +11352,7 @@ dyn_clone::clone_trait_object!(ResourceParameterType);
 impl_downcast!(ResourceParameterType);
 /// Mutable access to `resourceParameter`
 pub trait ResourceParameterTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ResourceParameterType
 {
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
@@ -9093,13 +11385,27 @@ pub struct ResourceParameterBinding {
     #[tia("ResourceParameterBindingType",rg*="expression","ResourceParameterBindingTypeMut",s,rmg*="expression_mut")]
     pub expression: Expression,
 }
+#[cast_to]
 impl DocumentElement for ResourceParameterBinding {
     fn element(&self) -> Element {
         Element::ResourceParameterBinding
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ResourceParameterBinding {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.expression.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9113,7 +11419,7 @@ impl DocumentElementContainer for ResourceParameterBinding {
     }
 }
 // Traits
-
+castable_to! {ResourceParameterBinding => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `resourceParameterBinding`
@@ -9129,7 +11435,7 @@ dyn_clone::clone_trait_object!(ResourceParameterBindingType);
 impl_downcast!(ResourceParameterBindingType);
 /// Mutable access to `resourceParameterBinding`
 pub trait ResourceParameterBindingTypeMut:
-    BaseElementTypeMut + Downcast + Debug + Send + DynClone
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ResourceParameterBindingType
 {
     /// Set value of attribute `parameterRef`
     fn set_parameter_ref(&mut self, value: String);
@@ -9168,13 +11474,33 @@ pub struct ResourceRole {
     #[tia("ResourceRoleType",rg*="resource_assignment_expression","ResourceRoleTypeMut",s,rmg*="resource_assignment_expression_mut")]
     pub resource_assignment_expression: Option<ResourceAssignmentExpression>,
 }
+#[cast_to]
 impl DocumentElement for ResourceRole {
     fn element(&self) -> Element {
         Element::ResourceRole
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ResourceRole {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.resource_ref.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.resource_parameter_bindings.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.resource_assignment_expression.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9194,7 +11520,7 @@ impl DocumentElementContainer for ResourceRole {
     }
 }
 // Traits
-
+castable_to! {ResourceRole => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `resourceRole`
@@ -9211,7 +11537,9 @@ pub trait ResourceRoleType: BaseElementType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(ResourceRoleType);
 impl_downcast!(ResourceRoleType);
 /// Mutable access to `resourceRole`
-pub trait ResourceRoleTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ResourceRoleTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + ResourceRoleType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `resourceRef` child
@@ -9278,6 +11606,111 @@ pub enum RootElement {
     #[xml(tag = "bpmn:signal")]
     Signal(Signal),
 }
+impl From<Category> for RootElement {
+    fn from(element: Category) -> Self {
+        Self::Category(element)
+    }
+}
+impl From<Collaboration> for RootElement {
+    fn from(element: Collaboration) -> Self {
+        Self::Collaboration(element)
+    }
+}
+impl From<CorrelationProperty> for RootElement {
+    fn from(element: CorrelationProperty) -> Self {
+        Self::CorrelationProperty(element)
+    }
+}
+impl From<DataStore> for RootElement {
+    fn from(element: DataStore) -> Self {
+        Self::DataStore(element)
+    }
+}
+impl From<EndPoint> for RootElement {
+    fn from(element: EndPoint) -> Self {
+        Self::EndPoint(element)
+    }
+}
+impl From<Error> for RootElement {
+    fn from(element: Error) -> Self {
+        Self::Error(element)
+    }
+}
+impl From<Escalation> for RootElement {
+    fn from(element: Escalation) -> Self {
+        Self::Escalation(element)
+    }
+}
+impl From<EventDefinition> for RootElement {
+    fn from(element: EventDefinition) -> Self {
+        Self::EventDefinition(element)
+    }
+}
+impl From<GlobalBusinessRuleTask> for RootElement {
+    fn from(element: GlobalBusinessRuleTask) -> Self {
+        Self::GlobalBusinessRuleTask(element)
+    }
+}
+impl From<GlobalManualTask> for RootElement {
+    fn from(element: GlobalManualTask) -> Self {
+        Self::GlobalManualTask(element)
+    }
+}
+impl From<GlobalScriptTask> for RootElement {
+    fn from(element: GlobalScriptTask) -> Self {
+        Self::GlobalScriptTask(element)
+    }
+}
+impl From<GlobalTask> for RootElement {
+    fn from(element: GlobalTask) -> Self {
+        Self::GlobalTask(element)
+    }
+}
+impl From<GlobalUserTask> for RootElement {
+    fn from(element: GlobalUserTask) -> Self {
+        Self::GlobalUserTask(element)
+    }
+}
+impl From<Interface> for RootElement {
+    fn from(element: Interface) -> Self {
+        Self::Interface(element)
+    }
+}
+impl From<ItemDefinition> for RootElement {
+    fn from(element: ItemDefinition) -> Self {
+        Self::ItemDefinition(element)
+    }
+}
+impl From<Message> for RootElement {
+    fn from(element: Message) -> Self {
+        Self::Message(element)
+    }
+}
+impl From<PartnerEntity> for RootElement {
+    fn from(element: PartnerEntity) -> Self {
+        Self::PartnerEntity(element)
+    }
+}
+impl From<PartnerRole> for RootElement {
+    fn from(element: PartnerRole) -> Self {
+        Self::PartnerRole(element)
+    }
+}
+impl From<Process> for RootElement {
+    fn from(element: Process) -> Self {
+        Self::Process(element)
+    }
+}
+impl From<Resource> for RootElement {
+    fn from(element: Resource) -> Self {
+        Self::Resource(element)
+    }
+}
+impl From<Signal> for RootElement {
+    fn from(element: Signal) -> Self {
+        Self::Signal(element)
+    }
+}
 impl RootElement {
     pub fn into_inner(self) -> Box<dyn DocumentElement> {
         match self {
@@ -9305,7 +11738,37 @@ impl RootElement {
         }
     }
 }
+#[cast_to]
 impl DocumentElementContainer for RootElement {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            RootElement::Category(e) => e.find_by_id_mut(id),
+            RootElement::Collaboration(e) => e.find_by_id_mut(id),
+            RootElement::CorrelationProperty(e) => e.find_by_id_mut(id),
+            RootElement::DataStore(e) => e.find_by_id_mut(id),
+            RootElement::EndPoint(e) => e.find_by_id_mut(id),
+            RootElement::Error(e) => e.find_by_id_mut(id),
+            RootElement::Escalation(e) => e.find_by_id_mut(id),
+            RootElement::EventDefinition(e) => e.find_by_id_mut(id),
+            RootElement::GlobalBusinessRuleTask(e) => e.find_by_id_mut(id),
+            RootElement::GlobalManualTask(e) => e.find_by_id_mut(id),
+            RootElement::GlobalScriptTask(e) => e.find_by_id_mut(id),
+            RootElement::GlobalTask(e) => e.find_by_id_mut(id),
+            RootElement::GlobalUserTask(e) => e.find_by_id_mut(id),
+            RootElement::Interface(e) => e.find_by_id_mut(id),
+            RootElement::ItemDefinition(e) => e.find_by_id_mut(id),
+            RootElement::Message(e) => e.find_by_id_mut(id),
+            RootElement::PartnerEntity(e) => e.find_by_id_mut(id),
+            RootElement::PartnerRole(e) => e.find_by_id_mut(id),
+            RootElement::Process(e) => e.find_by_id_mut(id),
+            RootElement::Resource(e) => e.find_by_id_mut(id),
+            RootElement::Signal(e) => e.find_by_id_mut(id),
+
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -9335,6 +11798,7 @@ impl DocumentElementContainer for RootElement {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for RootElement {
     fn element(&self) -> Element {
         Element::RootElement
@@ -9345,7 +11809,10 @@ pub trait RootElementType: BaseElementType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(RootElementType);
 impl_downcast!(RootElementType);
 /// Mutable access to `rootElement`
-pub trait RootElementTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait RootElementTypeMut:
+    BaseElementTypeMut + Downcast + Debug + Send + DynClone + RootElementType
+{
+}
 dyn_clone::clone_trait_object!(RootElementTypeMut);
 impl_downcast!(RootElementTypeMut);
 /// Auto-generated from BPNM schema
@@ -9421,13 +11888,27 @@ pub struct ScriptTask {
     #[tia("ScriptTaskType",rg*="script","ScriptTaskTypeMut",s,rmg*="script_mut")]
     pub script: Option<Script>,
 }
+#[cast_to]
 impl DocumentElement for ScriptTask {
     fn element(&self) -> Element {
         Element::ScriptTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ScriptTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.script.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9441,8 +11922,16 @@ impl DocumentElementContainer for ScriptTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for ScriptTask {}
+#[cast_to]
 impl TaskTypeMut for ScriptTask {}
+castable_to! {ScriptTask => PartialEq<ScriptTask> }
+castable_to! {ScriptTask => TaskType,TaskTypeMut}
+castable_to! {ScriptTask => ActivityType,ActivityTypeMut}
+castable_to! {ScriptTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ScriptTask => FlowElementType,FlowElementTypeMut}
+castable_to! {ScriptTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `scriptTask`
@@ -9455,7 +11944,9 @@ pub trait ScriptTaskType: TaskType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ScriptTaskType);
 impl_downcast!(ScriptTaskType);
 /// Mutable access to `scriptTask`
-pub trait ScriptTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ScriptTaskTypeMut:
+    TaskTypeMut + Downcast + Debug + Send + DynClone + ScriptTaskType
+{
     /// Set value of attribute `scriptFormat`
     fn set_script_format(&mut self, value: Option<String>);
     /// Get a mutable value of `script` child
@@ -9474,12 +11965,14 @@ pub struct Script {
     #[xml(text, cdata)]
     content: String,
 }
+#[cast_to]
 impl DocumentElement for Script {
     fn element(&self) -> Element {
         Element::Script
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Script {}
 // Traits
 
@@ -9490,7 +11983,7 @@ pub trait ScriptType: Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(ScriptType);
 impl_downcast!(ScriptType);
 /// Mutable access to `script`
-pub trait ScriptTypeMut: Downcast + Debug + Send + DynClone {}
+pub trait ScriptTypeMut: Downcast + Debug + Send + DynClone + ScriptType {}
 dyn_clone::clone_trait_object!(ScriptTypeMut);
 impl_downcast!(ScriptTypeMut);
 /// Auto-generated from BPNM schema
@@ -9569,13 +12062,25 @@ pub struct SendTask {
     #[tia("SendTaskType",rg*="operation_ref","SendTaskTypeMut",s)]
     pub operation_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for SendTask {
     fn element(&self) -> Element {
         Element::SendTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SendTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9587,8 +12092,16 @@ impl DocumentElementContainer for SendTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for SendTask {}
+#[cast_to]
 impl TaskTypeMut for SendTask {}
+castable_to! {SendTask => PartialEq<SendTask> }
+castable_to! {SendTask => TaskType,TaskTypeMut}
+castable_to! {SendTask => ActivityType,ActivityTypeMut}
+castable_to! {SendTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {SendTask => FlowElementType,FlowElementTypeMut}
+castable_to! {SendTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `sendTask`
@@ -9603,7 +12116,7 @@ pub trait SendTaskType: TaskType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(SendTaskType);
 impl_downcast!(SendTaskType);
 /// Mutable access to `sendTask`
-pub trait SendTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait SendTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone + SendTaskType {
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
     /// Set value of attribute `messageRef`
@@ -9653,13 +12166,27 @@ pub struct SequenceFlow {
     #[tia("SequenceFlowType",rg*="condition_expression","SequenceFlowTypeMut",s,rmg*="condition_expression_mut")]
     pub condition_expression: Option<Expression>,
 }
+#[cast_to]
 impl DocumentElement for SequenceFlow {
     fn element(&self) -> Element {
         Element::SequenceFlow
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SequenceFlow {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.condition_expression.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9673,7 +12200,8 @@ impl DocumentElementContainer for SequenceFlow {
     }
 }
 // Traits
-
+castable_to! {SequenceFlow => FlowElementType,FlowElementTypeMut}
+castable_to! {SequenceFlow => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `sequenceFlow`
@@ -9690,7 +12218,9 @@ pub trait SequenceFlowType: FlowElementType + Downcast + Debug + Send + DynClone
 dyn_clone::clone_trait_object!(SequenceFlowType);
 impl_downcast!(SequenceFlowType);
 /// Mutable access to `sequenceFlow`
-pub trait SequenceFlowTypeMut: FlowElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait SequenceFlowTypeMut:
+    FlowElementTypeMut + Downcast + Debug + Send + DynClone + SequenceFlowType
+{
     /// Set value of attribute `sourceRef`
     fn set_source_ref(&mut self, value: String);
     /// Set value of attribute `targetRef`
@@ -9777,13 +12307,25 @@ pub struct ServiceTask {
     #[tia("ServiceTaskType",rg*="operation_ref","ServiceTaskTypeMut",s)]
     pub operation_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ServiceTask {
     fn element(&self) -> Element {
         Element::ServiceTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ServiceTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9795,8 +12337,16 @@ impl DocumentElementContainer for ServiceTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for ServiceTask {}
+#[cast_to]
 impl TaskTypeMut for ServiceTask {}
+castable_to! {ServiceTask => PartialEq<ServiceTask> }
+castable_to! {ServiceTask => TaskType,TaskTypeMut}
+castable_to! {ServiceTask => ActivityType,ActivityTypeMut}
+castable_to! {ServiceTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {ServiceTask => FlowElementType,FlowElementTypeMut}
+castable_to! {ServiceTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `serviceTask`
@@ -9809,7 +12359,9 @@ pub trait ServiceTaskType: TaskType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ServiceTaskType);
 impl_downcast!(ServiceTaskType);
 /// Mutable access to `serviceTask`
-pub trait ServiceTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ServiceTaskTypeMut:
+    TaskTypeMut + Downcast + Debug + Send + DynClone + ServiceTaskType
+{
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
     /// Set value of attribute `operationRef`
@@ -9839,13 +12391,25 @@ pub struct Signal {
     #[tia("SignalType",rg*="structure_ref","SignalTypeMut",s)]
     pub structure_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Signal {
     fn element(&self) -> Element {
         Element::Signal
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Signal {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9857,8 +12421,13 @@ impl DocumentElementContainer for Signal {
     }
 }
 // Traits
+#[cast_to]
 impl RootElementType for Signal {}
+#[cast_to]
 impl RootElementTypeMut for Signal {}
+castable_to! {Signal => PartialEq<Signal> }
+castable_to! {Signal => RootElementType,RootElementTypeMut}
+castable_to! {Signal => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `signal`
@@ -9871,7 +12440,9 @@ pub trait SignalType: RootElementType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(SignalType);
 impl_downcast!(SignalType);
 /// Mutable access to `signal`
-pub trait SignalTypeMut: RootElementTypeMut + Downcast + Debug + Send + DynClone {
+pub trait SignalTypeMut:
+    RootElementTypeMut + Downcast + Debug + Send + DynClone + SignalType
+{
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Set value of attribute `structureRef`
@@ -9898,13 +12469,25 @@ pub struct SignalEventDefinition {
     #[tia("SignalEventDefinitionType",rg*="signal_ref","SignalEventDefinitionTypeMut",s)]
     pub signal_ref: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for SignalEventDefinition {
     fn element(&self) -> Element {
         Element::SignalEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SignalEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9916,10 +12499,19 @@ impl DocumentElementContainer for SignalEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for SignalEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for SignalEventDefinition {}
+castable_to! {SignalEventDefinition => PartialEq<SignalEventDefinition> }
+castable_to! {SignalEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for SignalEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for SignalEventDefinition {}
+castable_to! {SignalEventDefinition => PartialEq<SignalEventDefinition> }
+castable_to! {SignalEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {SignalEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `signalEventDefinition`
@@ -9933,7 +12525,7 @@ dyn_clone::clone_trait_object!(SignalEventDefinitionType);
 impl_downcast!(SignalEventDefinitionType);
 /// Mutable access to `signalEventDefinition`
 pub trait SignalEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + SignalEventDefinitionType
 {
     /// Set value of attribute `signalRef`
     fn set_signal_ref(&mut self, value: Option<String>);
@@ -9965,13 +12557,27 @@ pub struct StandardLoopCharacteristics {
     #[tia("StandardLoopCharacteristicsType",rg*="loop_condition","StandardLoopCharacteristicsTypeMut",s,rmg*="loop_condition_mut")]
     pub loop_condition: Option<Expression>,
 }
+#[cast_to]
 impl DocumentElement for StandardLoopCharacteristics {
     fn element(&self) -> Element {
         Element::StandardLoopCharacteristics
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for StandardLoopCharacteristics {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.loop_condition.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -9985,8 +12591,13 @@ impl DocumentElementContainer for StandardLoopCharacteristics {
     }
 }
 // Traits
+#[cast_to]
 impl LoopCharacteristicsType for StandardLoopCharacteristics {}
+#[cast_to]
 impl LoopCharacteristicsTypeMut for StandardLoopCharacteristics {}
+castable_to! {StandardLoopCharacteristics => PartialEq<StandardLoopCharacteristics> }
+castable_to! {StandardLoopCharacteristics => LoopCharacteristicsType,LoopCharacteristicsTypeMut}
+castable_to! {StandardLoopCharacteristics => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `standardLoopCharacteristics`
@@ -10004,7 +12615,7 @@ dyn_clone::clone_trait_object!(StandardLoopCharacteristicsType);
 impl_downcast!(StandardLoopCharacteristicsType);
 /// Mutable access to `standardLoopCharacteristics`
 pub trait StandardLoopCharacteristicsTypeMut:
-    LoopCharacteristicsTypeMut + Downcast + Debug + Send + DynClone
+    LoopCharacteristicsTypeMut + Downcast + Debug + Send + DynClone + StandardLoopCharacteristicsType
 {
     /// Set value of attribute `testBefore`
     fn set_test_before(&mut self, value: Option<bool>);
@@ -10086,13 +12697,25 @@ pub struct StartEvent {
     #[tia("StartEventType",rg*="is_interrupting","StartEventTypeMut",s)]
     pub is_interrupting: Option<bool>,
 }
+#[cast_to]
 impl DocumentElement for StartEvent {
     fn element(&self) -> Element {
         Element::StartEvent
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for StartEvent {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10104,7 +12727,11 @@ impl DocumentElementContainer for StartEvent {
     }
 }
 // Traits
-
+castable_to! {StartEvent => CatchEventType,CatchEventTypeMut}
+castable_to! {StartEvent => EventType,EventTypeMut}
+castable_to! {StartEvent => FlowNodeType,FlowNodeTypeMut}
+castable_to! {StartEvent => FlowElementType,FlowElementTypeMut}
+castable_to! {StartEvent => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `startEvent`
@@ -10115,7 +12742,9 @@ pub trait StartEventType: CatchEventType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(StartEventType);
 impl_downcast!(StartEventType);
 /// Mutable access to `startEvent`
-pub trait StartEventTypeMut: CatchEventTypeMut + Downcast + Debug + Send + DynClone {
+pub trait StartEventTypeMut:
+    CatchEventTypeMut + Downcast + Debug + Send + DynClone + StartEventType
+{
     /// Set value of attribute `isInterrupting`
     fn set_is_interrupting(&mut self, value: Option<bool>);
 }
@@ -10209,13 +12838,30 @@ pub struct SubChoreography {
     #[tia("SubChoreographyType",rg*="artifacts","SubChoreographyTypeMut",s,rmg*="artifacts_mut")]
     pub artifacts: Vec<Artifact>,
 }
+#[cast_to]
 impl DocumentElement for SubChoreography {
     fn element(&self) -> Element {
         Element::SubChoreography
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SubChoreography {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.flow_elements.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.artifacts.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10232,7 +12878,10 @@ impl DocumentElementContainer for SubChoreography {
     }
 }
 // Traits
-
+castable_to! {SubChoreography => ChoreographyActivityType,ChoreographyActivityTypeMut}
+castable_to! {SubChoreography => FlowNodeType,FlowNodeTypeMut}
+castable_to! {SubChoreography => FlowElementType,FlowElementTypeMut}
+castable_to! {SubChoreography => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `subChoreography`
@@ -10248,7 +12897,7 @@ dyn_clone::clone_trait_object!(SubChoreographyType);
 impl_downcast!(SubChoreographyType);
 /// Mutable access to `subChoreography`
 pub trait SubChoreographyTypeMut:
-    ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone
+    ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone + SubChoreographyType
 {
     /// Get a mutable value of `flowElement` child
     fn flow_elements_mut(&mut self) -> &mut Vec<FlowElement>;
@@ -10296,13 +12945,27 @@ pub struct SubConversation {
     #[tia("SubConversationType",rg*="conversation_nodes","SubConversationTypeMut",s,rmg*="conversation_nodes_mut")]
     pub conversation_nodes: Vec<ConversationNode>,
 }
+#[cast_to]
 impl DocumentElement for SubConversation {
     fn element(&self) -> Element {
         Element::SubConversation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SubConversation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.conversation_nodes.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10316,7 +12979,8 @@ impl DocumentElementContainer for SubConversation {
     }
 }
 // Traits
-
+castable_to! {SubConversation => ConversationNodeType,ConversationNodeTypeMut}
+castable_to! {SubConversation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `subConversation`
@@ -10328,7 +12992,7 @@ dyn_clone::clone_trait_object!(SubConversationType);
 impl_downcast!(SubConversationType);
 /// Mutable access to `subConversation`
 pub trait SubConversationTypeMut:
-    ConversationNodeTypeMut + Downcast + Debug + Send + DynClone
+    ConversationNodeTypeMut + Downcast + Debug + Send + DynClone + SubConversationType
 {
     /// Get a mutable value of `conversationNode` child
     fn conversation_nodes_mut(&mut self) -> &mut Vec<ConversationNode>;
@@ -10452,13 +13116,33 @@ pub struct SubProcess {
     #[tia("SubProcessType",rg*="artifacts","SubProcessTypeMut",s,rmg*="artifacts_mut")]
     pub artifacts: Vec<Artifact>,
 }
+#[cast_to]
 impl DocumentElement for SubProcess {
     fn element(&self) -> Element {
         Element::SubProcess
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SubProcess {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.lane_sets.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.flow_elements.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.artifacts.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10478,7 +13162,10 @@ impl DocumentElementContainer for SubProcess {
     }
 }
 // Traits
-
+castable_to! {SubProcess => ActivityType,ActivityTypeMut}
+castable_to! {SubProcess => FlowNodeType,FlowNodeTypeMut}
+castable_to! {SubProcess => FlowElementType,FlowElementTypeMut}
+castable_to! {SubProcess => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `subProcess`
@@ -10495,7 +13182,9 @@ pub trait SubProcessType: ActivityType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(SubProcessType);
 impl_downcast!(SubProcessType);
 /// Mutable access to `subProcess`
-pub trait SubProcessTypeMut: ActivityTypeMut + Downcast + Debug + Send + DynClone {
+pub trait SubProcessTypeMut:
+    ActivityTypeMut + Downcast + Debug + Send + DynClone + SubProcessType
+{
     /// Set value of attribute `triggeredByEvent`
     fn set_triggered_byevent(&mut self, value: Option<bool>);
     /// Get a mutable value of `laneSet` child
@@ -10580,13 +13269,25 @@ pub struct Task {
     #[tia("ActivityType",rg*="loop_characteristics","ActivityTypeMut",s,rmg*="loop_characteristics_mut")]
     pub loop_characteristics: Option<LoopCharacteristics>,
 }
+#[cast_to]
 impl DocumentElement for Task {
     fn element(&self) -> Element {
         Element::Task
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Task {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10598,7 +13299,10 @@ impl DocumentElementContainer for Task {
     }
 }
 // Traits
-
+castable_to! {Task => ActivityType,ActivityTypeMut}
+castable_to! {Task => FlowNodeType,FlowNodeTypeMut}
+castable_to! {Task => FlowElementType,FlowElementTypeMut}
+castable_to! {Task => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `task`
@@ -10606,7 +13310,7 @@ pub trait TaskType: ActivityType + Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(TaskType);
 impl_downcast!(TaskType);
 /// Mutable access to `task`
-pub trait TaskTypeMut: ActivityTypeMut + Downcast + Debug + Send + DynClone {}
+pub trait TaskTypeMut: ActivityTypeMut + Downcast + Debug + Send + DynClone + TaskType {}
 dyn_clone::clone_trait_object!(TaskTypeMut);
 impl_downcast!(TaskTypeMut);
 /// Auto-generated from BPNM schema
@@ -10625,13 +13329,25 @@ pub struct TerminateEventDefinition {
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
 }
+#[cast_to]
 impl DocumentElement for TerminateEventDefinition {
     fn element(&self) -> Element {
         Element::TerminateEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for TerminateEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10643,10 +13359,19 @@ impl DocumentElementContainer for TerminateEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for TerminateEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for TerminateEventDefinition {}
+castable_to! {TerminateEventDefinition => PartialEq<TerminateEventDefinition> }
+castable_to! {TerminateEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for TerminateEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for TerminateEventDefinition {}
+castable_to! {TerminateEventDefinition => PartialEq<TerminateEventDefinition> }
+castable_to! {TerminateEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {TerminateEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `terminateEventDefinition`
@@ -10658,7 +13383,7 @@ dyn_clone::clone_trait_object!(TerminateEventDefinitionType);
 impl_downcast!(TerminateEventDefinitionType);
 /// Mutable access to `terminateEventDefinition`
 pub trait TerminateEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + TerminateEventDefinitionType
 {
 }
 dyn_clone::clone_trait_object!(TerminateEventDefinitionTypeMut);
@@ -10685,13 +13410,27 @@ pub struct TextAnnotation {
     #[tia("TextAnnotationType",rg*="text","TextAnnotationTypeMut",s,rmg*="text_mut")]
     pub text: Option<Text>,
 }
+#[cast_to]
 impl DocumentElement for TextAnnotation {
     fn element(&self) -> Element {
         Element::TextAnnotation
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for TextAnnotation {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.text.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10705,8 +13444,13 @@ impl DocumentElementContainer for TextAnnotation {
     }
 }
 // Traits
+#[cast_to]
 impl ArtifactType for TextAnnotation {}
+#[cast_to]
 impl ArtifactTypeMut for TextAnnotation {}
+castable_to! {TextAnnotation => PartialEq<TextAnnotation> }
+castable_to! {TextAnnotation => ArtifactType,ArtifactTypeMut}
+castable_to! {TextAnnotation => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `textAnnotation`
@@ -10719,7 +13463,9 @@ pub trait TextAnnotationType: ArtifactType + Downcast + Debug + Send + DynClone 
 dyn_clone::clone_trait_object!(TextAnnotationType);
 impl_downcast!(TextAnnotationType);
 /// Mutable access to `textAnnotation`
-pub trait TextAnnotationTypeMut: ArtifactTypeMut + Downcast + Debug + Send + DynClone {
+pub trait TextAnnotationTypeMut:
+    ArtifactTypeMut + Downcast + Debug + Send + DynClone + TextAnnotationType
+{
     /// Set value of attribute `textFormat`
     fn set_text_format(&mut self, value: Option<String>);
     /// Get a mutable value of `text` child
@@ -10738,12 +13484,14 @@ pub struct Text {
     #[xml(text, cdata)]
     content: String,
 }
+#[cast_to]
 impl DocumentElement for Text {
     fn element(&self) -> Element {
         Element::Text
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Text {}
 // Traits
 
@@ -10754,7 +13502,7 @@ pub trait TextType: Downcast + Debug + Send + DynClone {}
 dyn_clone::clone_trait_object!(TextType);
 impl_downcast!(TextType);
 /// Mutable access to `text`
-pub trait TextTypeMut: Downcast + Debug + Send + DynClone {}
+pub trait TextTypeMut: Downcast + Debug + Send + DynClone + TextType {}
 dyn_clone::clone_trait_object!(TextTypeMut);
 impl_downcast!(TextTypeMut);
 /// Auto-generated from BPNM schema
@@ -10768,7 +13516,15 @@ impl ThrowEvent {
         match self {}
     }
 }
+#[cast_to]
 impl DocumentElementContainer for ThrowEvent {
+    #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            _ => None,
+        }
+    }
+
     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         match self {
@@ -10776,6 +13532,7 @@ impl DocumentElementContainer for ThrowEvent {
         }
     }
 }
+#[cast_to]
 impl DocumentElement for ThrowEvent {
     fn element(&self) -> Element {
         Element::ThrowEvent
@@ -10797,7 +13554,9 @@ pub trait ThrowEventType: EventType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(ThrowEventType);
 impl_downcast!(ThrowEventType);
 /// Mutable access to `throwEvent`
-pub trait ThrowEventTypeMut: EventTypeMut + Downcast + Debug + Send + DynClone {
+pub trait ThrowEventTypeMut:
+    EventTypeMut + Downcast + Debug + Send + DynClone + ThrowEventType
+{
     /// Get a mutable value of `dataInput` child
     fn data_inputs_mut(&mut self) -> &mut Vec<DataInput>;
     /// Set value of `dataInput` child
@@ -10846,13 +13605,33 @@ pub struct TimerEventDefinition {
     #[tia("TimerEventDefinitionType",rg*="time_cycle","TimerEventDefinitionTypeMut",s,rmg*="time_cycle_mut")]
     pub time_cycle: Option<Expression>,
 }
+#[cast_to]
 impl DocumentElement for TimerEventDefinition {
     fn element(&self) -> Element {
         Element::TimerEventDefinition
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for TimerEventDefinition {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.time_date.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.time_duration.find_by_id_mut(id) {
+            return Some(e);
+        }
+        if let Some(e) = self.time_cycle.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -10872,10 +13651,19 @@ impl DocumentElementContainer for TimerEventDefinition {
     }
 }
 // Traits
+#[cast_to]
 impl EventDefinitionType for TimerEventDefinition {}
+#[cast_to]
 impl EventDefinitionTypeMut for TimerEventDefinition {}
+castable_to! {TimerEventDefinition => PartialEq<TimerEventDefinition> }
+castable_to! {TimerEventDefinition => EventDefinitionType,EventDefinitionTypeMut}
+#[cast_to]
 impl RootElementType for TimerEventDefinition {}
+#[cast_to]
 impl RootElementTypeMut for TimerEventDefinition {}
+castable_to! {TimerEventDefinition => PartialEq<TimerEventDefinition> }
+castable_to! {TimerEventDefinition => RootElementType,RootElementTypeMut}
+castable_to! {TimerEventDefinition => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `timerEventDefinition`
@@ -10893,7 +13681,7 @@ dyn_clone::clone_trait_object!(TimerEventDefinitionType);
 impl_downcast!(TimerEventDefinitionType);
 /// Mutable access to `timerEventDefinition`
 pub trait TimerEventDefinitionTypeMut:
-    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone
+    EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + TimerEventDefinitionType
 {
     /// Get a mutable value of `timeDate` child
     fn time_date_mut(&mut self) -> &mut Option<Expression>;
@@ -11028,13 +13816,25 @@ pub struct Transaction {
     #[tia("TransactionType",rg*="method","TransactionTypeMut",s)]
     pub method: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Transaction {
     fn element(&self) -> Element {
         Element::Transaction
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Transaction {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -11046,7 +13846,11 @@ impl DocumentElementContainer for Transaction {
     }
 }
 // Traits
-
+castable_to! {Transaction => SubProcessType,SubProcessTypeMut}
+castable_to! {Transaction => ActivityType,ActivityTypeMut}
+castable_to! {Transaction => FlowNodeType,FlowNodeTypeMut}
+castable_to! {Transaction => FlowElementType,FlowElementTypeMut}
+castable_to! {Transaction => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `transaction`
@@ -11057,7 +13861,9 @@ pub trait TransactionType: SubProcessType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(TransactionType);
 impl_downcast!(TransactionType);
 /// Mutable access to `transaction`
-pub trait TransactionTypeMut: SubProcessTypeMut + Downcast + Debug + Send + DynClone {
+pub trait TransactionTypeMut:
+    SubProcessTypeMut + Downcast + Debug + Send + DynClone + TransactionType
+{
     /// Set value of attribute `method`
     fn set_method(&mut self, value: Option<String>);
 }
@@ -11136,13 +13942,27 @@ pub struct UserTask {
     #[tia("UserTaskType",rg*="renderings","UserTaskTypeMut",s,rmg*="renderings_mut")]
     pub renderings: Vec<Rendering>,
 }
+#[cast_to]
 impl DocumentElement for UserTask {
     fn element(&self) -> Element {
         Element::UserTask
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for UserTask {
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        if let Some(ref id_) = self.id {
+            if id_ == id {
+                return Some(self);
+            }
+        }
+        if let Some(e) = self.renderings.find_by_id_mut(id) {
+            return Some(e);
+        }
+        None
+    }
+
     fn find_by_id(&self, id: &str) -> Option<&dyn DocumentElement> {
         if let Some(ref id_) = self.id {
             if id_ == id {
@@ -11156,8 +13976,16 @@ impl DocumentElementContainer for UserTask {
     }
 }
 // Traits
+#[cast_to]
 impl TaskType for UserTask {}
+#[cast_to]
 impl TaskTypeMut for UserTask {}
+castable_to! {UserTask => PartialEq<UserTask> }
+castable_to! {UserTask => TaskType,TaskTypeMut}
+castable_to! {UserTask => ActivityType,ActivityTypeMut}
+castable_to! {UserTask => FlowNodeType,FlowNodeTypeMut}
+castable_to! {UserTask => FlowElementType,FlowElementTypeMut}
+castable_to! {UserTask => BaseElementType,BaseElementTypeMut}
 //
 
 /// Access to `userTask`
@@ -11170,7 +13998,7 @@ pub trait UserTaskType: TaskType + Downcast + Debug + Send + DynClone {
 dyn_clone::clone_trait_object!(UserTaskType);
 impl_downcast!(UserTaskType);
 /// Mutable access to `userTask`
-pub trait UserTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone {
+pub trait UserTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone + UserTaskType {
     /// Set value of attribute `implementation`
     fn set_implementation(&mut self, value: Option<String>);
     /// Get a mutable value of `rendering` child
@@ -11190,12 +14018,14 @@ pub struct SupportedInterfaceRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for SupportedInterfaceRef {
     fn element(&self) -> Element {
         Element::SupportedInterfaceRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SupportedInterfaceRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11207,12 +14037,14 @@ pub struct EventDefinitionRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for EventDefinitionRef {
     fn element(&self) -> Element {
         Element::EventDefinitionRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for EventDefinitionRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11224,12 +14056,14 @@ pub struct ParticipantRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ParticipantRef {
     fn element(&self) -> Element {
         Element::ParticipantRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11241,12 +14075,14 @@ pub struct MessageFlowRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for MessageFlowRef {
     fn element(&self) -> Element {
         Element::MessageFlowRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for MessageFlowRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11258,12 +14094,14 @@ pub struct ChoreographyRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ChoreographyRef {
     fn element(&self) -> Element {
         Element::ChoreographyRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ChoreographyRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11275,12 +14113,14 @@ pub struct CorrelationPropertyRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for CorrelationPropertyRef {
     fn element(&self) -> Element {
         Element::CorrelationPropertyRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CorrelationPropertyRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11292,12 +14132,14 @@ pub struct SourceRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for SourceRef {
     fn element(&self) -> Element {
         Element::SourceRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for SourceRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11309,12 +14151,14 @@ pub struct TargetRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for TargetRef {
     fn element(&self) -> Element {
         Element::TargetRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for TargetRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11326,12 +14170,14 @@ pub struct CategoryValueRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for CategoryValueRef {
     fn element(&self) -> Element {
         Element::CategoryValueRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for CategoryValueRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11343,12 +14189,14 @@ pub struct Incoming {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Incoming {
     fn element(&self) -> Element {
         Element::Incoming
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Incoming {}
 /// Auto-generated from BPNM schema
 ///
@@ -11360,12 +14208,14 @@ pub struct Outgoing {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Outgoing {
     fn element(&self) -> Element {
         Element::Outgoing
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Outgoing {}
 /// Auto-generated from BPNM schema
 ///
@@ -11377,12 +14227,14 @@ pub struct DataInputRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for DataInputRefs {
     fn element(&self) -> Element {
         Element::DataInputRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataInputRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11394,12 +14246,14 @@ pub struct OptionalInputRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for OptionalInputRefs {
     fn element(&self) -> Element {
         Element::OptionalInputRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OptionalInputRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11411,12 +14265,14 @@ pub struct WhileExecutingInputRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for WhileExecutingInputRefs {
     fn element(&self) -> Element {
         Element::WhileExecutingInputRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for WhileExecutingInputRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11428,12 +14284,14 @@ pub struct OutputSetRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for OutputSetRefs {
     fn element(&self) -> Element {
         Element::OutputSetRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OutputSetRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11445,12 +14303,14 @@ pub struct FlowNodeRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for FlowNodeRef {
     fn element(&self) -> Element {
         Element::FlowNodeRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for FlowNodeRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11462,12 +14322,14 @@ pub struct Source {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Source {
     fn element(&self) -> Element {
         Element::Source
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Source {}
 /// Auto-generated from BPNM schema
 ///
@@ -11479,12 +14341,14 @@ pub struct Target {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Target {
     fn element(&self) -> Element {
         Element::Target
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Target {}
 /// Auto-generated from BPNM schema
 ///
@@ -11496,12 +14360,14 @@ pub struct OperationRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for OperationRef {
     fn element(&self) -> Element {
         Element::OperationRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OperationRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11513,12 +14379,14 @@ pub struct LoopDataInputRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for LoopDataInputRef {
     fn element(&self) -> Element {
         Element::LoopDataInputRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for LoopDataInputRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11530,12 +14398,14 @@ pub struct LoopDataOutputRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for LoopDataOutputRef {
     fn element(&self) -> Element {
         Element::LoopDataOutputRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for LoopDataOutputRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11547,12 +14417,14 @@ pub struct InMessageRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for InMessageRef {
     fn element(&self) -> Element {
         Element::InMessageRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InMessageRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11564,12 +14436,14 @@ pub struct OutMessageRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for OutMessageRef {
     fn element(&self) -> Element {
         Element::OutMessageRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OutMessageRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11581,12 +14455,14 @@ pub struct ErrorRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ErrorRef {
     fn element(&self) -> Element {
         Element::ErrorRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ErrorRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11598,12 +14474,14 @@ pub struct DataOutputRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for DataOutputRefs {
     fn element(&self) -> Element {
         Element::DataOutputRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for DataOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11615,12 +14493,14 @@ pub struct OptionalOutputRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for OptionalOutputRefs {
     fn element(&self) -> Element {
         Element::OptionalOutputRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OptionalOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11632,12 +14512,14 @@ pub struct WhileExecutingOutputRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for WhileExecutingOutputRefs {
     fn element(&self) -> Element {
         Element::WhileExecutingOutputRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for WhileExecutingOutputRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11649,12 +14531,14 @@ pub struct InputSetRefs {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for InputSetRefs {
     fn element(&self) -> Element {
         Element::InputSetRefs
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InputSetRefs {}
 /// Auto-generated from BPNM schema
 ///
@@ -11666,12 +14550,14 @@ pub struct InterfaceRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for InterfaceRef {
     fn element(&self) -> Element {
         Element::InterfaceRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InterfaceRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11683,12 +14569,14 @@ pub struct EndPointRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for EndPointRef {
     fn element(&self) -> Element {
         Element::EndPointRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for EndPointRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11700,12 +14588,14 @@ pub struct InnerParticipantRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for InnerParticipantRef {
     fn element(&self) -> Element {
         Element::InnerParticipantRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for InnerParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11717,12 +14607,14 @@ pub struct OuterParticipantRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for OuterParticipantRef {
     fn element(&self) -> Element {
         Element::OuterParticipantRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for OuterParticipantRef {}
 /// Auto-generated from BPNM schema
 ///
@@ -11734,12 +14626,14 @@ pub struct Supports {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for Supports {
     fn element(&self) -> Element {
         Element::Supports
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for Supports {}
 /// Auto-generated from BPNM schema
 ///
@@ -11751,10 +14645,12 @@ pub struct ResourceRef {
     #[xml(text, cdata)]
     pub content: Option<String>,
 }
+#[cast_to]
 impl DocumentElement for ResourceRef {
     fn element(&self) -> Element {
         Element::ResourceRef
     }
 }
 #[allow(unused_variables)]
+#[cast_to]
 impl DocumentElementContainer for ResourceRef {}

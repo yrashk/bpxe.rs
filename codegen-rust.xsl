@@ -234,6 +234,16 @@
                 
                 <xsl:text>}</xsl:text>
                 
+                <xsl:for-each select="$elements[@substitutionGroup = $name]">
+                    <xsl:text>impl From&lt;</xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text xml:space="preserve">&gt; for </xsl:text>
+                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve"> { 
+                        fn from(element: </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>) -> Self {
+                            Self::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>(element)
+                        }
+                    }    
+                    </xsl:text>
+                </xsl:for-each>
+                
                 <xsl:text xml:space="preserve">impl </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {</xsl:text>
                 <xsl:text >pub fn into_inner(self) -> Box&lt;dyn DocumentElement&gt; { 
                     match self {
@@ -245,8 +255,21 @@
                 <xsl:text>}}}</xsl:text>
                 
                 <xsl:text xml:space="preserve">
+                    #[cast_to]
                     impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
                         #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+                        fn find_by_id_mut(&amp;mut self, id: &amp;str) -> Option&lt;&amp;mut dyn DocumentElement&gt; {
+                        match self {
+                    </xsl:text>
+                <xsl:for-each select="$elements[@substitutionGroup = $name]">
+                    <xsl:value-of select="local:struct-case($name)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>(e) => e.find_by_id_mut(id),
+                </xsl:for-each>
+                _ => None,
+                <xsl:text>
+                    }
+                    }
+                    
+                     #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
                         fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
                         match self {
                     </xsl:text>
@@ -294,7 +317,7 @@
                     <xsl:value-of select="local:struct-case($extTypeName)"/>
                     <xsl:text>TypeMut + </xsl:text>
                 </xsl:if>
-                <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
+                <xsl:text>Downcast + Debug + Send + DynClone + </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type {</xsl:text>
                 <xsl:call-template name="mutTraitFns">
                     <xsl:with-param name="type" select="$type"/>
                 </xsl:call-template>
@@ -373,7 +396,7 @@
                     <xsl:value-of select="local:struct-case($extTypeName)"/>
                     <xsl:text>TypeMut +</xsl:text>
                 </xsl:if>
-                <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
+                <xsl:text>Downcast + Debug + Send + DynClone + </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type  {</xsl:text>
                 <xsl:call-template name="mutTraitFns">
                     <xsl:with-param name="type" select="$type"/>
                 </xsl:call-template>
@@ -392,15 +415,24 @@
             <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
             <xsl:variable name="extType" select="$schema/xs:complexType[@name=$extTypeName]"/>
             <xsl:if test="empty(local:attributes($extType)) and empty(local:elements($extType))">
-                <xsl:text xml:space="preserve">impl </xsl:text>
+                <xsl:text xml:space="preserve">#[cast_to] impl </xsl:text>
                 <xsl:value-of select="local:struct-case($extTypeName)"/>
                 <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{}</xsl:text>
-                <xsl:text xml:space="preserve">impl </xsl:text>
+                <xsl:text xml:space="preserve">#[cast_to] impl </xsl:text>
                 <xsl:value-of select="local:struct-case($extTypeName)"/>
                 <xsl:text xml:space="preserve">TypeMut for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{}</xsl:text>
+                <xsl:text>castable_to! {</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve"> => PartialEq&lt;</xsl:text>
+                <xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text>&gt; }</xsl:text>
             </xsl:if>
+            <xsl:text>castable_to! {</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve"> => </xsl:text>
+            <xsl:value-of select="local:struct-case($extTypeName)"/>
+            <xsl:text xml:space="preserve">Type,</xsl:text>
+            <xsl:value-of select="local:struct-case($extTypeName)"/>
+            <xsl:text xml:space="preserve">TypeMut</xsl:text>
+            <xsl:text>}</xsl:text>
             
             <xsl:call-template name="traits">
                 <xsl:with-param name="type" select="$schema/xs:complexType[@name = $extTypeName]"></xsl:with-param>
@@ -480,7 +512,7 @@
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
         <xsl:param name="skipContainer" required="yes" />
-        <xsl:text xml:space="preserve">impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
+        <xsl:text xml:space="preserve">#[cast_to] impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
             fn element(&amp;self) -> Element {
             Element::</xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text>
                 }
@@ -500,13 +532,44 @@
         <xsl:param name="typeName" required="yes"/>
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
-        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+        <xsl:text xml:space="preserve">#[allow(unused_variables)]#[cast_to] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
         <xsl:choose>
             <!-- use default implementation -->
             <xsl:when test="empty($elements) and not($id)">{}</xsl:when>
             <xsl:otherwise>
                 
                 <xsl:text> {
+                    fn find_by_id_mut(&amp;mut self, id: &amp;str) -> Option&lt;&amp;mut dyn DocumentElement&gt; {
+                </xsl:text>
+                
+                <xsl:if test="$id = true()">
+                    <xsl:text>
+                        if let Some(ref id_) = self.id {
+                        if id_ == id {
+                        return Some(self);
+                        }
+                        }
+                    </xsl:text>
+                </xsl:if>
+                
+                <xsl:for-each select="$elements">
+                    <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
+                    
+                    <xsl:text> if let Some(e) = self.</xsl:text>
+                    <xsl:choose> 
+                        <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
+                    </xsl:choose>
+                    <xsl:text>.find_by_id_mut(id) {
+                        return Some(e);
+                        }</xsl:text>
+                </xsl:for-each>
+                <xsl:text>
+                    None
+                    }
+                </xsl:text>
+                
+                <xsl:text> 
                     fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
                 </xsl:text>
                 
@@ -535,7 +598,10 @@
                 <xsl:text>
                     None
                     }
-                    }</xsl:text>
+                </xsl:text>
+                
+                
+                <xsl:text>}</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
         

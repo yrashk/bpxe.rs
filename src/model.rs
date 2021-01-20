@@ -162,14 +162,21 @@ mod tests {
 
     #[tokio::test]
     async fn list_processes() {
-        let mut proc1: Process = Default::default();
-        proc1.id = Some("proc1".into());
-        let mut proc2: Process = Default::default();
-        proc2.id = Some("proc2".into());
-
-        let mut definitions: Definitions = Default::default();
-        definitions.root_elements.push(RootElement::Process(proc1));
-        definitions.root_elements.push(RootElement::Process(proc2));
+        let definitions = Definitions {
+            root_elements: vec![
+                Process {
+                    id: Some("proc1".into()),
+                    ..Default::default()
+                }
+                .into(),
+                Process {
+                    id: Some("proc2".into()),
+                    ..Default::default()
+                }
+                .into(),
+            ],
+            ..Default::default()
+        };
 
         let model = Model::new(definitions);
         let handle = model.spawn().await;

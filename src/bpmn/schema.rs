@@ -12,9 +12,18 @@ pub type Integer = num_bigint::BigInt;
 pub type Int = i32;
 
 use downcast_rs::{impl_downcast, Downcast};
+use intertrait::*;
 
-pub trait DocumentElementContainer: Downcast {
+pub trait DocumentElementContainer: Downcast + CastFrom {
+    /// Find an element by ID
+    #[allow(unused_variables)]
     fn find_by_id(&self, _id: &str) -> Option<&dyn DocumentElement> {
+        None
+    }
+
+    /// Find an element by ID and return a mutable reference
+    #[allow(unused_variables)]
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
         None
     }
 }
@@ -32,6 +41,14 @@ where
         }
         None
     }
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        for e in self.iter_mut() {
+            if let Some(de) = e.find_by_id_mut(id) {
+                return Some(de);
+            }
+        }
+        None
+    }
 }
 
 impl<T> DocumentElementContainer for Option<T>
@@ -42,6 +59,12 @@ where
         match self {
             None => None,
             Some(e) => e.find_by_id(id),
+        }
+    }
+    fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
+        match self {
+            None => None,
+            Some(e) => e.find_by_id_mut(id),
         }
     }
 }
@@ -60,16 +83,162 @@ pub enum EstablishSequenceFlowError {
     NoSourceId,
     #[error("target.id must be Some")]
     NoTargetId,
+    #[error("can't find source of the right type")]
+    SourceNotFound,
+    #[error("can't find target of the right type")]
+    TargetNotFound,
 }
 
+impl Process {
+    /// Establishes sequence flow between flow identified nodes
+    ///
+    /// Resulting sequence flow will have `id` as an ID and it will be
+    /// added to the matching process.
+    // TODO: add support for sub-processes
+    pub fn establish_sequence_flow(
+        &mut self,
+        source: &str,
+        target: &str,
+        id: &str,
+    ) -> Result<&mut Self, EstablishSequenceFlowError> {
+        use intertrait::cast::CastMut;
+        // The main reason why this method is written in a somewhat convoluted fashion (not saving
+        // source and target nodes when we check for their presence) has to do
+        // with the need to avoid multiple mutable borrows.
+
+        // check source element presence
+        self.find_by_id_mut(source)
+            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .ok_or(EstablishSequenceFlowError::SourceNotFound)?;
+
+        // check target element presence
+        self.find_by_id_mut(target)
+            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .ok_or(EstablishSequenceFlowError::TargetNotFound)?;
+
+        let sequence_flow = SequenceFlow {
+            id: Some(id.to_string()),
+            source_ref: source.to_string(),
+            target_ref: target.to_string(),
+            ..SequenceFlow::default()
+        };
+
+        // add sequence flow
+        self.flow_elements_mut()
+            .push(FlowElement::SequenceFlow(sequence_flow));
+
+        // add outgoing
+        let source_node = self
+            .find_by_id_mut(source)
+            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .unwrap();
+
+        source_node.outgoings_mut().push(Outgoing {
+            content: Some(id.to_string()),
+        });
+
+        // add incoming
+        let target_node = self
+            .find_by_id_mut(target)
+            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .unwrap();
+        target_node.incomings_mut().push(Incoming {
+            content: Some(id.to_string()),
+        });
+
+        Ok(self)
+    }
+}
+
+#[cfg(test)]
+#[test]
+fn establishing_sequence_flow_in_process() {
+    use intertrait::cast::CastRef;
+    let mut process = Process {
+        id: Some("proc1".to_string()),
+        flow_elements: vec![
+            FlowElement::StartEvent(StartEvent {
+                id: Some("start".to_string()),
+                ..Default::default()
+            }),
+            FlowElement::EndEvent(EndEvent {
+                id: Some("end".to_string()),
+                ..Default::default()
+            }),
+        ],
+        ..Default::default()
+    };
+
+    process
+        .establish_sequence_flow("start", "end", "test")
+        .unwrap();
+
+    let seq_flow = process
+        .find_by_id("test")
+        .unwrap()
+        .downcast_ref::<SequenceFlow>()
+        .unwrap();
+    assert_eq!(seq_flow.id(), &Some("test".into()));
+    assert_eq!(seq_flow.source_ref(), "start");
+    assert_eq!(seq_flow.target_ref(), "end");
+
+    let start = process
+        .find_by_id("start")
+        .unwrap()
+        .cast::<dyn FlowNodeType>()
+        .unwrap();
+    assert_eq!(start.outgoings(), &vec![Some("test".into()).into()]);
+
+    let end = process
+        .find_by_id("end")
+        .unwrap()
+        .cast::<dyn FlowNodeType>()
+        .unwrap();
+    assert_eq!(end.incomings(), &vec![Some("test".into()).into()]);
+}
+
+#[cfg(test)]
+#[test]
+fn failing_to_establish_sequence_flow_in_process() {
+    let mut process = Process {
+        id: Some("proc1".to_string()),
+        flow_elements: vec![
+            FlowElement::StartEvent(StartEvent {
+                id: Some("start".to_string()),
+                ..Default::default()
+            }),
+            FlowElement::EndEvent(EndEvent {
+                id: Some("end".to_string()),
+                ..Default::default()
+            }),
+        ],
+        ..Default::default()
+    };
+
+    assert!(matches!(
+        process
+            .establish_sequence_flow("no_start", "end", "test")
+            .unwrap_err(),
+        EstablishSequenceFlowError::SourceNotFound
+    ));
+
+    assert!(matches!(
+        process
+            .establish_sequence_flow("start", "no_end", "test")
+            .unwrap_err(),
+        EstablishSequenceFlowError::TargetNotFound
+    ));
+}
+
+/// Establishes and returns a sequence flow between nodes
 pub fn establish_sequence_flow<F, T, S>(
     source: &mut F,
     target: &mut T,
     id: S,
 ) -> Result<SequenceFlow, EstablishSequenceFlowError>
 where
-    F: FlowNodeType + FlowNodeTypeMut,
-    T: FlowNodeType + FlowNodeTypeMut,
+    F: FlowNodeTypeMut,
+    T: FlowNodeTypeMut,
     S: Into<String>,
 {
     let mut sequence_flow = SequenceFlow::default();
@@ -154,4 +323,37 @@ fn find_by_id() {
     );
 
     assert!(definitions.find_by_id("not_to_be_found").is_none());
+}
+
+#[cfg(test)]
+#[test]
+fn find_by_id_mut() {
+    let mut proc: Process = Default::default();
+    proc.id = Some("proc".into());
+    let mut start_event: StartEvent = Default::default();
+    start_event.id = Some("start".into());
+
+    proc.flow_elements
+        .push(FlowElement::StartEvent(start_event.clone()));
+
+    let mut definitions: Definitions = Default::default();
+    definitions
+        .root_elements
+        .push(RootElement::Process(proc.clone()));
+    let proc_ = definitions
+        .find_by_id_mut("proc")
+        .expect("`proc` should have been found");
+    assert_eq!(proc_.element(), Element::Process);
+    assert_eq!(proc_.downcast_ref::<Process>().unwrap(), &proc);
+
+    let start_event_ = definitions
+        .find_by_id_mut("start")
+        .expect("`start` should have been found");
+    assert_eq!(start_event_.element(), Element::StartEvent);
+    assert_eq!(
+        start_event_.downcast_ref::<StartEvent>().unwrap(),
+        &start_event
+    );
+
+    assert!(definitions.find_by_id_mut("not_to_be_found").is_none());
 }
