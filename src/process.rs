@@ -56,6 +56,11 @@ enum Request {
 #[derive(Clone, Debug)]
 #[non_exhaustive]
 pub enum Log {
+    /// Flow node has received an incoming flow (activated for each incoming flow)
+    FlowNodeIncoming {
+        node: Box<dyn FlowNodeType>,
+        incoming_index: flow_node::IncomingIndex,
+    },
     /// Flow node execution has been completed
     FlowNodeCompleted { node: Box<dyn FlowNodeType> },
     /// No default path is available for a node
@@ -163,6 +168,33 @@ struct Scheduler {
 // should probably be rethought.
 struct NamedStreamFuture<T>(String, StreamFuture<T>);
 
+use std::ops::{Deref, DerefMut};
+
+impl<T> Deref for NamedStreamFuture<T>
+where
+    T: Unpin + Stream,
+{
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        // FIXME: is there any better way to do this?
+        // I *think* it's reasonable to assume it won't panic in runtime
+        // because when it's used, scheduler is not doing anything with the future.
+        // However, I am not confident in this.
+        self.1.get_ref().unwrap()
+    }
+}
+
+impl<T> DerefMut for NamedStreamFuture<T>
+where
+    T: Unpin + Stream,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        // FIXME: see above in `Deref` implementation
+        self.1.get_mut().unwrap()
+    }
+}
+
 impl<T> Future for NamedStreamFuture<T>
 where
     T: Unpin + Stream,
@@ -265,8 +297,42 @@ impl Scheduler {
                    },
                next = self.flow_nodes.next() => {
                    if let Some((id, (action, mut flow_node))) = next  {
-                       match action {
-                           Some(flow_node::Action::ProbeOutgoingSequenceFlows(indices)) => {
+                       // Figure out if this action should be transformed, kept as is, or dropped
+                       enum Control {
+                           Proceed(Option<flow_node::Action>),
+                           Drop
+                       }
+                       let control = flow_node.element().incomings().iter().
+                           fold(Control::Proceed(action), |control, incoming| {
+                               match control {
+                                   // once the action has been dropped, it's not checked against
+                                   // any other incoming flows
+                                   Control::Drop => control,
+                                   Control::Proceed(action) => {
+                                       let mut matching_predecessor = self.flow_nodes.iter_mut().find(|node|
+                                           node.element().outgoings().iter()
+                                           .any(|outgoing| outgoing.content == incoming.content));
+                                           if let Some(ref mut node) = matching_predecessor {
+                                               // it's ok to unwrap here because we already know such
+                                               // predecessor exists
+                                               let index = node.element().outgoings().iter().
+                                                   enumerate().find_map(|(i, name)| if name.content == incoming.content {
+                                                       Some(i)
+                                                   } else {
+                                                       None
+                                                   }).unwrap();
+                                               match node.handle_outgoing_action(index, action) {
+                                                   None => Control::Drop,
+                                                   Some(action) => Control::Proceed(action),
+                                                   }
+                                           } else {
+                                               Control::Proceed(action)
+                                           }
+                                   }
+                               }
+                           });
+                       match control {
+                           Control::Proceed(Some(flow_node::Action::ProbeOutgoingSequenceFlows(indices))) => {
                                let outgoings = flow_node.element().outgoings().clone();
                                for index in indices {
                                    let seq_flow = {
@@ -281,7 +347,7 @@ impl Scheduler {
                                    }
                                }
                            }
-                           Some(flow_node::Action::Flow(indices)) => {
+                           Control::Proceed(Some(flow_node::Action::Flow(indices))) => {
                                let outgoings = flow_node.element().outgoings().clone();
                                for index in indices {
                                    // FIXME: see above about ID-less flow nodes
@@ -308,6 +374,10 @@ impl Scheduler {
                                                                None
                                                            })
                                                        .map(|index| {
+                                                           let _ = log_broadcast.send(Log::FlowNodeIncoming {
+                                                               node: node.element().clone(),
+                                                               incoming_index: index
+                                                           });
                                                            node.incoming(index)
                                                        }));
 
@@ -317,15 +387,16 @@ impl Scheduler {
                                    }
                                }
                            }
-                           Some(flow_node::Action::Complete) => {
+                           Control::Proceed(Some(flow_node::Action::Complete)) => {
                                let _ = log_broadcast.send(Log::FlowNodeCompleted { node: flow_node.element().clone() });
                            }
-                           None => {
+                           Control::Proceed(None) => {
                                if self.flow_nodes.is_empty() {
                                    let _ = log_broadcast.send(Log::Done);
                                }
                                continue
                            }
+                           Control::Drop => {}
                        }
                        // Reschedule the flow node
                        self.flow_nodes.push(NamedStreamFuture(id, flow_node.into_future()));
@@ -454,6 +525,59 @@ mod tests {
                     Some(start_event) if start_event.id().as_ref().unwrap() == "start2")
                 } else {
                     false
+                })
+                .await
+        );
+    }
+
+    #[tokio::test]
+    async fn incoming_log() {
+        let mut definitions = Definitions {
+            root_elements: vec![Process {
+                id: Some("proc1".into()),
+                flow_elements: vec![
+                    StartEvent {
+                        id: Some("start".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                    EndEvent {
+                        id: Some("end".into()),
+                        ..Default::default()
+                    }
+                    .into(),
+                ],
+                ..Default::default()
+            }
+            .into()],
+            ..Default::default()
+        };
+
+        definitions
+            .find_by_id_mut("proc1")
+            .unwrap()
+            .downcast_mut::<Process>()
+            .unwrap()
+            .establish_sequence_flow("start", "end", "s1", None)
+            .unwrap();
+
+        let model = model::Model::new(definitions).spawn().await;
+        let handle = model.processes().await.unwrap().pop().unwrap();
+        let mut mailbox = Mailbox::new(handle.log_receiver());
+        assert!(handle.start().await.is_ok());
+        assert!(
+            mailbox
+                .receive(|e| {
+                    if let Log::FlowNodeIncoming {
+                        node,
+                        incoming_index: 0,
+                    } = e
+                    {
+                        matches!(node.downcast_ref::<EndEvent>(),
+                    Some(end_event) if end_event.id().as_ref().unwrap() == "end")
+                    } else {
+                        false
+                    }
                 })
                 .await
         );

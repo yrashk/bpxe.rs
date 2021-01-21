@@ -1,9 +1,9 @@
 //! # Flow Node
 use crate::bpmn::schema::{
-    DocumentElement, Element, EndEvent, ExclusiveGateway, FlowNodeType, IntermediateThrowEvent,
-    ParallelGateway, SequenceFlow, StartEvent,
+    DocumentElement, Element, EndEvent, EventBasedGateway, ExclusiveGateway, FlowNodeType,
+    IntermediateCatchEvent, IntermediateThrowEvent, ParallelGateway, SequenceFlow, StartEvent,
 };
-use crate::event::{end_event, intermediate_throw_event, start_event};
+use crate::event::{end_event, intermediate_catch_event, intermediate_throw_event, start_event};
 use crate::gateway;
 use crate::process::{self};
 use futures::stream::Stream;
@@ -23,9 +23,11 @@ use thiserror::Error;
 pub enum State {
     StartEvent(start_event::State),
     EndEvent(end_event::State),
+    IntermediateThrowEvent(intermediate_throw_event::State),
+    IntermediateCatchEvent(intermediate_catch_event::State),
     ParallelGateway(gateway::parallel::State),
     ExclusiveGateway(gateway::exclusive::State),
-    IntermediateThrowEvent(intermediate_throw_event::State),
+    EventBasedGateway(gateway::event_based::State),
 }
 
 /// State handling errors
@@ -93,6 +95,24 @@ pub trait FlowNode: Stream<Item = Action> + Send + Unpin {
     ) {
     }
 
+    /// Maps outgoing node's action to a new action (or inaction)
+    ///
+    /// This is useful for nodes with more complex processing (for example, event-based gateway)
+    /// that need to handle the result action of the outgoing node.
+    ///
+    /// Returning `None` will mean that the action has to be dropped, returning `Some(action)` will
+    /// replace the original action with the returned one in the flow.
+    ///
+    /// Default implementation does nothing (returns the same action)
+    #[allow(unused_variables)]
+    fn handle_outgoing_action(
+        &mut self,
+        index: OutgoingIndex,
+        action: Option<Action>,
+    ) -> Option<Option<Action>> {
+        Some(action)
+    }
+
     /// Reports incoming sequence flow
     ///
     /// Default implementation does nothing.
@@ -107,12 +127,19 @@ pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
     match element.element() {
         Element::StartEvent => make::<StartEvent, start_event::StartEvent>(element),
         Element::EndEvent => make::<EndEvent, end_event::EndEvent>(element),
-        Element::ParallelGateway => make::<ParallelGateway, gateway::parallel::Gateway>(element),
-        Element::ExclusiveGateway => make::<ExclusiveGateway, gateway::exclusive::Gateway>(element),
         Element::IntermediateThrowEvent => make::<
             IntermediateThrowEvent,
             intermediate_throw_event::IntermediateThrowEvent,
         >(element),
+        Element::IntermediateCatchEvent => make::<
+            IntermediateCatchEvent,
+            intermediate_catch_event::IntermediateCatchEvent,
+        >(element),
+        Element::ParallelGateway => make::<ParallelGateway, gateway::parallel::Gateway>(element),
+        Element::ExclusiveGateway => make::<ExclusiveGateway, gateway::exclusive::Gateway>(element),
+        Element::EventBasedGateway => {
+            make::<EventBasedGateway, gateway::event_based::Gateway>(element)
+        }
         _ => None,
     }
 }

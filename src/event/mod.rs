@@ -5,11 +5,13 @@ pub mod end_event;
 pub use end_event::EndEvent;
 pub mod intermediate_throw_event;
 pub use intermediate_throw_event::IntermediateThrowEvent;
+pub mod intermediate_catch_event;
+pub use intermediate_catch_event::IntermediateCatchEvent;
 
 use crate::bpmn::schema::*;
 use std::convert::TryFrom;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
 pub enum ProcessEvent {
     /// Process has started
