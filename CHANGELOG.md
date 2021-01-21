@@ -1,0 +1,25 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+<!-- next-header -->
+
+## [Unreleased] - ReleaseDate
+
+### Added
+- BPMN data model (`bpmn::schema`)
+- XML parser (limited, see #1 and #2)
+- Serde serialization/deserialization support (limited, see #3)
+- Process scheduler (`bpmn::process`)
+- Parallel Gateway (`bpmn::gateway::parallel`)
+- Exclusive Gateway (`bpmn::gateway::exclusive`)
+- Event-based Gateway (`bpmn::gateway::event`)
+- Start Event (`bpmn::event::start_event`)
+- End Event (`bpmn::event::end_event`)
+- Intermediate Throw Event (`bpmn::event::throw_event`) (limited)
+- Intermediate Catch Event (`bpmn::event::catch_event`) (limited)
+- Rudimentary expression language evaluation (`bpmn::language`)
+
+<!-- next-url -->
