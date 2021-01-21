@@ -344,6 +344,16 @@
                     <xsl:with-param name="type" select="$type"></xsl:with-param>
                 </xsl:call-template>
                 
+                <xsl:if test="$typeName = 'tExpression'">
+                    // FIXME: This is a hack because obviously there's nothing about xsi:type
+                    // in BPMN schema (and rightfully so)
+                    #[tia(rg*="xsi_type",s)]
+                    #[xml(attr = "xsi:type")]
+                    pub xsi_type: Option&lt;String&gt;,
+                    <xsl:text>#[tia("DocumentElementWithContent",rg*="content",
+                    "DocumentElementWithContentMut",s,rmg*="content_mut")]</xsl:text>
+                    <xsl:text>#[xml(text)]pub content: Option&lt;String&gt;,</xsl:text>
+                </xsl:if>
                 
                 <xsl:text>}</xsl:text>
                 
@@ -379,6 +389,9 @@
                     <xsl:value-of select="local:struct-case($extTypeName)"/>
                     <xsl:text>Type +</xsl:text>
                 </xsl:if>
+                <xsl:if test="$type = 'tExtension'">
+                    <xsl:text>DocumentElemenWithContent</xsl:text>
+                </xsl:if>
                 <xsl:text>Downcast + Debug + Send + DynClone {</xsl:text>
                 <xsl:call-template name="traitFns">
                     <xsl:with-param name="type" select="$type"/>
@@ -395,6 +408,9 @@
                     <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
                     <xsl:value-of select="local:struct-case($extTypeName)"/>
                     <xsl:text>TypeMut +</xsl:text>
+                </xsl:if>
+                <xsl:if test="$type = 'tExtension'">
+                    <xsl:text>DocumentElemenWithContent</xsl:text>
                 </xsl:if>
                 <xsl:text>Downcast + Debug + Send + DynClone + </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>Type  {</xsl:text>
                 <xsl:call-template name="mutTraitFns">
@@ -497,13 +513,7 @@
             <xsl:text>,</xsl:text>
         </xsl:for-each>
         
-        <!-- Any -->
-        <xsl:if test="$type//xs:any">
-            <xsl:text>
-                #[xml(text, cdata)]
-                content: String,</xsl:text>
-        </xsl:if>
-        
+         
     </xsl:template>
     
     <xsl:template name="documentElementTrait">

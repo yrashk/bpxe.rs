@@ -1,10 +1,11 @@
 //! # Process
 use crate::bpmn::schema::{
-    DocumentElementContainer, Element as E, FlowNodeType, Process as Element, ProcessType,
-    SequenceFlow,
+    DocumentElementContainer, Element as E, Expression, FlowNodeType, Process as Element,
+    ProcessType, SequenceFlow,
 };
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
+use crate::language::ExpressionEvaluator;
 use crate::model;
 use futures::future::FutureExt;
 use futures::stream::{FuturesUnordered, Stream, StreamExt, StreamFuture};
@@ -57,6 +58,10 @@ enum Request {
 pub enum Log {
     /// Flow node execution has been completed
     FlowNodeCompleted { node: Box<dyn FlowNodeType> },
+    /// No default path is available for a node
+    NoDefaultPath { node: Box<dyn FlowNodeType> },
+    /// Expression evaluation error
+    ExpressionError { error: String },
     /// There are no more flow nodes to schedule, ever
     Done,
 }
@@ -203,6 +208,46 @@ impl Scheduler {
         let mut join_handle = None;
         let element = self.process.element();
         let log_broadcast = self.process.log_broadcast();
+        let expression_evaluator: ExpressionEvaluator = Default::default();
+        let default_expression_language = self
+            .process
+            .model()
+            .definitions()
+            .expression_language
+            .clone();
+
+        // This function is async even though nothing in it is asynchronous
+        // at this moment. This is done with an expectation that expression
+        // evaluation *might* become asynchronous in the future.
+        async fn probe_sequence_flow(
+            expression_evaluator: &ExpressionEvaluator,
+            seq_flow: &SequenceFlow,
+            default_expression_language: Option<&String>,
+            log_broadcast: broadcast::Sender<Log>,
+        ) -> bool {
+            if let Some(Expression {
+                xsi_type: Some(ref xsi_type),
+                content: Some(ref content),
+                ..
+            }) = seq_flow.condition_expression
+            {
+                if xsi_type == "tFormalExpression" {
+                    match expression_evaluator.eval(default_expression_language, content) {
+                        Ok(result) => result,
+                        Err(err) => {
+                            let _ = log_broadcast.send(Log::ExpressionError {
+                                error: format!("{:?}", err),
+                            });
+                            false
+                        }
+                    }
+                } else {
+                    true
+                }
+            } else {
+                true
+            }
+        }
         loop {
             task::yield_now().await;
             tokio::select! {
@@ -229,12 +274,10 @@ impl Scheduler {
                                            .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
                                    };
                                    if let Some(seq_flow) = seq_flow {
-                                       // This yield is here to simulate asynchronous
-                                       // condition expression testing
-                                       task::yield_now().await;
-                                       // TODO: actually probe them when condition expressions will be
-                                       // feasible
-                                       flow_node.sequence_flow(index, &seq_flow, true);
+                                       let success = probe_sequence_flow(&expression_evaluator, &seq_flow,
+                                           default_expression_language.as_ref(),
+                                           log_broadcast.clone()).await;
+                                       flow_node.sequence_flow(index, &seq_flow, success);
                                    }
                                }
                            }
@@ -242,8 +285,16 @@ impl Scheduler {
                                let outgoings = flow_node.element().outgoings().clone();
                                for index in indices {
                                    // FIXME: see above about ID-less flow nodes
-                                   if let Some(seq_flow) = element.find_by_id(outgoings[index].as_ref().unwrap_or(&"".to_string()))
-                                       .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>()) {
+                                   let seq_flow = {
+                                       element.find_by_id(outgoings[index].as_ref().unwrap_or(&"".to_string()))
+                                           .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
+                                   };
+
+                                   if let Some(seq_flow) = seq_flow {
+                                       let success = probe_sequence_flow(&expression_evaluator, &seq_flow,
+                                           default_expression_language.as_ref(),
+                                           log_broadcast.clone()).await;
+                                       if success {
                                            for next_node in self.flow_nodes.iter_mut() {
                                                if next_node.0 == seq_flow.target_ref {
                                                    let target_node = &mut next_node.1;
@@ -263,6 +314,7 @@ impl Scheduler {
                                                }
                                            }
                                        }
+                                   }
                                }
                            }
                            Some(flow_node::Action::Complete) => {

@@ -1,6 +1,7 @@
 use bpxe;
 
 #[test]
+#[ignore]
 fn parse_sample() {
     let sample = include_str!("fixtures/sample.bpmn");
     let definitions = bpxe::bpmn::parse(sample).unwrap();

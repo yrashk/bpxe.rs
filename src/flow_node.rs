@@ -1,7 +1,7 @@
 //! # Flow Node
 use crate::bpmn::schema::{
-    DocumentElement, Element, EndEvent, FlowNodeType, IntermediateThrowEvent, ParallelGateway,
-    SequenceFlow, StartEvent,
+    DocumentElement, Element, EndEvent, ExclusiveGateway, FlowNodeType, IntermediateThrowEvent,
+    ParallelGateway, SequenceFlow, StartEvent,
 };
 use crate::event::{end_event, intermediate_throw_event, start_event};
 use crate::gateway;
@@ -24,6 +24,7 @@ pub enum State {
     StartEvent(start_event::State),
     EndEvent(end_event::State),
     ParallelGateway(gateway::parallel::State),
+    ExclusiveGateway(gateway::exclusive::State),
     IntermediateThrowEvent(intermediate_throw_event::State),
 }
 
@@ -107,6 +108,7 @@ pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
         Element::StartEvent => make::<StartEvent, start_event::StartEvent>(element),
         Element::EndEvent => make::<EndEvent, end_event::EndEvent>(element),
         Element::ParallelGateway => make::<ParallelGateway, gateway::parallel::Gateway>(element),
+        Element::ExclusiveGateway => make::<ExclusiveGateway, gateway::exclusive::Gateway>(element),
         Element::IntermediateThrowEvent => make::<
             IntermediateThrowEvent,
             intermediate_throw_event::IntermediateThrowEvent,

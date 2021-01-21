@@ -16,6 +16,7 @@ pub mod bpmn;
 pub mod event;
 pub mod flow_node;
 pub mod gateway;
+pub mod language;
 pub mod model;
 pub mod process;
 

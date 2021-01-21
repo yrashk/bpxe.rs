@@ -4825,8 +4825,6 @@ pub struct Documentation {
     #[xml(attr = "textFormat")]
     #[tia("DocumentationType",rg*="text_format","DocumentationTypeMut",s)]
     pub text_format: Option<String>,
-    #[xml(text, cdata)]
-    content: String,
 }
 #[cast_to]
 impl DocumentElement for Documentation {
@@ -5805,6 +5803,15 @@ pub struct Expression {
     #[xml(child = "bpmn:extensionElements")]
     #[tia("BaseElementWithMixedContentType",rg*="extension_elements","BaseElementWithMixedContentTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
+    // FIXME: This is a hack because obviously there's nothing about xsi:type
+    // in BPMN schema (and rightfully so)
+    #[tia(rg*="xsi_type",s)]
+    #[xml(attr = "xsi:type")]
+    pub xsi_type: Option<String>,
+    #[tia("DocumentElementWithContent",rg*="content",
+                    "DocumentElementWithContentMut",s,rmg*="content_mut")]
+    #[xml(text)]
+    pub content: Option<String>,
 }
 #[cast_to]
 impl DocumentElement for Expression {
@@ -5925,10 +5932,7 @@ impl_downcast!(ExtensionTypeMut);
 /// (See codegen-rust.xsl)
 #[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:extensionElements")]
-pub struct ExtensionElements {
-    #[xml(text, cdata)]
-    content: String,
-}
+pub struct ExtensionElements {}
 #[cast_to]
 impl DocumentElement for ExtensionElements {
     fn element(&self) -> Element {
@@ -11961,10 +11965,7 @@ impl_downcast!(ScriptTaskTypeMut);
 /// (See codegen-rust.xsl)
 #[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:script")]
-pub struct Script {
-    #[xml(text, cdata)]
-    content: String,
-}
+pub struct Script {}
 #[cast_to]
 impl DocumentElement for Script {
     fn element(&self) -> Element {
@@ -13480,10 +13481,7 @@ impl_downcast!(TextAnnotationTypeMut);
 /// (See codegen-rust.xsl)
 #[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]
 #[xml(tag = "bpmn:text")]
-pub struct Text {
-    #[xml(text, cdata)]
-    content: String,
-}
+pub struct Text {}
 #[cast_to]
 impl DocumentElement for Text {
     fn element(&self) -> Element {

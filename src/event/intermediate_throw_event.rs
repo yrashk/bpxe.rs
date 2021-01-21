@@ -1,5 +1,5 @@
 //! # Intermediate Throw Event flow node
-use crate::bpmn::schema::{FlowNodeType, IntermediateThrowEvent as Element};
+use crate::bpmn::schema::{EventDefinitionType, FlowNodeType, IntermediateThrowEvent as Element};
 use crate::event::ProcessEvent;
 use crate::flow_node::{self, Action, FlowNode, IncomingIndex};
 use futures::stream::Stream;
@@ -89,6 +89,20 @@ impl Stream for IntermediateThrowEvent {
                 if let Some(event_broadcaster) = self.event_broadcaster.as_ref() {
                     if self.element.event_definitions.is_empty() {
                         let _ = event_broadcaster.send(ProcessEvent::NoneEvent);
+                    } else {
+                        for event_definition in &self.element.event_definitions {
+                            use intertrait::cast::CastBox;
+                            if let Ok(definition) = event_definition
+                                .clone()
+                                .into_inner()
+                                .cast::<dyn EventDefinitionType>()
+                            {
+                                use std::convert::TryFrom;
+                                if let Ok(event) = ProcessEvent::try_from(definition) {
+                                    let _ = event_broadcaster.send(event);
+                                }
+                            }
+                        }
                     }
                 }
                 Poll::Ready(Some(Action::Flow(
@@ -144,9 +158,9 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "throw", "s1")
+            .establish_sequence_flow("start", "throw", "s1", None)
             .unwrap()
-            .establish_sequence_flow("throw", "end", "s2")
+            .establish_sequence_flow("throw", "end", "s2", None)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;
@@ -159,6 +173,70 @@ mod tests {
         assert!(
             mailbox
                 .receive(|e| matches!(e, ProcessEvent::NoneEvent))
+                .await
+        );
+    }
+
+    #[tokio::test]
+    async fn throw_signal_event() {
+        let mut definitions = Definitions {
+            root_elements: vec![
+                Process {
+                    id: Some("proc1".into()),
+                    flow_elements: vec![
+                        StartEvent {
+                            id: Some("start".into()),
+                            ..Default::default()
+                        }
+                        .into(),
+                        IntermediateThrowEvent {
+                            id: Some("throw".into()),
+                            event_definitions: vec![SignalEventDefinition {
+                                signal_ref: Some("sig1".into()),
+                                ..Default::default()
+                            }
+                            .into()],
+                            ..Default::default()
+                        }
+                        .into(),
+                        EndEvent {
+                            id: Some("end".into()),
+                            ..Default::default()
+                        }
+                        .into(),
+                    ],
+                    ..Default::default()
+                }
+                .into(),
+                Signal {
+                    id: Some("sig1".into()),
+                    ..Default::default()
+                }
+                .into(),
+            ],
+            ..Default::default()
+        };
+
+        definitions
+            .find_by_id_mut("proc1")
+            .unwrap()
+            .downcast_mut::<Process>()
+            .unwrap()
+            .establish_sequence_flow("start", "throw", "s1", None)
+            .unwrap()
+            .establish_sequence_flow("throw", "end", "s2", None)
+            .unwrap();
+
+        let model = model::Model::new(definitions).spawn().await;
+
+        let handle = model.processes().await.unwrap().pop().unwrap();
+        let mut mailbox = Mailbox::new(handle.event_receiver());
+
+        assert!(handle.start().await.is_ok());
+
+        assert!(
+            mailbox
+                .receive(|e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "sig1"))
                 .await
         );
     }
