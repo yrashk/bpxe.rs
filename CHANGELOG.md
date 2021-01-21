@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - BPMN data model (`bpmn::schema`)
-- XML parser (limited, see #1 and #2)
-- Serde serialization/deserialization support (limited, see #3)
+- XML parser (limited, see [#1][i1] and [#2][i2])
+- Serde serialization/deserialization support (limited, see [#3][i3]))
 - Process scheduler (`bpmn::process`)
 - Parallel Gateway (`bpmn::gateway::parallel`)
 - Exclusive Gateway (`bpmn::gateway::exclusive`)
@@ -26,3 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- next-url -->
 [Unreleased]: https://github.com/bpxe/bpxe/compare/v0.1.0...HEAD
+
+[i1]: https://github.com/bpxe/bpxe/issues/1
+[i2]: https://github.com/bpxe/bpxe/issues/2
+[i3]: https://github.com/bpxe/bpxe/issues/3
