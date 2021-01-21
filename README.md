@@ -1,5 +1,7 @@
 # BPXE (Business Process eXecution Engine)
 
+[![](http://meritbadge.herokuapp.com/bpxe)](https://crates.io/crates/bpxe)
+
 BPMN 2.0 based business process execution engine implemented in
 [Rust](https://rust-lang.org). BPMN stands for **Business Process Model and
 Notation**. BPMN's goal is to help stakeholders to have a shared understanding
