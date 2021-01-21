@@ -26,4 +26,5 @@ starting point would be to add this to your Cargo.toml:
 bpxe = "0.1.0"
 ```
 
-You can also check out [API documentation](https://docs.rs/bpxe).
+You can also check out [latest release API documentation](https://docs.rs/bpxe), as well as
+bleeding edge [master documentation](https://docs.bpxe.rs/master/bpxe).
