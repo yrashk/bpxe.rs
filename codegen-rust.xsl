@@ -152,6 +152,7 @@
         <xsl:text>
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
             use strong_xml::XmlRead;
+            use serde::{Serialize, Deserialize};
             use derive_more::{Deref, From};
             use std::fmt::Debug;
             use dyn_clone::DynClone;
@@ -183,7 +184,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text>#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug)]#[from(forward)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                <xsl:text>#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]#[from(forward)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($name)"/>
                 <xsl:text xml:space="preserve"> {</xsl:text>
@@ -218,8 +219,9 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(Hash, XmlRead, Clone, PartialEq, Debug)]</xsl:text>
+                <xsl:text >#[derive(Hash, XmlRead, Clone, PartialEq, Debug, Deserialize, Serialize)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                <xsl:text>#[serde(tag = "type")]</xsl:text>
                 <xsl:text xml:space="preserve">pub enum </xsl:text>
                 <xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{</xsl:text>
@@ -332,7 +334,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug)]</xsl:text>
+                <xsl:text >#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug, Serialize, Deserialize)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($typeName)"/>

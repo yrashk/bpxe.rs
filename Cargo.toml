@@ -12,7 +12,7 @@ strong-xml = "0.6.0"
 # due to deficiencies of strong-xml
 sxd-document = "0.3.2"
 thiserror = "1.0"
-num-bigint = "0.3.1"
+num-bigint = { version = "0.3.1", features = ["serde"] }
 # Used for schema traversals
 downcast-rs = "1.2"
 # Used for casting between traits
@@ -30,6 +30,7 @@ rhai = { version = "0.19.10", features = ["sync", "serde"], optional = true }
 
 [dev-dependencies]
 async-trait = "0.1"
+serde_yaml = "0.8"
 
 [features]
 default = ["rhai"]
