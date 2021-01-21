@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+## [0.1.0] - 2021-01-21
+
 ### Added
 - BPMN data model (`bpmn::schema`)
 - XML parser (limited, see #1 and #2)
@@ -23,3 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rudimentary expression language evaluation (`bpmn::language`)
 
 <!-- next-url -->
+[Unreleased]: https://github.com/bpxe/bpxe/compare/v0.1.0...HEAD

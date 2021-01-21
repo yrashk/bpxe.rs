@@ -21,7 +21,7 @@ starting point would be to add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bpxe = "0.1.0-dev"
+bpxe = "0.1.0"
 ```
 
 You can also check out [API documentation](https://docs.rs/bpxe).
