@@ -16,7 +16,7 @@
       <bpmn:outgoing>x4</bpmn:outgoing>
     </bpmn:task>
     <bpmn:sequenceFlow id="x2" name="x2&#10;&#10;" sourceRef="either" targetRef="left">
-            <bpmn:conditionExpression>a</bpmn:conditionExpression>
+            <bpmn:conditionExpression xsi:type="tFormalExpression">a</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:task id="right" name="right">
       <bpmn:incoming>x3</bpmn:incoming>
