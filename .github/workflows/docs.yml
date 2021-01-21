@@ -39,9 +39,11 @@ jobs:
     - name: Build docs
       run: |-
         cargo doc --all-features
-
-    - name: Deploy
-      run: |-
         mkdir -p content
         mv target/doc/* content
-        gsutil -m rsync -R content gs://$GCS_DOCS_BUCKET/${{ matrix.branch }}
+
+    - name: Deploy
+      uses: google-github-actions/upload-cloud-storage@main
+      with:
+        path: content
+        destination: ${{ secrets.GCS_DOCS_BUCKET }}/${{ matrix.branch }}
