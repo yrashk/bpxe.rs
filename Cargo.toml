@@ -1,9 +1,13 @@
 [package]
 name = "bpxe"
-version = "0.1.0"
+version = "0.1.0-dev"
 authors = ["Yurii Rashkovskii <yrashk@gmail.com>"]
 edition = "2018"
-
+license = "Apache-2.0"
+keywords = ["bpmn", "workflow"]
+repository = "https://github.com/bpxe/bpxe"
+readme = "README.md"
+description = "Business Process eXecution Engine"
 
 [dependencies]
 # Used to parse BPMN to a typed schema

@@ -13,3 +13,15 @@ a particular focus on type and memory safety, performance and multi-tenancy capa
 (ensuring that a great deal of processes should be able to operate even on
 a single server concurrently) and resistant to failures so that workflows can
 be resumed with little to no consideration when a failure happen.
+
+## Usage
+
+Since BPXE is not a server in its own right, but rather a library, a good
+starting point would be to add this to your Cargo.toml:
+
+```toml
+[dependencies]
+bpxe = "0.1.0-dev"
+```
+
+You can also check out [API documentation](https://docs.rs/bpxe).
