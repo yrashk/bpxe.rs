@@ -5,9 +5,6 @@ on:
     branches:
     - master
 
-env:
-  GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
-
 jobs:
   publish:
 
@@ -46,7 +43,5 @@ jobs:
         mv target/doc/* content
 
     - name: Deploy
-      uses: google-github-actions/upload-cloud-storage@main
-      with:
-        path: content
-        destination: ${{ secrets.GCS_DOCS_BUCKET }}/${{ matrix.branch }}
+      run: |-
+        gsutil -m rsync -R content gs://${{ secrets.GCS_DOCS_BUCKET }}/${{ matrix.branch }}
