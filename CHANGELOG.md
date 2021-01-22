@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+## [0.1.1] - 2021-01-22
+
 ### Changed
 
 - single-field BPMN schema structures were changed to the contained types
@@ -33,7 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rudimentary expression language evaluation (`bpmn::language`)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/bpxe/bpxe/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bpxe/bpxe/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/bpxe/bpxe/compare/v0.1.0...v0.1.1
 
 [i1]: https://github.com/bpxe/bpxe/issues/1
 [i2]: https://github.com/bpxe/bpxe/issues/2
