@@ -18,7 +18,7 @@ fn parse_formal_expr() {
         .downcast_ref::<SequenceFlow>()
         .unwrap();
     assert!(
-        matches!(&flow.condition_expression, 
+        matches!(&flow.condition_expression,
             Some(Expr::FormalExpression(FormalExpression{ content: Some(content), .. })) if content == "a")
     );
 }
