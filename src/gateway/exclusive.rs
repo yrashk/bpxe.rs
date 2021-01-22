@@ -412,7 +412,7 @@ mod tests {
                 "f2s",
                 Some(Expression {
                     #[cfg(feature = "rhai")]
-                    content: Some("flow".into()),
+                    content: Some("false".into()),
                     xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
@@ -549,7 +549,7 @@ mod tests {
                 "f2s",
                 Some(Expression {
                     #[cfg(feature = "rhai")]
-                    content: Some("flow".into()),
+                    content: Some("false".into()),
                     xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
