@@ -184,36 +184,7 @@
                 <xsl:with-param name="type" select="." />
             </xsl:call-template>
         </xsl:for-each>
-        
-       <!-- <xsl:for-each-group select="$schema//xs:element[@name and @type]" group-by="@name">
-            <xsl:variable name="e" select="current-group()[1]"/>
-            <xsl:if test="contains($e/@type, ':')">
-                <xsl:variable name="name" select="$e/@name"/>
-                <xsl:variable name="type" select="$e/@type"/>
-                
-                <xsl:text xml:space="preserve">
-                    /// Auto-generated from BPNM schema
-                    ///
-                    /// (See codegen-rust.xsl)
-                </xsl:text>
-                <xsl:text>#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]#[from(forward)]#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
-                <xsl:text xml:space="preserve">pub struct </xsl:text>
-                <xsl:value-of select="local:struct-case($name)"/>
-                <xsl:text xml:space="preserve"> {</xsl:text>
-                <xsl:text>#[xml(text, cdata)]</xsl:text>
-                <xsl:text>pub content:</xsl:text><xsl:value-of select="local:attributeType($type)"/>
-                <xsl:text xml:space="preserve">}</xsl:text>
-                
-                <xsl:call-template name="documentElementTrait">
-                    <xsl:with-param name="name" select="$name"></xsl:with-param>
-                    <xsl:with-param name="typeName" select="$name"></xsl:with-param>
-                    <xsl:with-param name="elements" select="()"></xsl:with-param>
-                    <xsl:with-param name="id" select="false()"></xsl:with-param>
-                    <xsl:with-param name="skipContainer" select="false()"/>
-                </xsl:call-template>
-                
-            </xsl:if>
-        </xsl:for-each-group>-->
+    
     </xsl:template>
     
     
