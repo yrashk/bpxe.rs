@@ -11,12 +11,6 @@
         select="(/ | document(/xs:schema/xs:include/@schemaLocation))/xs:schema"/>
     <xsl:variable name="elements" select="$schema//xs:element"/>
     
-    <xsl:accumulator name="knownElements" initial-value="map{}">
-        <xsl:accumulator-rule match="xs:element[@name]" select="map:put($value, string(./@name), true())" phase="end"/>
-    </xsl:accumulator>
-    
-    <xsl:mode use-accumulators="#all"/>
-    
     <xsl:function name="local:underscoreCase">
         <xsl:param name="string"/>
         <xsl:choose>
