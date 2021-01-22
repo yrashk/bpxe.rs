@@ -168,6 +168,7 @@
             use std::fmt::Debug;
             use dyn_clone::DynClone;
             use tia::Tia;
+            use super::*;
         </xsl:text>
         
         <!-- Generate enum with all elements -->

@@ -1,4 +1,5 @@
 // This file is generated from BPMN 2.0 schema using `codegen.sh` script
+use super::*;
 use dyn_clone::DynClone;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
