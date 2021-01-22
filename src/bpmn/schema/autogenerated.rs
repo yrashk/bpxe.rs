@@ -1,5 +1,4 @@
 // This file is generated from BPMN 2.0 schema using `codegen.sh` script
-use derive_more::{Deref, From};
 use dyn_clone::DynClone;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -547,15 +546,15 @@ pub struct AdHocSubProcess {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -1176,15 +1175,15 @@ pub struct BoundaryEvent {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(child = "bpmn:property")]
     #[tia("EventType",rg*="properies","EventTypeMut",s,rmg*="properies_mut")]
     pub properies: Vec<Property>,
@@ -1214,9 +1213,9 @@ pub struct BoundaryEvent {
     )]
     #[tia("CatchEventType",rg*="event_definitions","CatchEventTypeMut",s,rmg*="event_definitions_mut")]
     pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
+    #[xml(flatten_text = "bpmn:eventDefinitionRef")]
     #[tia("CatchEventType",rg*="event_definition_refs","CatchEventTypeMut",s,rmg*="event_definition_refs_mut")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
+    pub event_definition_refs: Vec<String>,
     #[xml(attr = "cancelActivity")]
     #[tia("BoundaryEventType",rg*="cancel_activity","BoundaryEventTypeMut",s)]
     pub cancel_activity: Option<bool>,
@@ -1305,15 +1304,15 @@ pub struct BusinessRuleTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -1427,9 +1426,9 @@ pub struct CallableElement {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -1452,9 +1451,6 @@ impl DocumentElementContainer for CallableElement {
                 return Some(self);
             }
         }
-        if let Some(e) = self.supported_interface_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.io_specification.find_by_id_mut(id) {
             return Some(e);
         }
@@ -1469,9 +1465,6 @@ impl DocumentElementContainer for CallableElement {
             if id_ == id {
                 return Some(self);
             }
-        }
-        if let Some(e) = self.supported_interface_refs.find_by_id(id) {
-            return Some(e);
         }
         if let Some(e) = self.io_specification.find_by_id(id) {
             return Some(e);
@@ -1497,7 +1490,7 @@ pub trait CallableElementType: RootElementType + Downcast + Debug + Send + DynCl
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `supportedInterfaceRef` child
-    fn supported_interface_refs(&self) -> &Vec<SupportedInterfaceRef>;
+    fn supported_interface_refs(&self) -> &Vec<String>;
     /// Get value of `ioSpecification` child
     fn io_specification(&self) -> &Option<InputOutputSpecification>;
     /// Get value of `ioBinding` child
@@ -1512,9 +1505,9 @@ pub trait CallableElementTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `supportedInterfaceRef` child
-    fn supported_interface_refs_mut(&mut self) -> &mut Vec<SupportedInterfaceRef>;
+    fn supported_interface_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `supportedInterfaceRef` child
-    fn set_supported_interface_refs(&mut self, value: Vec<SupportedInterfaceRef>);
+    fn set_supported_interface_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `ioSpecification` child
     fn io_specification_mut(&mut self) -> &mut Option<InputOutputSpecification>;
     /// Set value of `ioSpecification` child
@@ -1550,15 +1543,15 @@ pub struct CallActivity {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -1672,24 +1665,24 @@ pub struct CallChoreography {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "initiatingParticipantRef")]
     #[tia("ChoreographyActivityType",rg*="initiating_participant_ref","ChoreographyActivityTypeMut",s)]
     pub initiating_participant_ref: String,
     #[xml(attr = "loopType")]
     #[tia("ChoreographyActivityType",rg*="loop_type","ChoreographyActivityTypeMut",s)]
     pub loop_type: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("ChoreographyActivityType",rg*="participant_refs","ChoreographyActivityTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
+    pub participant_refs: Vec<String>,
     #[xml(child = "bpmn:correlationKey")]
     #[tia("ChoreographyActivityType",rg*="correlation_keys","ChoreographyActivityTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
@@ -1782,12 +1775,12 @@ pub struct CallConversation {
     #[xml(attr = "name")]
     #[tia("ConversationNodeType",rg*="name","ConversationNodeTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("ConversationNodeType",rg*="participant_refs","ConversationNodeTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
-    #[xml(child = "bpmn:messageFlowRef")]
+    pub participant_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:messageFlowRef")]
     #[tia("ConversationNodeType",rg*="message_flow_refs","ConversationNodeTypeMut",s,rmg*="message_flow_refs_mut")]
-    pub message_flow_refs: Vec<MessageFlowRef>,
+    pub message_flow_refs: Vec<String>,
     #[xml(child = "bpmn:correlationKey")]
     #[tia("ConversationNodeType",rg*="correlation_keys","ConversationNodeTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
@@ -1980,7 +1973,7 @@ pub trait CatchEventType: EventType + Downcast + Debug + Send + DynClone {
     /// Get value of `eventDefinition` child
     fn event_definitions(&self) -> &Vec<EventDefinition>;
     /// Get value of `eventDefinitionRef` child
-    fn event_definition_refs(&self) -> &Vec<EventDefinitionRef>;
+    fn event_definition_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(CatchEventType);
 impl_downcast!(CatchEventType);
@@ -2007,9 +2000,9 @@ pub trait CatchEventTypeMut:
     /// Set value of `eventDefinition` child
     fn set_event_definitions(&mut self, value: Vec<EventDefinition>);
     /// Get a mutable value of `eventDefinitionRef` child
-    fn event_definition_refs_mut(&mut self) -> &mut Vec<EventDefinitionRef>;
+    fn event_definition_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `eventDefinitionRef` child
-    fn set_event_definition_refs(&mut self, value: Vec<EventDefinitionRef>);
+    fn set_event_definition_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(CatchEventTypeMut);
 impl_downcast!(CatchEventTypeMut);
@@ -2221,9 +2214,9 @@ pub struct Choreography {
     #[xml(child = "bpmn:correlationKey")]
     #[tia("CollaborationType",rg*="correlation_keys","CollaborationTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
-    #[xml(child = "bpmn:choreographyRef")]
+    #[xml(flatten_text = "bpmn:choreographyRef")]
     #[tia("CollaborationType",rg*="choreography_refs","CollaborationTypeMut",s,rmg*="choreography_refs_mut")]
-    pub choreography_refs: Vec<ChoreographyRef>,
+    pub choreography_refs: Vec<String>,
     #[xml(child = "bpmn:conversationLink")]
     #[tia("CollaborationType",rg*="conversation_links","CollaborationTypeMut",s,rmg*="conversation_links_mut")]
     pub conversation_links: Vec<ConversationLink>,
@@ -2366,7 +2359,7 @@ pub trait ChoreographyActivityType: FlowNodeType + Downcast + Debug + Send + Dyn
     /// Get value of attribute `loopType`
     fn loop_type(&self) -> &Option<String>;
     /// Get value of `participantRef` child
-    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+    fn participant_refs(&self) -> &Vec<String>;
     /// Get value of `correlationKey` child
     fn correlation_keys(&self) -> &Vec<CorrelationKey>;
 }
@@ -2381,9 +2374,9 @@ pub trait ChoreographyActivityTypeMut:
     /// Set value of attribute `loopType`
     fn set_loop_type(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
-    fn participant_refs_mut(&mut self) -> &mut Vec<ParticipantRef>;
+    fn participant_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `participantRef` child
-    fn set_participant_refs(&mut self, value: Vec<ParticipantRef>);
+    fn set_participant_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `correlationKey` child
     fn correlation_keys_mut(&mut self) -> &mut Vec<CorrelationKey>;
     /// Set value of `correlationKey` child
@@ -2415,30 +2408,30 @@ pub struct ChoreographyTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "initiatingParticipantRef")]
     #[tia("ChoreographyActivityType",rg*="initiating_participant_ref","ChoreographyActivityTypeMut",s)]
     pub initiating_participant_ref: String,
     #[xml(attr = "loopType")]
     #[tia("ChoreographyActivityType",rg*="loop_type","ChoreographyActivityTypeMut",s)]
     pub loop_type: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("ChoreographyActivityType",rg*="participant_refs","ChoreographyActivityTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
+    pub participant_refs: Vec<String>,
     #[xml(child = "bpmn:correlationKey")]
     #[tia("ChoreographyActivityType",rg*="correlation_keys","ChoreographyActivityTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
-    #[xml(child = "bpmn:messageFlowRef")]
+    #[xml(flatten_text = "bpmn:messageFlowRef")]
     #[tia("ChoreographyTaskType",rg*="message_flow_ref","ChoreographyTaskTypeMut",s,rmg*="message_flow_ref_mut")]
-    pub message_flow_ref: MessageFlowRef,
+    pub message_flow_ref: String,
 }
 #[cast_to]
 impl DocumentElement for ChoreographyTask {
@@ -2455,9 +2448,7 @@ impl DocumentElementContainer for ChoreographyTask {
                 return Some(self);
             }
         }
-        if let Some(e) = self.message_flow_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -2467,9 +2458,7 @@ impl DocumentElementContainer for ChoreographyTask {
                 return Some(self);
             }
         }
-        if let Some(e) = self.message_flow_ref.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -2485,7 +2474,7 @@ pub trait ChoreographyTaskType:
     ChoreographyActivityType + Downcast + Debug + Send + DynClone
 {
     /// Get value of `messageFlowRef` child
-    fn message_flow_ref(&self) -> &MessageFlowRef;
+    fn message_flow_ref(&self) -> &String;
 }
 dyn_clone::clone_trait_object!(ChoreographyTaskType);
 impl_downcast!(ChoreographyTaskType);
@@ -2494,9 +2483,9 @@ pub trait ChoreographyTaskTypeMut:
     ChoreographyActivityTypeMut + Downcast + Debug + Send + DynClone + ChoreographyTaskType
 {
     /// Get a mutable value of `messageFlowRef` child
-    fn message_flow_ref_mut(&mut self) -> &mut MessageFlowRef;
+    fn message_flow_ref_mut(&mut self) -> &mut String;
     /// Set value of `messageFlowRef` child
-    fn set_message_flow_ref(&mut self, value: MessageFlowRef);
+    fn set_message_flow_ref(&mut self, value: String);
 }
 dyn_clone::clone_trait_object!(ChoreographyTaskTypeMut);
 impl_downcast!(ChoreographyTaskTypeMut);
@@ -2553,9 +2542,9 @@ pub struct Collaboration {
     #[xml(child = "bpmn:correlationKey")]
     #[tia("CollaborationType",rg*="correlation_keys","CollaborationTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
-    #[xml(child = "bpmn:choreographyRef")]
+    #[xml(flatten_text = "bpmn:choreographyRef")]
     #[tia("CollaborationType",rg*="choreography_refs","CollaborationTypeMut",s,rmg*="choreography_refs_mut")]
-    pub choreography_refs: Vec<ChoreographyRef>,
+    pub choreography_refs: Vec<String>,
     #[xml(child = "bpmn:conversationLink")]
     #[tia("CollaborationType",rg*="conversation_links","CollaborationTypeMut",s,rmg*="conversation_links_mut")]
     pub conversation_links: Vec<ConversationLink>,
@@ -2599,9 +2588,6 @@ impl DocumentElementContainer for Collaboration {
         if let Some(e) = self.correlation_keys.find_by_id_mut(id) {
             return Some(e);
         }
-        if let Some(e) = self.choreography_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.conversation_links.find_by_id_mut(id) {
             return Some(e);
         }
@@ -2636,9 +2622,6 @@ impl DocumentElementContainer for Collaboration {
             return Some(e);
         }
         if let Some(e) = self.correlation_keys.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.choreography_refs.find_by_id(id) {
             return Some(e);
         }
         if let Some(e) = self.conversation_links.find_by_id(id) {
@@ -2680,7 +2663,7 @@ pub trait CollaborationType: RootElementType + Downcast + Debug + Send + DynClon
     /// Get value of `correlationKey` child
     fn correlation_keys(&self) -> &Vec<CorrelationKey>;
     /// Get value of `choreographyRef` child
-    fn choreography_refs(&self) -> &Vec<ChoreographyRef>;
+    fn choreography_refs(&self) -> &Vec<String>;
     /// Get value of `conversationLink` child
     fn conversation_links(&self) -> &Vec<ConversationLink>;
 }
@@ -2727,9 +2710,9 @@ pub trait CollaborationTypeMut:
     /// Set value of `correlationKey` child
     fn set_correlation_keys(&mut self, value: Vec<CorrelationKey>);
     /// Get a mutable value of `choreographyRef` child
-    fn choreography_refs_mut(&mut self) -> &mut Vec<ChoreographyRef>;
+    fn choreography_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `choreographyRef` child
-    fn set_choreography_refs(&mut self, value: Vec<ChoreographyRef>);
+    fn set_choreography_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `conversationLink` child
     fn conversation_links_mut(&mut self) -> &mut Vec<ConversationLink>;
     /// Set value of `conversationLink` child
@@ -2941,15 +2924,15 @@ pub struct ComplexGateway {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "gatewayDirection")]
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
@@ -3128,12 +3111,12 @@ pub struct Conversation {
     #[xml(attr = "name")]
     #[tia("ConversationNodeType",rg*="name","ConversationNodeTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("ConversationNodeType",rg*="participant_refs","ConversationNodeTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
-    #[xml(child = "bpmn:messageFlowRef")]
+    pub participant_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:messageFlowRef")]
     #[tia("ConversationNodeType",rg*="message_flow_refs","ConversationNodeTypeMut",s,rmg*="message_flow_refs_mut")]
-    pub message_flow_refs: Vec<MessageFlowRef>,
+    pub message_flow_refs: Vec<String>,
     #[xml(child = "bpmn:correlationKey")]
     #[tia("ConversationNodeType",rg*="correlation_keys","ConversationNodeTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
@@ -3415,9 +3398,9 @@ pub trait ConversationNodeType: BaseElementType + Downcast + Debug + Send + DynC
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `participantRef` child
-    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+    fn participant_refs(&self) -> &Vec<String>;
     /// Get value of `messageFlowRef` child
-    fn message_flow_refs(&self) -> &Vec<MessageFlowRef>;
+    fn message_flow_refs(&self) -> &Vec<String>;
     /// Get value of `correlationKey` child
     fn correlation_keys(&self) -> &Vec<CorrelationKey>;
 }
@@ -3430,13 +3413,13 @@ pub trait ConversationNodeTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
-    fn participant_refs_mut(&mut self) -> &mut Vec<ParticipantRef>;
+    fn participant_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `participantRef` child
-    fn set_participant_refs(&mut self, value: Vec<ParticipantRef>);
+    fn set_participant_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `messageFlowRef` child
-    fn message_flow_refs_mut(&mut self) -> &mut Vec<MessageFlowRef>;
+    fn message_flow_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `messageFlowRef` child
-    fn set_message_flow_refs(&mut self, value: Vec<MessageFlowRef>);
+    fn set_message_flow_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `correlationKey` child
     fn correlation_keys_mut(&mut self) -> &mut Vec<CorrelationKey>;
     /// Set value of `correlationKey` child
@@ -3462,9 +3445,9 @@ pub struct CorrelationKey {
     #[xml(attr = "name")]
     #[tia("CorrelationKeyType",rg*="name","CorrelationKeyTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:correlationPropertyRef")]
+    #[xml(flatten_text = "bpmn:correlationPropertyRef")]
     #[tia("CorrelationKeyType",rg*="correlation_property_refs","CorrelationKeyTypeMut",s,rmg*="correlation_property_refs_mut")]
-    pub correlation_property_refs: Vec<CorrelationPropertyRef>,
+    pub correlation_property_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for CorrelationKey {
@@ -3481,9 +3464,7 @@ impl DocumentElementContainer for CorrelationKey {
                 return Some(self);
             }
         }
-        if let Some(e) = self.correlation_property_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -3493,9 +3474,7 @@ impl DocumentElementContainer for CorrelationKey {
                 return Some(self);
             }
         }
-        if let Some(e) = self.correlation_property_refs.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -3508,7 +3487,7 @@ pub trait CorrelationKeyType: BaseElementType + Downcast + Debug + Send + DynClo
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `correlationPropertyRef` child
-    fn correlation_property_refs(&self) -> &Vec<CorrelationPropertyRef>;
+    fn correlation_property_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(CorrelationKeyType);
 impl_downcast!(CorrelationKeyType);
@@ -3519,9 +3498,9 @@ pub trait CorrelationKeyTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `correlationPropertyRef` child
-    fn correlation_property_refs_mut(&mut self) -> &mut Vec<CorrelationPropertyRef>;
+    fn correlation_property_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `correlationPropertyRef` child
-    fn set_correlation_property_refs(&mut self, value: Vec<CorrelationPropertyRef>);
+    fn set_correlation_property_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(CorrelationKeyTypeMut);
 impl_downcast!(CorrelationKeyTypeMut);
@@ -3896,12 +3875,12 @@ pub struct DataAssociation {
     #[xml(child = "bpmn:extensionElements")]
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
-    #[xml(child = "bpmn:sourceRef")]
+    #[xml(flatten_text = "bpmn:sourceRef")]
     #[tia("DataAssociationType",rg*="source_refs","DataAssociationTypeMut",s,rmg*="source_refs_mut")]
-    pub source_refs: Vec<SourceRef>,
-    #[xml(child = "bpmn:targetRef")]
+    pub source_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:targetRef")]
     #[tia("DataAssociationType",rg*="target_ref","DataAssociationTypeMut",s,rmg*="target_ref_mut")]
-    pub target_ref: TargetRef,
+    pub target_ref: String,
     #[xml(child = "bpmn:transformation")]
     #[tia("DataAssociationType",rg*="transformation","DataAssociationTypeMut",s,rmg*="transformation_mut")]
     pub transformation: Option<FormalExpression>,
@@ -3924,12 +3903,6 @@ impl DocumentElementContainer for DataAssociation {
                 return Some(self);
             }
         }
-        if let Some(e) = self.source_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.target_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.transformation.find_by_id_mut(id) {
             return Some(e);
         }
@@ -3944,12 +3917,6 @@ impl DocumentElementContainer for DataAssociation {
             if id_ == id {
                 return Some(self);
             }
-        }
-        if let Some(e) = self.source_refs.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.target_ref.find_by_id(id) {
-            return Some(e);
         }
         if let Some(e) = self.transformation.find_by_id(id) {
             return Some(e);
@@ -3967,9 +3934,9 @@ castable_to! {DataAssociation => BaseElementType,BaseElementTypeMut}
 /// Access to `dataAssociation`
 pub trait DataAssociationType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of `sourceRef` child
-    fn source_refs(&self) -> &Vec<SourceRef>;
+    fn source_refs(&self) -> &Vec<String>;
     /// Get value of `targetRef` child
-    fn target_ref(&self) -> &TargetRef;
+    fn target_ref(&self) -> &String;
     /// Get value of `transformation` child
     fn transformation(&self) -> &Option<FormalExpression>;
     /// Get value of `assignment` child
@@ -3982,13 +3949,13 @@ pub trait DataAssociationTypeMut:
     BaseElementTypeMut + Downcast + Debug + Send + DynClone + DataAssociationType
 {
     /// Get a mutable value of `sourceRef` child
-    fn source_refs_mut(&mut self) -> &mut Vec<SourceRef>;
+    fn source_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `sourceRef` child
-    fn set_source_refs(&mut self, value: Vec<SourceRef>);
+    fn set_source_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `targetRef` child
-    fn target_ref_mut(&mut self) -> &mut TargetRef;
+    fn target_ref_mut(&mut self) -> &mut String;
     /// Set value of `targetRef` child
-    fn set_target_ref(&mut self, value: TargetRef);
+    fn set_target_ref(&mut self, value: String);
     /// Get a mutable value of `transformation` child
     fn transformation_mut(&mut self) -> &mut Option<FormalExpression>;
     /// Set value of `transformation` child
@@ -4110,12 +4077,12 @@ pub struct DataInputAssociation {
     #[xml(child = "bpmn:extensionElements")]
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
-    #[xml(child = "bpmn:sourceRef")]
+    #[xml(flatten_text = "bpmn:sourceRef")]
     #[tia("DataAssociationType",rg*="source_refs","DataAssociationTypeMut",s,rmg*="source_refs_mut")]
-    pub source_refs: Vec<SourceRef>,
-    #[xml(child = "bpmn:targetRef")]
+    pub source_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:targetRef")]
     #[tia("DataAssociationType",rg*="target_ref","DataAssociationTypeMut",s,rmg*="target_ref_mut")]
-    pub target_ref: TargetRef,
+    pub target_ref: String,
     #[xml(child = "bpmn:transformation")]
     #[tia("DataAssociationType",rg*="transformation","DataAssociationTypeMut",s,rmg*="transformation_mut")]
     pub transformation: Option<FormalExpression>,
@@ -4195,9 +4162,9 @@ pub struct DataObject {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
+    pub category_value_refs: Vec<String>,
     #[xml(attr = "itemSubjectRef")]
     #[tia("DataObjectType",rg*="item_subject_ref","DataObjectTypeMut",s)]
     pub item_subject_ref: Option<String>,
@@ -4296,9 +4263,9 @@ pub struct DataObjectReference {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
+    pub category_value_refs: Vec<String>,
     #[xml(attr = "itemSubjectRef")]
     #[tia("DataObjectReferenceType",rg*="item_subject_ref","DataObjectReferenceTypeMut",s)]
     pub item_subject_ref: Option<String>,
@@ -4483,12 +4450,12 @@ pub struct DataOutputAssociation {
     #[xml(child = "bpmn:extensionElements")]
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
-    #[xml(child = "bpmn:sourceRef")]
+    #[xml(flatten_text = "bpmn:sourceRef")]
     #[tia("DataAssociationType",rg*="source_refs","DataAssociationTypeMut",s,rmg*="source_refs_mut")]
-    pub source_refs: Vec<SourceRef>,
-    #[xml(child = "bpmn:targetRef")]
+    pub source_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:targetRef")]
     #[tia("DataAssociationType",rg*="target_ref","DataAssociationTypeMut",s,rmg*="target_ref_mut")]
-    pub target_ref: TargetRef,
+    pub target_ref: String,
     #[xml(child = "bpmn:transformation")]
     #[tia("DataAssociationType",rg*="transformation","DataAssociationTypeMut",s,rmg*="transformation_mut")]
     pub transformation: Option<FormalExpression>,
@@ -4744,9 +4711,9 @@ pub struct DataStoreReference {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
+    pub category_value_refs: Vec<String>,
     #[xml(attr = "itemSubjectRef")]
     #[tia("DataStoreReferenceType",rg*="item_subject_ref","DataStoreReferenceTypeMut",s)]
     pub item_subject_ref: Option<String>,
@@ -4909,15 +4876,15 @@ pub struct EndEvent {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(child = "bpmn:property")]
     #[tia("EventType",rg*="properies","EventTypeMut",s,rmg*="properies_mut")]
     pub properies: Vec<Property>,
@@ -4944,9 +4911,9 @@ pub struct EndEvent {
     )]
     #[tia("ThrowEventType",rg*="event_definitions","ThrowEventTypeMut",s,rmg*="event_definitions_mut")]
     pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
+    #[xml(flatten_text = "bpmn:eventDefinitionRef")]
     #[tia("ThrowEventType",rg*="event_definition_refs","ThrowEventTypeMut",s,rmg*="event_definition_refs_mut")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
+    pub event_definition_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for EndEvent {
@@ -5476,15 +5443,15 @@ pub struct EventBasedGateway {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "gatewayDirection")]
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
@@ -5730,15 +5697,15 @@ pub struct ExclusiveGateway {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "gatewayDirection")]
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
@@ -6324,7 +6291,7 @@ pub trait FlowElementType: BaseElementType + Downcast + Debug + Send + DynClone 
     /// Get value of `monitoring` child
     fn monitoring(&self) -> &Option<Monitoring>;
     /// Get value of `categoryValueRef` child
-    fn category_value_refs(&self) -> &Vec<CategoryValueRef>;
+    fn category_value_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(FlowElementType);
 impl_downcast!(FlowElementType);
@@ -6343,9 +6310,9 @@ pub trait FlowElementTypeMut:
     /// Set value of `monitoring` child
     fn set_monitoring(&mut self, value: Option<Monitoring>);
     /// Get a mutable value of `categoryValueRef` child
-    fn category_value_refs_mut(&mut self) -> &mut Vec<CategoryValueRef>;
+    fn category_value_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `categoryValueRef` child
-    fn set_category_value_refs(&mut self, value: Vec<CategoryValueRef>);
+    fn set_category_value_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(FlowElementTypeMut);
 impl_downcast!(FlowElementTypeMut);
@@ -6386,9 +6353,9 @@ impl DocumentElement for FlowNode {
 /// Access to `flowNode`
 pub trait FlowNodeType: FlowElementType + Downcast + Debug + Send + DynClone {
     /// Get value of `incoming` child
-    fn incomings(&self) -> &Vec<Incoming>;
+    fn incomings(&self) -> &Vec<String>;
     /// Get value of `outgoing` child
-    fn outgoings(&self) -> &Vec<Outgoing>;
+    fn outgoings(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(FlowNodeType);
 impl_downcast!(FlowNodeType);
@@ -6397,13 +6364,13 @@ pub trait FlowNodeTypeMut:
     FlowElementTypeMut + Downcast + Debug + Send + DynClone + FlowNodeType
 {
     /// Get a mutable value of `incoming` child
-    fn incomings_mut(&mut self) -> &mut Vec<Incoming>;
+    fn incomings_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `incoming` child
-    fn set_incomings(&mut self, value: Vec<Incoming>);
+    fn set_incomings(&mut self, value: Vec<String>);
     /// Get a mutable value of `outgoing` child
-    fn outgoings_mut(&mut self) -> &mut Vec<Outgoing>;
+    fn outgoings_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `outgoing` child
-    fn set_outgoings(&mut self, value: Vec<Outgoing>);
+    fn set_outgoings(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(FlowNodeTypeMut);
 impl_downcast!(FlowNodeTypeMut);
@@ -6512,15 +6479,15 @@ pub struct Gateway {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "gatewayDirection")]
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
@@ -6594,9 +6561,9 @@ pub struct GlobalBusinessRuleTask {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -6720,9 +6687,9 @@ pub struct GlobalChoreographyTask {
     #[xml(child = "bpmn:correlationKey")]
     #[tia("CollaborationType",rg*="correlation_keys","CollaborationTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
-    #[xml(child = "bpmn:choreographyRef")]
+    #[xml(flatten_text = "bpmn:choreographyRef")]
     #[tia("CollaborationType",rg*="choreography_refs","CollaborationTypeMut",s,rmg*="choreography_refs_mut")]
-    pub choreography_refs: Vec<ChoreographyRef>,
+    pub choreography_refs: Vec<String>,
     #[xml(child = "bpmn:conversationLink")]
     #[tia("CollaborationType",rg*="conversation_links","CollaborationTypeMut",s,rmg*="conversation_links_mut")]
     pub conversation_links: Vec<ConversationLink>,
@@ -6877,9 +6844,9 @@ pub struct GlobalConversation {
     #[xml(child = "bpmn:correlationKey")]
     #[tia("CollaborationType",rg*="correlation_keys","CollaborationTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
-    #[xml(child = "bpmn:choreographyRef")]
+    #[xml(flatten_text = "bpmn:choreographyRef")]
     #[tia("CollaborationType",rg*="choreography_refs","CollaborationTypeMut",s,rmg*="choreography_refs_mut")]
-    pub choreography_refs: Vec<ChoreographyRef>,
+    pub choreography_refs: Vec<String>,
     #[xml(child = "bpmn:conversationLink")]
     #[tia("CollaborationType",rg*="conversation_links","CollaborationTypeMut",s,rmg*="conversation_links_mut")]
     pub conversation_links: Vec<ConversationLink>,
@@ -6953,9 +6920,9 @@ pub struct GlobalManualTask {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -7036,9 +7003,9 @@ pub struct GlobalScriptTask {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -7140,9 +7107,9 @@ pub struct GlobalTask {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -7233,9 +7200,9 @@ pub struct GlobalUserTask {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -7409,9 +7376,9 @@ pub struct HumanPerformer {
     #[xml(attr = "name")]
     #[tia("ResourceRoleType",rg*="name","ResourceRoleTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:resourceRef")]
+    #[xml(flatten_text = "bpmn:resourceRef")]
     #[tia("ResourceRoleType",rg*="resource_ref","ResourceRoleTypeMut",s,rmg*="resource_ref_mut")]
-    pub resource_ref: ResourceRef,
+    pub resource_ref: String,
     #[xml(child = "bpmn:resourceParameterBinding")]
     #[tia("ResourceRoleType",rg*="resource_parameter_bindings","ResourceRoleTypeMut",s,rmg*="resource_parameter_bindings_mut")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
@@ -7494,15 +7461,15 @@ pub struct ImplicitThrowEvent {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(child = "bpmn:property")]
     #[tia("EventType",rg*="properies","EventTypeMut",s,rmg*="properies_mut")]
     pub properies: Vec<Property>,
@@ -7529,9 +7496,9 @@ pub struct ImplicitThrowEvent {
     )]
     #[tia("ThrowEventType",rg*="event_definitions","ThrowEventTypeMut",s,rmg*="event_definitions_mut")]
     pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
+    #[xml(flatten_text = "bpmn:eventDefinitionRef")]
     #[tia("ThrowEventType",rg*="event_definition_refs","ThrowEventTypeMut",s,rmg*="event_definition_refs_mut")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
+    pub event_definition_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for ImplicitThrowEvent {
@@ -7605,15 +7572,15 @@ pub struct InclusiveGateway {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "gatewayDirection")]
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
@@ -7691,18 +7658,18 @@ pub struct InputSet {
     #[xml(attr = "name")]
     #[tia("InputSetType",rg*="name","InputSetTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:dataInputRefs")]
+    #[xml(flatten_text = "bpmn:dataInputRefs")]
     #[tia("InputSetType",rg*="data_input_refss","InputSetTypeMut",s,rmg*="data_input_refss_mut")]
-    pub data_input_refss: Vec<DataInputRefs>,
-    #[xml(child = "bpmn:optionalInputRefs")]
+    pub data_input_refss: Vec<String>,
+    #[xml(flatten_text = "bpmn:optionalInputRefs")]
     #[tia("InputSetType",rg*="optional_input_refss","InputSetTypeMut",s,rmg*="optional_input_refss_mut")]
-    pub optional_input_refss: Vec<OptionalInputRefs>,
-    #[xml(child = "bpmn:whileExecutingInputRefs")]
+    pub optional_input_refss: Vec<String>,
+    #[xml(flatten_text = "bpmn:whileExecutingInputRefs")]
     #[tia("InputSetType",rg*="while_executing_input_refss","InputSetTypeMut",s,rmg*="while_executing_input_refss_mut")]
-    pub while_executing_input_refss: Vec<WhileExecutingInputRefs>,
-    #[xml(child = "bpmn:outputSetRefs")]
+    pub while_executing_input_refss: Vec<String>,
+    #[xml(flatten_text = "bpmn:outputSetRefs")]
     #[tia("InputSetType",rg*="output_set_refss","InputSetTypeMut",s,rmg*="output_set_refss_mut")]
-    pub output_set_refss: Vec<OutputSetRefs>,
+    pub output_set_refss: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for InputSet {
@@ -7719,18 +7686,7 @@ impl DocumentElementContainer for InputSet {
                 return Some(self);
             }
         }
-        if let Some(e) = self.data_input_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.optional_input_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.while_executing_input_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.output_set_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -7740,18 +7696,7 @@ impl DocumentElementContainer for InputSet {
                 return Some(self);
             }
         }
-        if let Some(e) = self.data_input_refss.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.optional_input_refss.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.while_executing_input_refss.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.output_set_refss.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -7764,13 +7709,13 @@ pub trait InputSetType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `dataInputRefs` child
-    fn data_input_refss(&self) -> &Vec<DataInputRefs>;
+    fn data_input_refss(&self) -> &Vec<String>;
     /// Get value of `optionalInputRefs` child
-    fn optional_input_refss(&self) -> &Vec<OptionalInputRefs>;
+    fn optional_input_refss(&self) -> &Vec<String>;
     /// Get value of `whileExecutingInputRefs` child
-    fn while_executing_input_refss(&self) -> &Vec<WhileExecutingInputRefs>;
+    fn while_executing_input_refss(&self) -> &Vec<String>;
     /// Get value of `outputSetRefs` child
-    fn output_set_refss(&self) -> &Vec<OutputSetRefs>;
+    fn output_set_refss(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(InputSetType);
 impl_downcast!(InputSetType);
@@ -7781,21 +7726,21 @@ pub trait InputSetTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `dataInputRefs` child
-    fn data_input_refss_mut(&mut self) -> &mut Vec<DataInputRefs>;
+    fn data_input_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `dataInputRefs` child
-    fn set_data_input_refss(&mut self, value: Vec<DataInputRefs>);
+    fn set_data_input_refss(&mut self, value: Vec<String>);
     /// Get a mutable value of `optionalInputRefs` child
-    fn optional_input_refss_mut(&mut self) -> &mut Vec<OptionalInputRefs>;
+    fn optional_input_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `optionalInputRefs` child
-    fn set_optional_input_refss(&mut self, value: Vec<OptionalInputRefs>);
+    fn set_optional_input_refss(&mut self, value: Vec<String>);
     /// Get a mutable value of `whileExecutingInputRefs` child
-    fn while_executing_input_refss_mut(&mut self) -> &mut Vec<WhileExecutingInputRefs>;
+    fn while_executing_input_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `whileExecutingInputRefs` child
-    fn set_while_executing_input_refss(&mut self, value: Vec<WhileExecutingInputRefs>);
+    fn set_while_executing_input_refss(&mut self, value: Vec<String>);
     /// Get a mutable value of `outputSetRefs` child
-    fn output_set_refss_mut(&mut self) -> &mut Vec<OutputSetRefs>;
+    fn output_set_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `outputSetRefs` child
-    fn set_output_set_refss(&mut self, value: Vec<OutputSetRefs>);
+    fn set_output_set_refss(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(InputSetTypeMut);
 impl_downcast!(InputSetTypeMut);
@@ -7917,15 +7862,15 @@ pub struct IntermediateCatchEvent {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(child = "bpmn:property")]
     #[tia("EventType",rg*="properies","EventTypeMut",s,rmg*="properies_mut")]
     pub properies: Vec<Property>,
@@ -7955,9 +7900,9 @@ pub struct IntermediateCatchEvent {
     )]
     #[tia("CatchEventType",rg*="event_definitions","CatchEventTypeMut",s,rmg*="event_definitions_mut")]
     pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
+    #[xml(flatten_text = "bpmn:eventDefinitionRef")]
     #[tia("CatchEventType",rg*="event_definition_refs","CatchEventTypeMut",s,rmg*="event_definition_refs_mut")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
+    pub event_definition_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for IntermediateCatchEvent {
@@ -8031,15 +7976,15 @@ pub struct IntermediateThrowEvent {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(child = "bpmn:property")]
     #[tia("EventType",rg*="properies","EventTypeMut",s,rmg*="properies_mut")]
     pub properies: Vec<Property>,
@@ -8066,9 +8011,9 @@ pub struct IntermediateThrowEvent {
     )]
     #[tia("ThrowEventType",rg*="event_definitions","ThrowEventTypeMut",s,rmg*="event_definitions_mut")]
     pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
+    #[xml(flatten_text = "bpmn:eventDefinitionRef")]
     #[tia("ThrowEventType",rg*="event_definition_refs","ThrowEventTypeMut",s,rmg*="event_definition_refs_mut")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
+    pub event_definition_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for IntermediateThrowEvent {
@@ -8433,9 +8378,9 @@ pub struct Lane {
     #[xml(child = "bpmn:partitionElement")]
     #[tia("LaneType",rg*="partition_element","LaneTypeMut",s,rmg*="partition_element_mut")]
     pub partition_element: Option<BaseElement>,
-    #[xml(child = "bpmn:flowNodeRef")]
+    #[xml(flatten_text = "bpmn:flowNodeRef")]
     #[tia("LaneType",rg*="flow_node_refs","LaneTypeMut",s,rmg*="flow_node_refs_mut")]
-    pub flow_node_refs: Vec<FlowNodeRef>,
+    pub flow_node_refs: Vec<String>,
     #[xml(child = "bpmn:childLaneSet")]
     #[tia("LaneType",rg*="child_lane_set","LaneTypeMut",s,rmg*="child_lane_set_mut")]
     pub child_lane_set: Option<LaneSet>,
@@ -8458,9 +8403,6 @@ impl DocumentElementContainer for Lane {
         if let Some(e) = self.partition_element.find_by_id_mut(id) {
             return Some(e);
         }
-        if let Some(e) = self.flow_node_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.child_lane_set.find_by_id_mut(id) {
             return Some(e);
         }
@@ -8474,9 +8416,6 @@ impl DocumentElementContainer for Lane {
             }
         }
         if let Some(e) = self.partition_element.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.flow_node_refs.find_by_id(id) {
             return Some(e);
         }
         if let Some(e) = self.child_lane_set.find_by_id(id) {
@@ -8498,7 +8437,7 @@ pub trait LaneType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of `partitionElement` child
     fn partition_element(&self) -> &Option<BaseElement>;
     /// Get value of `flowNodeRef` child
-    fn flow_node_refs(&self) -> &Vec<FlowNodeRef>;
+    fn flow_node_refs(&self) -> &Vec<String>;
     /// Get value of `childLaneSet` child
     fn child_lane_set(&self) -> &Option<LaneSet>;
 }
@@ -8515,9 +8454,9 @@ pub trait LaneTypeMut: BaseElementTypeMut + Downcast + Debug + Send + DynClone +
     /// Set value of `partitionElement` child
     fn set_partition_element(&mut self, value: Option<BaseElement>);
     /// Get a mutable value of `flowNodeRef` child
-    fn flow_node_refs_mut(&mut self) -> &mut Vec<FlowNodeRef>;
+    fn flow_node_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `flowNodeRef` child
-    fn set_flow_node_refs(&mut self, value: Vec<FlowNodeRef>);
+    fn set_flow_node_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `childLaneSet` child
     fn child_lane_set_mut(&mut self) -> &mut Option<LaneSet>;
     /// Set value of `childLaneSet` child
@@ -8624,12 +8563,12 @@ pub struct LinkEventDefinition {
     #[xml(attr = "name")]
     #[tia("LinkEventDefinitionType",rg*="name","LinkEventDefinitionTypeMut",s)]
     pub name: String,
-    #[xml(child = "bpmn:source")]
+    #[xml(flatten_text = "bpmn:source")]
     #[tia("LinkEventDefinitionType",rg*="sources","LinkEventDefinitionTypeMut",s,rmg*="sources_mut")]
-    pub sources: Vec<Source>,
-    #[xml(child = "bpmn:target")]
+    pub sources: Vec<String>,
+    #[xml(flatten_text = "bpmn:target")]
     #[tia("LinkEventDefinitionType",rg*="target","LinkEventDefinitionTypeMut",s,rmg*="target_mut")]
-    pub target: Option<Target>,
+    pub target: Option<String>,
 }
 #[cast_to]
 impl DocumentElement for LinkEventDefinition {
@@ -8646,12 +8585,7 @@ impl DocumentElementContainer for LinkEventDefinition {
                 return Some(self);
             }
         }
-        if let Some(e) = self.sources.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.target.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -8661,12 +8595,7 @@ impl DocumentElementContainer for LinkEventDefinition {
                 return Some(self);
             }
         }
-        if let Some(e) = self.sources.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.target.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -8693,9 +8622,9 @@ pub trait LinkEventDefinitionType:
     /// Get value of attribute `name`
     fn name(&self) -> &String;
     /// Get value of `source` child
-    fn sources(&self) -> &Vec<Source>;
+    fn sources(&self) -> &Vec<String>;
     /// Get value of `target` child
-    fn target(&self) -> &Option<Target>;
+    fn target(&self) -> &Option<String>;
 }
 dyn_clone::clone_trait_object!(LinkEventDefinitionType);
 impl_downcast!(LinkEventDefinitionType);
@@ -8706,13 +8635,13 @@ pub trait LinkEventDefinitionTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: String);
     /// Get a mutable value of `source` child
-    fn sources_mut(&mut self) -> &mut Vec<Source>;
+    fn sources_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `source` child
-    fn set_sources(&mut self, value: Vec<Source>);
+    fn set_sources(&mut self, value: Vec<String>);
     /// Get a mutable value of `target` child
-    fn target_mut(&mut self) -> &mut Option<Target>;
+    fn target_mut(&mut self) -> &mut Option<String>;
     /// Set value of `target` child
-    fn set_target(&mut self, value: Option<Target>);
+    fn set_target(&mut self, value: Option<String>);
 }
 dyn_clone::clone_trait_object!(LinkEventDefinitionTypeMut);
 impl_downcast!(LinkEventDefinitionTypeMut);
@@ -8813,15 +8742,15 @@ pub struct ManualTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -9008,9 +8937,9 @@ pub struct MessageEventDefinition {
     #[xml(attr = "messageRef")]
     #[tia("MessageEventDefinitionType",rg*="message_ref","MessageEventDefinitionTypeMut",s)]
     pub message_ref: Option<String>,
-    #[xml(child = "bpmn:operationRef")]
+    #[xml(flatten_text = "bpmn:operationRef")]
     #[tia("MessageEventDefinitionType",rg*="operation_ref","MessageEventDefinitionTypeMut",s,rmg*="operation_ref_mut")]
-    pub operation_ref: Option<OperationRef>,
+    pub operation_ref: Option<String>,
 }
 #[cast_to]
 impl DocumentElement for MessageEventDefinition {
@@ -9027,9 +8956,7 @@ impl DocumentElementContainer for MessageEventDefinition {
                 return Some(self);
             }
         }
-        if let Some(e) = self.operation_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -9039,9 +8966,7 @@ impl DocumentElementContainer for MessageEventDefinition {
                 return Some(self);
             }
         }
-        if let Some(e) = self.operation_ref.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -9068,7 +8993,7 @@ pub trait MessageEventDefinitionType:
     /// Get value of attribute `messageRef`
     fn message_ref(&self) -> &Option<String>;
     /// Get value of `operationRef` child
-    fn operation_ref(&self) -> &Option<OperationRef>;
+    fn operation_ref(&self) -> &Option<String>;
 }
 dyn_clone::clone_trait_object!(MessageEventDefinitionType);
 impl_downcast!(MessageEventDefinitionType);
@@ -9079,9 +9004,9 @@ pub trait MessageEventDefinitionTypeMut:
     /// Set value of attribute `messageRef`
     fn set_message_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `operationRef` child
-    fn operation_ref_mut(&mut self) -> &mut Option<OperationRef>;
+    fn operation_ref_mut(&mut self) -> &mut Option<String>;
     /// Set value of `operationRef` child
-    fn set_operation_ref(&mut self, value: Option<OperationRef>);
+    fn set_operation_ref(&mut self, value: Option<String>);
 }
 dyn_clone::clone_trait_object!(MessageEventDefinitionTypeMut);
 impl_downcast!(MessageEventDefinitionTypeMut);
@@ -9339,12 +9264,12 @@ pub struct MultiInstanceLoopCharacteristics {
     #[xml(child = "bpmn:loopCardinality")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_cardinality","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="loop_cardinality_mut")]
     pub loop_cardinality: Option<Expression>,
-    #[xml(child = "bpmn:loopDataInputRef")]
+    #[xml(flatten_text = "bpmn:loopDataInputRef")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_data_input_ref","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="loop_data_input_ref_mut")]
-    pub loop_data_input_ref: Option<LoopDataInputRef>,
-    #[xml(child = "bpmn:loopDataOutputRef")]
+    pub loop_data_input_ref: Option<String>,
+    #[xml(flatten_text = "bpmn:loopDataOutputRef")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_data_output_ref","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="loop_data_output_ref_mut")]
-    pub loop_data_output_ref: Option<LoopDataOutputRef>,
+    pub loop_data_output_ref: Option<String>,
     #[xml(child = "bpmn:inputDataItem")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="input_data_item","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="input_data_item_mut")]
     pub input_data_item: Option<DataInput>,
@@ -9376,12 +9301,6 @@ impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
         if let Some(e) = self.loop_cardinality.find_by_id_mut(id) {
             return Some(e);
         }
-        if let Some(e) = self.loop_data_input_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.loop_data_output_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.input_data_item.find_by_id_mut(id) {
             return Some(e);
         }
@@ -9404,12 +9323,6 @@ impl DocumentElementContainer for MultiInstanceLoopCharacteristics {
             }
         }
         if let Some(e) = self.loop_cardinality.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.loop_data_input_ref.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.loop_data_output_ref.find_by_id(id) {
             return Some(e);
         }
         if let Some(e) = self.input_data_item.find_by_id(id) {
@@ -9452,9 +9365,9 @@ pub trait MultiInstanceLoopCharacteristicsType:
     /// Get value of `loopCardinality` child
     fn loop_cardinality(&self) -> &Option<Expression>;
     /// Get value of `loopDataInputRef` child
-    fn loop_data_input_ref(&self) -> &Option<LoopDataInputRef>;
+    fn loop_data_input_ref(&self) -> &Option<String>;
     /// Get value of `loopDataOutputRef` child
-    fn loop_data_output_ref(&self) -> &Option<LoopDataOutputRef>;
+    fn loop_data_output_ref(&self) -> &Option<String>;
     /// Get value of `inputDataItem` child
     fn input_data_item(&self) -> &Option<DataInput>;
     /// Get value of `outputDataItem` child
@@ -9488,13 +9401,13 @@ pub trait MultiInstanceLoopCharacteristicsTypeMut:
     /// Set value of `loopCardinality` child
     fn set_loop_cardinality(&mut self, value: Option<Expression>);
     /// Get a mutable value of `loopDataInputRef` child
-    fn loop_data_input_ref_mut(&mut self) -> &mut Option<LoopDataInputRef>;
+    fn loop_data_input_ref_mut(&mut self) -> &mut Option<String>;
     /// Set value of `loopDataInputRef` child
-    fn set_loop_data_input_ref(&mut self, value: Option<LoopDataInputRef>);
+    fn set_loop_data_input_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `loopDataOutputRef` child
-    fn loop_data_output_ref_mut(&mut self) -> &mut Option<LoopDataOutputRef>;
+    fn loop_data_output_ref_mut(&mut self) -> &mut Option<String>;
     /// Set value of `loopDataOutputRef` child
-    fn set_loop_data_output_ref(&mut self, value: Option<LoopDataOutputRef>);
+    fn set_loop_data_output_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `inputDataItem` child
     fn input_data_item_mut(&mut self) -> &mut Option<DataInput>;
     /// Set value of `inputDataItem` child
@@ -9535,15 +9448,15 @@ pub struct Operation {
     #[xml(attr = "implementationRef")]
     #[tia("OperationType",rg*="implementation_ref","OperationTypeMut",s)]
     pub implementation_ref: Option<String>,
-    #[xml(child = "bpmn:inMessageRef")]
+    #[xml(flatten_text = "bpmn:inMessageRef")]
     #[tia("OperationType",rg*="in_message_ref","OperationTypeMut",s,rmg*="in_message_ref_mut")]
-    pub in_message_ref: InMessageRef,
-    #[xml(child = "bpmn:outMessageRef")]
+    pub in_message_ref: String,
+    #[xml(flatten_text = "bpmn:outMessageRef")]
     #[tia("OperationType",rg*="out_message_ref","OperationTypeMut",s,rmg*="out_message_ref_mut")]
-    pub out_message_ref: Option<OutMessageRef>,
-    #[xml(child = "bpmn:errorRef")]
+    pub out_message_ref: Option<String>,
+    #[xml(flatten_text = "bpmn:errorRef")]
     #[tia("OperationType",rg*="error_refs","OperationTypeMut",s,rmg*="error_refs_mut")]
-    pub error_refs: Vec<ErrorRef>,
+    pub error_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for Operation {
@@ -9560,15 +9473,7 @@ impl DocumentElementContainer for Operation {
                 return Some(self);
             }
         }
-        if let Some(e) = self.in_message_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.out_message_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.error_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -9578,15 +9483,7 @@ impl DocumentElementContainer for Operation {
                 return Some(self);
             }
         }
-        if let Some(e) = self.in_message_ref.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.out_message_ref.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.error_refs.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -9601,11 +9498,11 @@ pub trait OperationType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of attribute `implementationRef`
     fn implementation_ref(&self) -> &Option<String>;
     /// Get value of `inMessageRef` child
-    fn in_message_ref(&self) -> &InMessageRef;
+    fn in_message_ref(&self) -> &String;
     /// Get value of `outMessageRef` child
-    fn out_message_ref(&self) -> &Option<OutMessageRef>;
+    fn out_message_ref(&self) -> &Option<String>;
     /// Get value of `errorRef` child
-    fn error_refs(&self) -> &Vec<ErrorRef>;
+    fn error_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(OperationType);
 impl_downcast!(OperationType);
@@ -9618,17 +9515,17 @@ pub trait OperationTypeMut:
     /// Set value of attribute `implementationRef`
     fn set_implementation_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `inMessageRef` child
-    fn in_message_ref_mut(&mut self) -> &mut InMessageRef;
+    fn in_message_ref_mut(&mut self) -> &mut String;
     /// Set value of `inMessageRef` child
-    fn set_in_message_ref(&mut self, value: InMessageRef);
+    fn set_in_message_ref(&mut self, value: String);
     /// Get a mutable value of `outMessageRef` child
-    fn out_message_ref_mut(&mut self) -> &mut Option<OutMessageRef>;
+    fn out_message_ref_mut(&mut self) -> &mut Option<String>;
     /// Set value of `outMessageRef` child
-    fn set_out_message_ref(&mut self, value: Option<OutMessageRef>);
+    fn set_out_message_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `errorRef` child
-    fn error_refs_mut(&mut self) -> &mut Vec<ErrorRef>;
+    fn error_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `errorRef` child
-    fn set_error_refs(&mut self, value: Vec<ErrorRef>);
+    fn set_error_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(OperationTypeMut);
 impl_downcast!(OperationTypeMut);
@@ -9650,18 +9547,18 @@ pub struct OutputSet {
     #[xml(attr = "name")]
     #[tia("OutputSetType",rg*="name","OutputSetTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:dataOutputRefs")]
+    #[xml(flatten_text = "bpmn:dataOutputRefs")]
     #[tia("OutputSetType",rg*="data_output_refss","OutputSetTypeMut",s,rmg*="data_output_refss_mut")]
-    pub data_output_refss: Vec<DataOutputRefs>,
-    #[xml(child = "bpmn:optionalOutputRefs")]
+    pub data_output_refss: Vec<String>,
+    #[xml(flatten_text = "bpmn:optionalOutputRefs")]
     #[tia("OutputSetType",rg*="optional_output_refss","OutputSetTypeMut",s,rmg*="optional_output_refss_mut")]
-    pub optional_output_refss: Vec<OptionalOutputRefs>,
-    #[xml(child = "bpmn:whileExecutingOutputRefs")]
+    pub optional_output_refss: Vec<String>,
+    #[xml(flatten_text = "bpmn:whileExecutingOutputRefs")]
     #[tia("OutputSetType",rg*="while_executing_output_refss","OutputSetTypeMut",s,rmg*="while_executing_output_refss_mut")]
-    pub while_executing_output_refss: Vec<WhileExecutingOutputRefs>,
-    #[xml(child = "bpmn:inputSetRefs")]
+    pub while_executing_output_refss: Vec<String>,
+    #[xml(flatten_text = "bpmn:inputSetRefs")]
     #[tia("OutputSetType",rg*="input_set_refss","OutputSetTypeMut",s,rmg*="input_set_refss_mut")]
-    pub input_set_refss: Vec<InputSetRefs>,
+    pub input_set_refss: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for OutputSet {
@@ -9678,18 +9575,7 @@ impl DocumentElementContainer for OutputSet {
                 return Some(self);
             }
         }
-        if let Some(e) = self.data_output_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.optional_output_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.while_executing_output_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.input_set_refss.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -9699,18 +9585,7 @@ impl DocumentElementContainer for OutputSet {
                 return Some(self);
             }
         }
-        if let Some(e) = self.data_output_refss.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.optional_output_refss.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.while_executing_output_refss.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.input_set_refss.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -9723,13 +9598,13 @@ pub trait OutputSetType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `dataOutputRefs` child
-    fn data_output_refss(&self) -> &Vec<DataOutputRefs>;
+    fn data_output_refss(&self) -> &Vec<String>;
     /// Get value of `optionalOutputRefs` child
-    fn optional_output_refss(&self) -> &Vec<OptionalOutputRefs>;
+    fn optional_output_refss(&self) -> &Vec<String>;
     /// Get value of `whileExecutingOutputRefs` child
-    fn while_executing_output_refss(&self) -> &Vec<WhileExecutingOutputRefs>;
+    fn while_executing_output_refss(&self) -> &Vec<String>;
     /// Get value of `inputSetRefs` child
-    fn input_set_refss(&self) -> &Vec<InputSetRefs>;
+    fn input_set_refss(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(OutputSetType);
 impl_downcast!(OutputSetType);
@@ -9740,21 +9615,21 @@ pub trait OutputSetTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `dataOutputRefs` child
-    fn data_output_refss_mut(&mut self) -> &mut Vec<DataOutputRefs>;
+    fn data_output_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `dataOutputRefs` child
-    fn set_data_output_refss(&mut self, value: Vec<DataOutputRefs>);
+    fn set_data_output_refss(&mut self, value: Vec<String>);
     /// Get a mutable value of `optionalOutputRefs` child
-    fn optional_output_refss_mut(&mut self) -> &mut Vec<OptionalOutputRefs>;
+    fn optional_output_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `optionalOutputRefs` child
-    fn set_optional_output_refss(&mut self, value: Vec<OptionalOutputRefs>);
+    fn set_optional_output_refss(&mut self, value: Vec<String>);
     /// Get a mutable value of `whileExecutingOutputRefs` child
-    fn while_executing_output_refss_mut(&mut self) -> &mut Vec<WhileExecutingOutputRefs>;
+    fn while_executing_output_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `whileExecutingOutputRefs` child
-    fn set_while_executing_output_refss(&mut self, value: Vec<WhileExecutingOutputRefs>);
+    fn set_while_executing_output_refss(&mut self, value: Vec<String>);
     /// Get a mutable value of `inputSetRefs` child
-    fn input_set_refss_mut(&mut self) -> &mut Vec<InputSetRefs>;
+    fn input_set_refss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `inputSetRefs` child
-    fn set_input_set_refss(&mut self, value: Vec<InputSetRefs>);
+    fn set_input_set_refss(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(OutputSetTypeMut);
 impl_downcast!(OutputSetTypeMut);
@@ -9782,15 +9657,15 @@ pub struct ParallelGateway {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "gatewayDirection")]
     #[tia("GatewayType",rg*="gateway_direction","GatewayTypeMut",s)]
     pub gateway_direction: Option<String>,
@@ -9863,12 +9738,12 @@ pub struct Participant {
     #[xml(attr = "processRef")]
     #[tia("ParticipantType",rg*="process_ref","ParticipantTypeMut",s)]
     pub process_ref: Option<String>,
-    #[xml(child = "bpmn:interfaceRef")]
+    #[xml(flatten_text = "bpmn:interfaceRef")]
     #[tia("ParticipantType",rg*="interface_refs","ParticipantTypeMut",s,rmg*="interface_refs_mut")]
-    pub interface_refs: Vec<InterfaceRef>,
-    #[xml(child = "bpmn:endPointRef")]
+    pub interface_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:endPointRef")]
     #[tia("ParticipantType",rg*="end_point_refs","ParticipantTypeMut",s,rmg*="end_point_refs_mut")]
-    pub end_point_refs: Vec<EndPointRef>,
+    pub end_point_refs: Vec<String>,
     #[xml(child = "bpmn:participantMultiplicity")]
     #[tia("ParticipantType",rg*="participant_multiplicity","ParticipantTypeMut",s,rmg*="participant_multiplicity_mut")]
     pub participant_multiplicity: Option<ParticipantMultiplicity>,
@@ -9888,12 +9763,6 @@ impl DocumentElementContainer for Participant {
                 return Some(self);
             }
         }
-        if let Some(e) = self.interface_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.end_point_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.participant_multiplicity.find_by_id_mut(id) {
             return Some(e);
         }
@@ -9905,12 +9774,6 @@ impl DocumentElementContainer for Participant {
             if id_ == id {
                 return Some(self);
             }
-        }
-        if let Some(e) = self.interface_refs.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.end_point_refs.find_by_id(id) {
-            return Some(e);
         }
         if let Some(e) = self.participant_multiplicity.find_by_id(id) {
             return Some(e);
@@ -9929,9 +9792,9 @@ pub trait ParticipantType: BaseElementType + Downcast + Debug + Send + DynClone 
     /// Get value of attribute `processRef`
     fn process_ref(&self) -> &Option<String>;
     /// Get value of `interfaceRef` child
-    fn interface_refs(&self) -> &Vec<InterfaceRef>;
+    fn interface_refs(&self) -> &Vec<String>;
     /// Get value of `endPointRef` child
-    fn end_point_refs(&self) -> &Vec<EndPointRef>;
+    fn end_point_refs(&self) -> &Vec<String>;
     /// Get value of `participantMultiplicity` child
     fn participant_multiplicity(&self) -> &Option<ParticipantMultiplicity>;
 }
@@ -9946,13 +9809,13 @@ pub trait ParticipantTypeMut:
     /// Set value of attribute `processRef`
     fn set_process_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `interfaceRef` child
-    fn interface_refs_mut(&mut self) -> &mut Vec<InterfaceRef>;
+    fn interface_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `interfaceRef` child
-    fn set_interface_refs(&mut self, value: Vec<InterfaceRef>);
+    fn set_interface_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `endPointRef` child
-    fn end_point_refs_mut(&mut self) -> &mut Vec<EndPointRef>;
+    fn end_point_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `endPointRef` child
-    fn set_end_point_refs(&mut self, value: Vec<EndPointRef>);
+    fn set_end_point_refs(&mut self, value: Vec<String>);
     /// Get a mutable value of `participantMultiplicity` child
     fn participant_multiplicity_mut(&mut self) -> &mut Option<ParticipantMultiplicity>;
     /// Set value of `participantMultiplicity` child
@@ -9975,12 +9838,12 @@ pub struct ParticipantAssociation {
     #[xml(child = "bpmn:extensionElements")]
     #[tia("BaseElementType",rg*="extension_elements","BaseElementTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
-    #[xml(child = "bpmn:innerParticipantRef")]
+    #[xml(flatten_text = "bpmn:innerParticipantRef")]
     #[tia("ParticipantAssociationType",rg*="inner_participant_ref","ParticipantAssociationTypeMut",s,rmg*="inner_participant_ref_mut")]
-    pub inner_participant_ref: InnerParticipantRef,
-    #[xml(child = "bpmn:outerParticipantRef")]
+    pub inner_participant_ref: String,
+    #[xml(flatten_text = "bpmn:outerParticipantRef")]
     #[tia("ParticipantAssociationType",rg*="outer_participant_ref","ParticipantAssociationTypeMut",s,rmg*="outer_participant_ref_mut")]
-    pub outer_participant_ref: OuterParticipantRef,
+    pub outer_participant_ref: String,
 }
 #[cast_to]
 impl DocumentElement for ParticipantAssociation {
@@ -9997,12 +9860,7 @@ impl DocumentElementContainer for ParticipantAssociation {
                 return Some(self);
             }
         }
-        if let Some(e) = self.inner_participant_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.outer_participant_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -10012,12 +9870,7 @@ impl DocumentElementContainer for ParticipantAssociation {
                 return Some(self);
             }
         }
-        if let Some(e) = self.inner_participant_ref.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.outer_participant_ref.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -10028,9 +9881,9 @@ castable_to! {ParticipantAssociation => BaseElementType,BaseElementTypeMut}
 /// Access to `participantAssociation`
 pub trait ParticipantAssociationType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of `innerParticipantRef` child
-    fn inner_participant_ref(&self) -> &InnerParticipantRef;
+    fn inner_participant_ref(&self) -> &String;
     /// Get value of `outerParticipantRef` child
-    fn outer_participant_ref(&self) -> &OuterParticipantRef;
+    fn outer_participant_ref(&self) -> &String;
 }
 dyn_clone::clone_trait_object!(ParticipantAssociationType);
 impl_downcast!(ParticipantAssociationType);
@@ -10039,13 +9892,13 @@ pub trait ParticipantAssociationTypeMut:
     BaseElementTypeMut + Downcast + Debug + Send + DynClone + ParticipantAssociationType
 {
     /// Get a mutable value of `innerParticipantRef` child
-    fn inner_participant_ref_mut(&mut self) -> &mut InnerParticipantRef;
+    fn inner_participant_ref_mut(&mut self) -> &mut String;
     /// Set value of `innerParticipantRef` child
-    fn set_inner_participant_ref(&mut self, value: InnerParticipantRef);
+    fn set_inner_participant_ref(&mut self, value: String);
     /// Get a mutable value of `outerParticipantRef` child
-    fn outer_participant_ref_mut(&mut self) -> &mut OuterParticipantRef;
+    fn outer_participant_ref_mut(&mut self) -> &mut String;
     /// Set value of `outerParticipantRef` child
-    fn set_outer_participant_ref(&mut self, value: OuterParticipantRef);
+    fn set_outer_participant_ref(&mut self, value: String);
 }
 dyn_clone::clone_trait_object!(ParticipantAssociationTypeMut);
 impl_downcast!(ParticipantAssociationTypeMut);
@@ -10144,9 +9997,9 @@ pub struct PartnerEntity {
     #[xml(attr = "name")]
     #[tia("PartnerEntityType",rg*="name","PartnerEntityTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("PartnerEntityType",rg*="participant_refs","PartnerEntityTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
+    pub participant_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for PartnerEntity {
@@ -10163,9 +10016,7 @@ impl DocumentElementContainer for PartnerEntity {
                 return Some(self);
             }
         }
-        if let Some(e) = self.participant_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -10175,9 +10026,7 @@ impl DocumentElementContainer for PartnerEntity {
                 return Some(self);
             }
         }
-        if let Some(e) = self.participant_refs.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -10196,7 +10045,7 @@ pub trait PartnerEntityType: RootElementType + Downcast + Debug + Send + DynClon
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `participantRef` child
-    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+    fn participant_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(PartnerEntityType);
 impl_downcast!(PartnerEntityType);
@@ -10207,9 +10056,9 @@ pub trait PartnerEntityTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
-    fn participant_refs_mut(&mut self) -> &mut Vec<ParticipantRef>;
+    fn participant_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `participantRef` child
-    fn set_participant_refs(&mut self, value: Vec<ParticipantRef>);
+    fn set_participant_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(PartnerEntityTypeMut);
 impl_downcast!(PartnerEntityTypeMut);
@@ -10231,9 +10080,9 @@ pub struct PartnerRole {
     #[xml(attr = "name")]
     #[tia("PartnerRoleType",rg*="name","PartnerRoleTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("PartnerRoleType",rg*="participant_refs","PartnerRoleTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
+    pub participant_refs: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for PartnerRole {
@@ -10250,9 +10099,7 @@ impl DocumentElementContainer for PartnerRole {
                 return Some(self);
             }
         }
-        if let Some(e) = self.participant_refs.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -10262,9 +10109,7 @@ impl DocumentElementContainer for PartnerRole {
                 return Some(self);
             }
         }
-        if let Some(e) = self.participant_refs.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -10283,7 +10128,7 @@ pub trait PartnerRoleType: RootElementType + Downcast + Debug + Send + DynClone 
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `participantRef` child
-    fn participant_refs(&self) -> &Vec<ParticipantRef>;
+    fn participant_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(PartnerRoleType);
 impl_downcast!(PartnerRoleType);
@@ -10294,9 +10139,9 @@ pub trait PartnerRoleTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `participantRef` child
-    fn participant_refs_mut(&mut self) -> &mut Vec<ParticipantRef>;
+    fn participant_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `participantRef` child
-    fn set_participant_refs(&mut self, value: Vec<ParticipantRef>);
+    fn set_participant_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(PartnerRoleTypeMut);
 impl_downcast!(PartnerRoleTypeMut);
@@ -10318,9 +10163,9 @@ pub struct Performer {
     #[xml(attr = "name")]
     #[tia("ResourceRoleType",rg*="name","ResourceRoleTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:resourceRef")]
+    #[xml(flatten_text = "bpmn:resourceRef")]
     #[tia("ResourceRoleType",rg*="resource_ref","ResourceRoleTypeMut",s,rmg*="resource_ref_mut")]
-    pub resource_ref: ResourceRef,
+    pub resource_ref: String,
     #[xml(child = "bpmn:resourceParameterBinding")]
     #[tia("ResourceRoleType",rg*="resource_parameter_bindings","ResourceRoleTypeMut",s,rmg*="resource_parameter_bindings_mut")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
@@ -10391,9 +10236,9 @@ pub struct PotentialOwner {
     #[xml(attr = "name")]
     #[tia("ResourceRoleType",rg*="name","ResourceRoleTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:resourceRef")]
+    #[xml(flatten_text = "bpmn:resourceRef")]
     #[tia("ResourceRoleType",rg*="resource_ref","ResourceRoleTypeMut",s,rmg*="resource_ref_mut")]
-    pub resource_ref: ResourceRef,
+    pub resource_ref: String,
     #[xml(child = "bpmn:resourceParameterBinding")]
     #[tia("ResourceRoleType",rg*="resource_parameter_bindings","ResourceRoleTypeMut",s,rmg*="resource_parameter_bindings_mut")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
@@ -10476,9 +10321,9 @@ pub struct Process {
     #[xml(attr = "name")]
     #[tia("CallableElementType",rg*="name","CallableElementTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:supportedInterfaceRef")]
+    #[xml(flatten_text = "bpmn:supportedInterfaceRef")]
     #[tia("CallableElementType",rg*="supported_interface_refs","CallableElementTypeMut",s,rmg*="supported_interface_refs_mut")]
-    pub supported_interface_refs: Vec<SupportedInterfaceRef>,
+    pub supported_interface_refs: Vec<String>,
     #[xml(child = "bpmn:ioSpecification")]
     #[tia("CallableElementType",rg*="io_specification","CallableElementTypeMut",s,rmg*="io_specification_mut")]
     pub io_specification: Option<InputOutputSpecification>,
@@ -10557,9 +10402,9 @@ pub struct Process {
     #[xml(child = "bpmn:correlationSubscription")]
     #[tia("ProcessType",rg*="correlation_subscriptions","ProcessTypeMut",s,rmg*="correlation_subscriptions_mut")]
     pub correlation_subscriptions: Vec<CorrelationSubscription>,
-    #[xml(child = "bpmn:supports")]
+    #[xml(flatten_text = "bpmn:supports")]
     #[tia("ProcessType",rg*="supportss","ProcessTypeMut",s,rmg*="supportss_mut")]
-    pub supportss: Vec<Supports>,
+    pub supportss: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for Process {
@@ -10600,9 +10445,6 @@ impl DocumentElementContainer for Process {
         if let Some(e) = self.correlation_subscriptions.find_by_id_mut(id) {
             return Some(e);
         }
-        if let Some(e) = self.supportss.find_by_id_mut(id) {
-            return Some(e);
-        }
         None
     }
 
@@ -10634,9 +10476,6 @@ impl DocumentElementContainer for Process {
             return Some(e);
         }
         if let Some(e) = self.correlation_subscriptions.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.supportss.find_by_id(id) {
             return Some(e);
         }
         None
@@ -10680,7 +10519,7 @@ pub trait ProcessType: CallableElementType + Downcast + Debug + Send + DynClone 
     /// Get value of `correlationSubscription` child
     fn correlation_subscriptions(&self) -> &Vec<CorrelationSubscription>;
     /// Get value of `supports` child
-    fn supportss(&self) -> &Vec<Supports>;
+    fn supportss(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(ProcessType);
 impl_downcast!(ProcessType);
@@ -10729,9 +10568,9 @@ pub trait ProcessTypeMut:
     /// Set value of `correlationSubscription` child
     fn set_correlation_subscriptions(&mut self, value: Vec<CorrelationSubscription>);
     /// Get a mutable value of `supports` child
-    fn supportss_mut(&mut self) -> &mut Vec<Supports>;
+    fn supportss_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `supports` child
-    fn set_supportss(&mut self, value: Vec<Supports>);
+    fn set_supportss(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(ProcessTypeMut);
 impl_downcast!(ProcessTypeMut);
@@ -10847,15 +10686,15 @@ pub struct ReceiveTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -10993,12 +10832,12 @@ pub struct Relationship {
     #[xml(attr = "direction")]
     #[tia("RelationshipType",rg*="direction","RelationshipTypeMut",s)]
     pub direction: Option<String>,
-    #[xml(child = "bpmn:source")]
+    #[xml(flatten_text = "bpmn:source")]
     #[tia("RelationshipType",rg*="sources","RelationshipTypeMut",s,rmg*="sources_mut")]
-    pub sources: Vec<Source>,
-    #[xml(child = "bpmn:target")]
+    pub sources: Vec<String>,
+    #[xml(flatten_text = "bpmn:target")]
     #[tia("RelationshipType",rg*="targets","RelationshipTypeMut",s,rmg*="targets_mut")]
-    pub targets: Vec<Target>,
+    pub targets: Vec<String>,
 }
 #[cast_to]
 impl DocumentElement for Relationship {
@@ -11015,12 +10854,7 @@ impl DocumentElementContainer for Relationship {
                 return Some(self);
             }
         }
-        if let Some(e) = self.sources.find_by_id_mut(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.targets.find_by_id_mut(id) {
-            return Some(e);
-        }
+
         None
     }
 
@@ -11030,12 +10864,7 @@ impl DocumentElementContainer for Relationship {
                 return Some(self);
             }
         }
-        if let Some(e) = self.sources.find_by_id(id) {
-            return Some(e);
-        }
-        if let Some(e) = self.targets.find_by_id(id) {
-            return Some(e);
-        }
+
         None
     }
 }
@@ -11050,9 +10879,9 @@ pub trait RelationshipType: BaseElementType + Downcast + Debug + Send + DynClone
     /// Get value of attribute `direction`
     fn direction(&self) -> &Option<String>;
     /// Get value of `source` child
-    fn sources(&self) -> &Vec<Source>;
+    fn sources(&self) -> &Vec<String>;
     /// Get value of `target` child
-    fn targets(&self) -> &Vec<Target>;
+    fn targets(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(RelationshipType);
 impl_downcast!(RelationshipType);
@@ -11065,13 +10894,13 @@ pub trait RelationshipTypeMut:
     /// Set value of attribute `direction`
     fn set_direction(&mut self, value: Option<String>);
     /// Get a mutable value of `source` child
-    fn sources_mut(&mut self) -> &mut Vec<Source>;
+    fn sources_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `source` child
-    fn set_sources(&mut self, value: Vec<Source>);
+    fn set_sources(&mut self, value: Vec<String>);
     /// Get a mutable value of `target` child
-    fn targets_mut(&mut self) -> &mut Vec<Target>;
+    fn targets_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `target` child
-    fn set_targets(&mut self, value: Vec<Target>);
+    fn set_targets(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(RelationshipTypeMut);
 impl_downcast!(RelationshipTypeMut);
@@ -11481,9 +11310,9 @@ pub struct ResourceRole {
     #[xml(attr = "name")]
     #[tia("ResourceRoleType",rg*="name","ResourceRoleTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:resourceRef")]
+    #[xml(flatten_text = "bpmn:resourceRef")]
     #[tia("ResourceRoleType",rg*="resource_ref","ResourceRoleTypeMut",s,rmg*="resource_ref_mut")]
-    pub resource_ref: ResourceRef,
+    pub resource_ref: String,
     #[xml(child = "bpmn:resourceParameterBinding")]
     #[tia("ResourceRoleType",rg*="resource_parameter_bindings","ResourceRoleTypeMut",s,rmg*="resource_parameter_bindings_mut")]
     pub resource_parameter_bindings: Vec<ResourceParameterBinding>,
@@ -11506,9 +11335,6 @@ impl DocumentElementContainer for ResourceRole {
                 return Some(self);
             }
         }
-        if let Some(e) = self.resource_ref.find_by_id_mut(id) {
-            return Some(e);
-        }
         if let Some(e) = self.resource_parameter_bindings.find_by_id_mut(id) {
             return Some(e);
         }
@@ -11523,9 +11349,6 @@ impl DocumentElementContainer for ResourceRole {
             if id_ == id {
                 return Some(self);
             }
-        }
-        if let Some(e) = self.resource_ref.find_by_id(id) {
-            return Some(e);
         }
         if let Some(e) = self.resource_parameter_bindings.find_by_id(id) {
             return Some(e);
@@ -11545,7 +11368,7 @@ pub trait ResourceRoleType: BaseElementType + Downcast + Debug + Send + DynClone
     /// Get value of attribute `name`
     fn name(&self) -> &Option<String>;
     /// Get value of `resourceRef` child
-    fn resource_ref(&self) -> &ResourceRef;
+    fn resource_ref(&self) -> &String;
     /// Get value of `resourceParameterBinding` child
     fn resource_parameter_bindings(&self) -> &Vec<ResourceParameterBinding>;
     /// Get value of `resourceAssignmentExpression` child
@@ -11560,9 +11383,9 @@ pub trait ResourceRoleTypeMut:
     /// Set value of attribute `name`
     fn set_name(&mut self, value: Option<String>);
     /// Get a mutable value of `resourceRef` child
-    fn resource_ref_mut(&mut self) -> &mut ResourceRef;
+    fn resource_ref_mut(&mut self) -> &mut String;
     /// Set value of `resourceRef` child
-    fn set_resource_ref(&mut self, value: ResourceRef);
+    fn set_resource_ref(&mut self, value: String);
     /// Get a mutable value of `resourceParameterBinding` child
     fn resource_parameter_bindings_mut(&mut self) -> &mut Vec<ResourceParameterBinding>;
     /// Set value of `resourceParameterBinding` child
@@ -11857,15 +11680,15 @@ pub struct ScriptTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -12025,15 +11848,15 @@ pub struct SendTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -12165,9 +11988,9 @@ pub struct SequenceFlow {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
+    pub category_value_refs: Vec<String>,
     #[xml(attr = "sourceRef")]
     #[tia("SequenceFlowType",rg*="source_ref","SequenceFlowTypeMut",s)]
     pub source_ref: String,
@@ -12273,15 +12096,15 @@ pub struct ServiceTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -12667,15 +12490,15 @@ pub struct StartEvent {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(child = "bpmn:property")]
     #[tia("EventType",rg*="properies","EventTypeMut",s,rmg*="properies_mut")]
     pub properies: Vec<Property>,
@@ -12705,9 +12528,9 @@ pub struct StartEvent {
     )]
     #[tia("CatchEventType",rg*="event_definitions","CatchEventTypeMut",s,rmg*="event_definitions_mut")]
     pub event_definitions: Vec<EventDefinition>,
-    #[xml(child = "bpmn:eventDefinitionRef")]
+    #[xml(flatten_text = "bpmn:eventDefinitionRef")]
     #[tia("CatchEventType",rg*="event_definition_refs","CatchEventTypeMut",s,rmg*="event_definition_refs_mut")]
-    pub event_definition_refs: Vec<EventDefinitionRef>,
+    pub event_definition_refs: Vec<String>,
     #[xml(attr = "isInterrupting")]
     #[tia("StartEventType",rg*="is_interrupting","StartEventTypeMut",s)]
     pub is_interrupting: Option<bool>,
@@ -12789,24 +12612,24 @@ pub struct SubChoreography {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "initiatingParticipantRef")]
     #[tia("ChoreographyActivityType",rg*="initiating_participant_ref","ChoreographyActivityTypeMut",s)]
     pub initiating_participant_ref: String,
     #[xml(attr = "loopType")]
     #[tia("ChoreographyActivityType",rg*="loop_type","ChoreographyActivityTypeMut",s)]
     pub loop_type: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("ChoreographyActivityType",rg*="participant_refs","ChoreographyActivityTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
+    pub participant_refs: Vec<String>,
     #[xml(child = "bpmn:correlationKey")]
     #[tia("ChoreographyActivityType",rg*="correlation_keys","ChoreographyActivityTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
@@ -12943,12 +12766,12 @@ pub struct SubConversation {
     #[xml(attr = "name")]
     #[tia("ConversationNodeType",rg*="name","ConversationNodeTypeMut",s)]
     pub name: Option<String>,
-    #[xml(child = "bpmn:participantRef")]
+    #[xml(flatten_text = "bpmn:participantRef")]
     #[tia("ConversationNodeType",rg*="participant_refs","ConversationNodeTypeMut",s,rmg*="participant_refs_mut")]
-    pub participant_refs: Vec<ParticipantRef>,
-    #[xml(child = "bpmn:messageFlowRef")]
+    pub participant_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:messageFlowRef")]
     #[tia("ConversationNodeType",rg*="message_flow_refs","ConversationNodeTypeMut",s,rmg*="message_flow_refs_mut")]
-    pub message_flow_refs: Vec<MessageFlowRef>,
+    pub message_flow_refs: Vec<String>,
     #[xml(child = "bpmn:correlationKey")]
     #[tia("ConversationNodeType",rg*="correlation_keys","ConversationNodeTypeMut",s,rmg*="correlation_keys_mut")]
     pub correlation_keys: Vec<CorrelationKey>,
@@ -13040,15 +12863,15 @@ pub struct SubProcess {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -13241,15 +13064,15 @@ pub struct Task {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -13562,7 +13385,7 @@ pub trait ThrowEventType: EventType + Downcast + Debug + Send + DynClone {
     /// Get value of `eventDefinition` child
     fn event_definitions(&self) -> &Vec<EventDefinition>;
     /// Get value of `eventDefinitionRef` child
-    fn event_definition_refs(&self) -> &Vec<EventDefinitionRef>;
+    fn event_definition_refs(&self) -> &Vec<String>;
 }
 dyn_clone::clone_trait_object!(ThrowEventType);
 impl_downcast!(ThrowEventType);
@@ -13587,9 +13410,9 @@ pub trait ThrowEventTypeMut:
     /// Set value of `eventDefinition` child
     fn set_event_definitions(&mut self, value: Vec<EventDefinition>);
     /// Get a mutable value of `eventDefinitionRef` child
-    fn event_definition_refs_mut(&mut self) -> &mut Vec<EventDefinitionRef>;
+    fn event_definition_refs_mut(&mut self) -> &mut Vec<String>;
     /// Set value of `eventDefinitionRef` child
-    fn set_event_definition_refs(&mut self, value: Vec<EventDefinitionRef>);
+    fn set_event_definition_refs(&mut self, value: Vec<String>);
 }
 dyn_clone::clone_trait_object!(ThrowEventTypeMut);
 impl_downcast!(ThrowEventTypeMut);
@@ -13735,15 +13558,15 @@ pub struct Transaction {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -13906,15 +13729,15 @@ pub struct UserTask {
     #[xml(child = "bpmn:monitoring")]
     #[tia("FlowElementType",rg*="monitoring","FlowElementTypeMut",s,rmg*="monitoring_mut")]
     pub monitoring: Option<Monitoring>,
-    #[xml(child = "bpmn:categoryValueRef")]
+    #[xml(flatten_text = "bpmn:categoryValueRef")]
     #[tia("FlowElementType",rg*="category_value_refs","FlowElementTypeMut",s,rmg*="category_value_refs_mut")]
-    pub category_value_refs: Vec<CategoryValueRef>,
-    #[xml(child = "bpmn:incoming")]
+    pub category_value_refs: Vec<String>,
+    #[xml(flatten_text = "bpmn:incoming")]
     #[tia("FlowNodeType",rg*="incomings","FlowNodeTypeMut",s,rmg*="incomings_mut")]
-    pub incomings: Vec<Incoming>,
-    #[xml(child = "bpmn:outgoing")]
+    pub incomings: Vec<String>,
+    #[xml(flatten_text = "bpmn:outgoing")]
     #[tia("FlowNodeType",rg*="outgoings","FlowNodeTypeMut",s,rmg*="outgoings_mut")]
-    pub outgoings: Vec<Outgoing>,
+    pub outgoings: Vec<String>,
     #[xml(attr = "isForCompensation")]
     #[tia("ActivityType",rg*="is_for_compensation","ActivityTypeMut",s)]
     pub is_for_compensation: Option<bool>,
@@ -14021,649 +13844,3 @@ pub trait UserTaskTypeMut: TaskTypeMut + Downcast + Debug + Send + DynClone + Us
 }
 dyn_clone::clone_trait_object!(UserTaskTypeMut);
 impl_downcast!(UserTaskTypeMut);
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:supportedInterfaceRef")]
-pub struct SupportedInterfaceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for SupportedInterfaceRef {
-    fn element(&self) -> Element {
-        Element::SupportedInterfaceRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for SupportedInterfaceRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:eventDefinitionRef")]
-pub struct EventDefinitionRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for EventDefinitionRef {
-    fn element(&self) -> Element {
-        Element::EventDefinitionRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for EventDefinitionRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:participantRef")]
-pub struct ParticipantRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for ParticipantRef {
-    fn element(&self) -> Element {
-        Element::ParticipantRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for ParticipantRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:messageFlowRef")]
-pub struct MessageFlowRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for MessageFlowRef {
-    fn element(&self) -> Element {
-        Element::MessageFlowRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for MessageFlowRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:choreographyRef")]
-pub struct ChoreographyRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for ChoreographyRef {
-    fn element(&self) -> Element {
-        Element::ChoreographyRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for ChoreographyRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:correlationPropertyRef")]
-pub struct CorrelationPropertyRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for CorrelationPropertyRef {
-    fn element(&self) -> Element {
-        Element::CorrelationPropertyRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for CorrelationPropertyRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:sourceRef")]
-pub struct SourceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for SourceRef {
-    fn element(&self) -> Element {
-        Element::SourceRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for SourceRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:targetRef")]
-pub struct TargetRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for TargetRef {
-    fn element(&self) -> Element {
-        Element::TargetRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for TargetRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:categoryValueRef")]
-pub struct CategoryValueRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for CategoryValueRef {
-    fn element(&self) -> Element {
-        Element::CategoryValueRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for CategoryValueRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:incoming")]
-pub struct Incoming {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for Incoming {
-    fn element(&self) -> Element {
-        Element::Incoming
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for Incoming {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:outgoing")]
-pub struct Outgoing {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for Outgoing {
-    fn element(&self) -> Element {
-        Element::Outgoing
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for Outgoing {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:dataInputRefs")]
-pub struct DataInputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for DataInputRefs {
-    fn element(&self) -> Element {
-        Element::DataInputRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for DataInputRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:optionalInputRefs")]
-pub struct OptionalInputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for OptionalInputRefs {
-    fn element(&self) -> Element {
-        Element::OptionalInputRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for OptionalInputRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:whileExecutingInputRefs")]
-pub struct WhileExecutingInputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for WhileExecutingInputRefs {
-    fn element(&self) -> Element {
-        Element::WhileExecutingInputRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for WhileExecutingInputRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:outputSetRefs")]
-pub struct OutputSetRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for OutputSetRefs {
-    fn element(&self) -> Element {
-        Element::OutputSetRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for OutputSetRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:flowNodeRef")]
-pub struct FlowNodeRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for FlowNodeRef {
-    fn element(&self) -> Element {
-        Element::FlowNodeRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for FlowNodeRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:source")]
-pub struct Source {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for Source {
-    fn element(&self) -> Element {
-        Element::Source
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for Source {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:target")]
-pub struct Target {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for Target {
-    fn element(&self) -> Element {
-        Element::Target
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for Target {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:operationRef")]
-pub struct OperationRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for OperationRef {
-    fn element(&self) -> Element {
-        Element::OperationRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for OperationRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:loopDataInputRef")]
-pub struct LoopDataInputRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for LoopDataInputRef {
-    fn element(&self) -> Element {
-        Element::LoopDataInputRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for LoopDataInputRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:loopDataOutputRef")]
-pub struct LoopDataOutputRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for LoopDataOutputRef {
-    fn element(&self) -> Element {
-        Element::LoopDataOutputRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for LoopDataOutputRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:inMessageRef")]
-pub struct InMessageRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for InMessageRef {
-    fn element(&self) -> Element {
-        Element::InMessageRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for InMessageRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:outMessageRef")]
-pub struct OutMessageRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for OutMessageRef {
-    fn element(&self) -> Element {
-        Element::OutMessageRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for OutMessageRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:errorRef")]
-pub struct ErrorRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for ErrorRef {
-    fn element(&self) -> Element {
-        Element::ErrorRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for ErrorRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:dataOutputRefs")]
-pub struct DataOutputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for DataOutputRefs {
-    fn element(&self) -> Element {
-        Element::DataOutputRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for DataOutputRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:optionalOutputRefs")]
-pub struct OptionalOutputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for OptionalOutputRefs {
-    fn element(&self) -> Element {
-        Element::OptionalOutputRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for OptionalOutputRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:whileExecutingOutputRefs")]
-pub struct WhileExecutingOutputRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for WhileExecutingOutputRefs {
-    fn element(&self) -> Element {
-        Element::WhileExecutingOutputRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for WhileExecutingOutputRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:inputSetRefs")]
-pub struct InputSetRefs {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for InputSetRefs {
-    fn element(&self) -> Element {
-        Element::InputSetRefs
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for InputSetRefs {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:interfaceRef")]
-pub struct InterfaceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for InterfaceRef {
-    fn element(&self) -> Element {
-        Element::InterfaceRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for InterfaceRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:endPointRef")]
-pub struct EndPointRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for EndPointRef {
-    fn element(&self) -> Element {
-        Element::EndPointRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for EndPointRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:innerParticipantRef")]
-pub struct InnerParticipantRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for InnerParticipantRef {
-    fn element(&self) -> Element {
-        Element::InnerParticipantRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for InnerParticipantRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:outerParticipantRef")]
-pub struct OuterParticipantRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for OuterParticipantRef {
-    fn element(&self) -> Element {
-        Element::OuterParticipantRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for OuterParticipantRef {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:supports")]
-pub struct Supports {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for Supports {
-    fn element(&self) -> Element {
-        Element::Supports
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for Supports {}
-/// Auto-generated from BPNM schema
-///
-/// (See codegen-rust.xsl)
-#[derive(Deref, From, Hash, Default, Clone, XmlRead, PartialEq, Debug, Deserialize, Serialize)]
-#[from(forward)]
-#[xml(tag = "bpmn:resourceRef")]
-pub struct ResourceRef {
-    #[xml(text, cdata)]
-    pub content: Option<String>,
-}
-#[cast_to]
-impl DocumentElement for ResourceRef {
-    fn element(&self) -> Element {
-        Element::ResourceRef
-    }
-}
-#[allow(unused_variables)]
-#[cast_to]
-impl DocumentElementContainer for ResourceRef {}

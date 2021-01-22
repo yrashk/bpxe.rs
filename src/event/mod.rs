@@ -31,14 +31,14 @@ pub enum ProcessEvent {
     /// Message Event
     MessageEvent {
         message_ref: Option<String>,
-        operation_ref: Option<OperationRef>,
+        operation_ref: Option<String>,
     },
     /// Escalation Event
     EscalationEvent { escalation_ref: Option<String> },
     /// Link Event
     LinkEvent {
-        sources: Vec<Source>,
-        target: Option<Target>,
+        sources: Vec<String>,
+        target: Option<String>,
     },
     /// Error Event
     ErrorEvent { error_ref: Option<String> },

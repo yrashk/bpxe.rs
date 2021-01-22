@@ -311,12 +311,12 @@ impl Scheduler {
                                    Control::Proceed(action) => {
                                        let mut matching_predecessor = self.flow_nodes.iter_mut().find(|node|
                                            node.element().outgoings().iter()
-                                           .any(|outgoing| outgoing.content == incoming.content));
+                                           .any(|outgoing| outgoing == incoming));
                                            if let Some(ref mut node) = matching_predecessor {
                                                // it's ok to unwrap here because we already know such
                                                // predecessor exists
                                                let index = node.element().outgoings().iter().
-                                                   enumerate().find_map(|(i, name)| if name.content == incoming.content {
+                                                   enumerate().find_map(|(i, name)| if name == incoming {
                                                        Some(i)
                                                    } else {
                                                        None
@@ -336,7 +336,7 @@ impl Scheduler {
                                let outgoings = flow_node.element().outgoings().clone();
                                for index in indices {
                                    let seq_flow = {
-                                       element.find_by_id(outgoings[index].as_ref().unwrap_or(&"".to_string()))
+                                       element.find_by_id(&outgoings[index])
                                            .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
                                    };
                                    if let Some(seq_flow) = seq_flow {
@@ -352,7 +352,7 @@ impl Scheduler {
                                for index in indices {
                                    // FIXME: see above about ID-less flow nodes
                                    let seq_flow = {
-                                       element.find_by_id(outgoings[index].as_ref().unwrap_or(&"".to_string()))
+                                       element.find_by_id(&outgoings[index])
                                            .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
                                    };
 
@@ -368,7 +368,7 @@ impl Scheduler {
                                                    node.and_then(|node|
                                                        node.element().incomings().iter().enumerate().
                                                        find_map(|(index, incoming)|
-                                                           if incoming.as_ref() == seq_flow.id.as_ref() {
+                                                           if incoming == seq_flow.id.as_ref().unwrap() {
                                                                Some(index)
                                                            } else {
                                                                None

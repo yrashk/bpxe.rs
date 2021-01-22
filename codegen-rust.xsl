@@ -107,7 +107,7 @@
         <xsl:variable name="subType" select="if (exists($schema/xs:complexType[@name = $subType])) then 
             local:struct-case($subType)
             else
-            local:struct-case($name)
+            local:type($element/@type)
             "/>
         <xsl:variable name="subType" select="if ($subType = '') then local:type($subType) else $subType"/>
         <xsl:choose>
@@ -120,6 +120,18 @@
         <xsl:choose>
             <xsl:when test="$element/@minOccurs = 0 and (not($element/@maxOccurs) or $element/@maxOccurs = '1')"><xsl:text>&gt;</xsl:text></xsl:when>
             <xsl:when test="$element/@maxOccurs = 'unbounded'"><xsl:text>&gt;</xsl:text></xsl:when>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="local:elementTypeTag">
+        <xsl:param name="element"/>
+        <xsl:variable name="name" select="local:elementName($element)"/>
+        <xsl:variable name="subType" select="$element/@type"/>
+        <xsl:variable name="subType" select="if (not($subType)) then $schema/xs:element[@name = $name]/@type else $subType"/>
+       
+        <xsl:choose>
+            <xsl:when test="exists($schema/xs:complexType[@name = $subType])"><xsl:text>child</xsl:text></xsl:when>
+            <xsl:otherwise><xsl:text>flatten_text</xsl:text></xsl:otherwise>
         </xsl:choose>
     </xsl:function>
     
@@ -153,7 +165,6 @@
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
             use strong_xml::XmlRead;
             use serde::{Serialize, Deserialize};
-            use derive_more::{Deref, From};
             use std::fmt::Debug;
             use dyn_clone::DynClone;
             use tia::Tia;
@@ -173,7 +184,7 @@
             </xsl:call-template>
         </xsl:for-each>
         
-        <xsl:for-each-group select="$schema//xs:element[@name and @type]" group-by="@name">
+       <!-- <xsl:for-each-group select="$schema//xs:element[@name and @type]" group-by="@name">
             <xsl:variable name="e" select="current-group()[1]"/>
             <xsl:if test="contains($e/@type, ':')">
                 <xsl:variable name="name" select="$e/@name"/>
@@ -201,7 +212,7 @@
                 </xsl:call-template>
                 
             </xsl:if>
-        </xsl:for-each-group>
+        </xsl:for-each-group>-->
     </xsl:template>
     
     
@@ -501,7 +512,7 @@
                     <xsl:text>)]</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:text>#[xml(child = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                    <xsl:text>#[xml(</xsl:text><xsl:value-of select="local:elementTypeTag(.)"/><xsl:text> = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:text>#[tia("</xsl:text><xsl:value-of select="local:struct-case($type/@name)"/><xsl:text>Type",rg*="</xsl:text><xsl:value-of select="local:elementUnderscoreName(.)"/>
@@ -549,11 +560,11 @@
             <!-- use default implementation -->
             <xsl:when test="empty($elements) and not($id)">{}</xsl:when>
             <xsl:otherwise>
-                
+
                 <xsl:text> {
                     fn find_by_id_mut(&amp;mut self, id: &amp;str) -> Option&lt;&amp;mut dyn DocumentElement&gt; {
                 </xsl:text>
-                
+
                 <xsl:if test="$id = true()">
                     <xsl:text>
                         if let Some(ref id_) = self.id {
@@ -563,28 +574,38 @@
                         }
                     </xsl:text>
                 </xsl:if>
-                
+
                 <xsl:for-each select="$elements">
-                    <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
-                    
-                    <xsl:text> if let Some(e) = self.</xsl:text>
-                    <xsl:choose> 
-                        <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
-                        <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
-                    </xsl:choose>
-                    <xsl:text>.find_by_id_mut(id) {
+                    <xsl:variable name="name" select="
+                            if (./@ref) then
+                                ./@ref
+                            else
+                                ./@name"/>
+                    <xsl:if test="not(contains(local:elementTypeTag(.), 'flatten_text'))">
+                        <xsl:text> if let Some(e) = self.</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'">
+                                <xsl:value-of select="local:pluralize(local:underscoreCase($name))"
+                                />
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="local:underscoreCase($name)"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:text>.find_by_id_mut(id) {
                         return Some(e);
                         }</xsl:text>
+                    </xsl:if>
                 </xsl:for-each>
                 <xsl:text>
                     None
                     }
                 </xsl:text>
-                
+
                 <xsl:text> 
                     fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
                 </xsl:text>
-                
+
                 <xsl:if test="$id = true()">
                     <xsl:text>
                         if let Some(ref id_) = self.id {
@@ -594,25 +615,35 @@
                         }
                     </xsl:text>
                 </xsl:if>
-                
+
                 <xsl:for-each select="$elements">
-                    <xsl:variable name="name" select="if (./@ref) then ./@ref else ./@name"/>
-                    
-                    <xsl:text> if let Some(e) = self.</xsl:text>
-                    <xsl:choose> 
-                        <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'"><xsl:value-of select="local:pluralize(local:underscoreCase($name))"/></xsl:when>
-                        <xsl:otherwise><xsl:value-of select="local:underscoreCase($name)"/></xsl:otherwise>
-                    </xsl:choose>
-                    <xsl:text>.find_by_id(id) {
+                    <xsl:variable name="name" select="
+                            if (./@ref) then
+                                ./@ref
+                            else
+                                ./@name"/>
+                    <xsl:if test="not(contains(local:elementTypeTag(.), 'flatten_text'))">
+                        <xsl:text> if let Some(e) = self.</xsl:text>
+                        <xsl:choose>
+                            <xsl:when test="xs:string(./@maxOccurs) = 'unbounded'">
+                                <xsl:value-of select="local:pluralize(local:underscoreCase($name))"
+                                />
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="local:underscoreCase($name)"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:text>.find_by_id(id) {
                         return Some(e);
                         }</xsl:text>
+                    </xsl:if>
                 </xsl:for-each>
                 <xsl:text>
                     None
                     }
                 </xsl:text>
-                
-                
+
+
                 <xsl:text>}</xsl:text>
             </xsl:otherwise>
         </xsl:choose>

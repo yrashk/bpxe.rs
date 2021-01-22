@@ -147,18 +147,14 @@ impl Process {
             .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
             .unwrap();
 
-        source_node.outgoings_mut().push(Outgoing {
-            content: Some(id.to_string()),
-        });
+        source_node.outgoings_mut().push(id.into());
 
         // add incoming
         let target_node = self
             .find_by_id_mut(target)
             .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
             .unwrap();
-        target_node.incomings_mut().push(Incoming {
-            content: Some(id.to_string()),
-        });
+        target_node.incomings_mut().push(id.into());
 
         Ok(self)
     }
@@ -200,7 +196,7 @@ fn establishing_sequence_flow_in_process() {
         .unwrap()
         .downcast_ref::<SequenceFlow>()
         .unwrap();
-    assert_eq!(seq_flow.id(), &Some("test".into()));
+    assert_eq!(seq_flow.id(), &Some("test".to_string()));
     assert_eq!(seq_flow.source_ref(), "start");
     assert_eq!(seq_flow.target_ref(), "end");
     assert_eq!(
@@ -219,14 +215,14 @@ fn establishing_sequence_flow_in_process() {
         .unwrap()
         .cast::<dyn FlowNodeType>()
         .unwrap();
-    assert_eq!(start.outgoings(), &vec![Some("test".into()).into()]);
+    assert_eq!(start.outgoings(), &vec!["test".to_string()]);
 
     let end = process
         .find_by_id("end")
         .unwrap()
         .cast::<dyn FlowNodeType>()
         .unwrap();
-    assert_eq!(end.incomings(), &vec![Some("test".into()).into()]);
+    assert_eq!(end.incomings(), &vec!["test".to_string()]);
 }
 
 #[cfg(test)]
@@ -291,10 +287,9 @@ where
     sequence_flow.set_target_ref(target.id().as_ref().unwrap().into());
     sequence_flow.set_condition_expression(condition_expression);
 
-    source.outgoings_mut().push(Outgoing {
-        content: id_s.clone(),
-    });
-    target.incomings_mut().push(Incoming { content: id_s });
+    let id = id_s.unwrap();
+    source.outgoings_mut().push(id.clone());
+    target.incomings_mut().push(id);
 
     Ok(sequence_flow)
 }
@@ -316,11 +311,11 @@ fn establishing_sequence_flow() {
         }),
     )
     .unwrap();
-    assert_eq!(seq_flow.id(), &Some("test".into()));
+    assert_eq!(seq_flow.id(), &Some("test".to_string()));
     assert_eq!(seq_flow.source_ref(), "start");
     assert_eq!(seq_flow.target_ref(), "end");
-    assert_eq!(start.outgoings(), &vec![Some("test".into()).into()]);
-    assert_eq!(end.incomings(), &vec![Some("test".into()).into()]);
+    assert_eq!(start.outgoings(), &vec!["test".to_string()]);
+    assert_eq!(end.incomings(), &vec!["test".to_string()]);
     assert_eq!(
         seq_flow
             .condition_expression()
