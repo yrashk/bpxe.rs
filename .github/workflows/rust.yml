@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        toolchain: ['stable', 'nightly']
+        toolchain: ['stable']
 
     steps:
       - name: Checkout sources
