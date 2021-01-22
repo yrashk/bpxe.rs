@@ -191,7 +191,7 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "end", "s1", None)
+            .establish_sequence_flow("start", "end", "s1", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;

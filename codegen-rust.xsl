@@ -104,6 +104,7 @@
             local:type($element/@type)
             "/>
         <xsl:variable name="subType" select="if ($subType = '') then local:type($subType) else $subType"/>
+        <xsl:variable name="subType" select="if ($subType = 'Expression') then 'Expr' else $subType"/>
         <xsl:choose>
             <xsl:when test="$element/@minOccurs = 0 and (not($element/@maxOccurs) or $element/@maxOccurs = '1')"><xsl:text>Option&lt;</xsl:text></xsl:when>
             <xsl:when test="$element/@maxOccurs = 'unbounded'"><xsl:text>Vec&lt;</xsl:text></xsl:when>
@@ -323,12 +324,7 @@
                     <xsl:with-param name="type" select="$type"></xsl:with-param>
                 </xsl:call-template>
                 
-                <xsl:if test="$typeName = 'tExpression'">
-                    // FIXME: This is a hack because obviously there's nothing about xsi:type
-                    // in BPMN schema (and rightfully so)
-                    #[tia(rg*="xsi_type",s)]
-                    #[xml(attr = "xsi:type")]
-                    pub xsi_type: Option&lt;String&gt;,
+                <xsl:if test="$typeName = 'tFormalExpression'">
                     <xsl:text>#[tia("DocumentElementWithContent",rg*="content",
                     "DocumentElementWithContentMut",s,rmg*="content_mut")]</xsl:text>
                     <xsl:text>#[xml(text)]pub content: Option&lt;String&gt;,</xsl:text>

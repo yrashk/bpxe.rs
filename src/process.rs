@@ -1,7 +1,7 @@
 //! # Process
 use crate::bpmn::schema::{
-    DocumentElementContainer, Element as E, Expression, FlowNodeType, Process as Element,
-    ProcessType, SequenceFlow,
+    DocumentElementContainer, Element as E, Expr, FlowNodeType, FormalExpression,
+    Process as Element, ProcessType, SequenceFlow,
 };
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
@@ -257,24 +257,19 @@ impl Scheduler {
             default_expression_language: Option<&String>,
             log_broadcast: broadcast::Sender<Log>,
         ) -> bool {
-            if let Some(Expression {
-                xsi_type: Some(ref xsi_type),
+            if let Some(Expr::FormalExpression(FormalExpression {
                 content: Some(ref content),
                 ..
-            }) = seq_flow.condition_expression
+            })) = seq_flow.condition_expression
             {
-                if xsi_type == "tFormalExpression" {
-                    match expression_evaluator.eval(default_expression_language, content) {
-                        Ok(result) => result,
-                        Err(err) => {
-                            let _ = log_broadcast.send(Log::ExpressionError {
-                                error: format!("{:?}", err),
-                            });
-                            false
-                        }
+                match expression_evaluator.eval(default_expression_language, content) {
+                    Ok(result) => result,
+                    Err(err) => {
+                        let _ = log_broadcast.send(Log::ExpressionError {
+                            error: format!("{:?}", err),
+                        });
+                        false
                     }
-                } else {
-                    true
                 }
             } else {
                 true
@@ -558,7 +553,7 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "end", "s1", None)
+            .establish_sequence_flow("start", "end", "s1", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;

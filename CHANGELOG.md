@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - single-field BPMN schema structures were changed to the contained types
 
+### Fixed
+
+- Broken XML parsing of expressions fixed (see [#1][i1] and #[#2][i2])
+
 ## [0.1.0] - 2021-01-21
 
 ### Added

@@ -1,12 +1,42 @@
 use bpxe;
-use bpxe::bpmn::schema::Definitions;
+use bpxe::bpmn::schema::*;
 
 #[test]
-#[ignore] // FIXME: https://github.com/bpxe/bpxe.rs/issues/1
 fn parse_sample() {
     let sample = include_str!("fixtures/sample.bpmn");
     let definitions = bpxe::bpmn::parse(sample).unwrap();
     assert!(definitions.root_elements.len() > 0);
+}
+
+#[test]
+fn parse_formal_expr() {
+    let sample = include_str!("fixtures/sample.bpmn");
+    let definitions = bpxe::bpmn::parse(sample).unwrap();
+    let flow = definitions
+        .find_by_id("x2")
+        .unwrap()
+        .downcast_ref::<SequenceFlow>()
+        .unwrap();
+    assert!(
+        matches!(&flow.condition_expression, 
+            Some(Expr::FormalExpression(FormalExpression{ content: Some(content), .. })) if content == "a")
+    );
+}
+
+#[test]
+fn parse_expr() {
+    let sample = include_str!("fixtures/sample.bpmn");
+    let definitions = bpxe::bpmn::parse(sample).unwrap();
+    let flow = definitions
+        .find_by_id("x3")
+        .unwrap()
+        .downcast_ref::<SequenceFlow>()
+        .unwrap();
+    dbg!(&flow.condition_expression);
+    assert!(matches!(
+        &flow.condition_expression,
+        Some(Expr::Expression(_))
+    ));
 }
 
 #[test]

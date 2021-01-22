@@ -645,7 +645,7 @@ pub struct AdHocSubProcess {
     pub ordering: Option<String>,
     #[xml(child = "bpmn:completionCondition")]
     #[tia("AdHocSubProcessType",rg*="completion_condition","AdHocSubProcessTypeMut",s,rmg*="completion_condition_mut")]
-    pub completion_condition: Option<Expression>,
+    pub completion_condition: Option<Expr>,
 }
 #[cast_to]
 impl DocumentElement for AdHocSubProcess {
@@ -695,7 +695,7 @@ pub trait AdHocSubProcessType: SubProcessType + Downcast + Debug + Send + DynClo
     /// Get value of attribute `ordering`
     fn ordering(&self) -> &Option<String>;
     /// Get value of `completionCondition` child
-    fn completion_condition(&self) -> &Option<Expression>;
+    fn completion_condition(&self) -> &Option<Expr>;
 }
 dyn_clone::clone_trait_object!(AdHocSubProcessType);
 impl_downcast!(AdHocSubProcessType);
@@ -708,9 +708,9 @@ pub trait AdHocSubProcessTypeMut:
     /// Set value of attribute `ordering`
     fn set_ordering(&mut self, value: Option<String>);
     /// Get a mutable value of `completionCondition` child
-    fn completion_condition_mut(&mut self) -> &mut Option<Expression>;
+    fn completion_condition_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `completionCondition` child
-    fn set_completion_condition(&mut self, value: Option<Expression>);
+    fn set_completion_condition(&mut self, value: Option<Expr>);
 }
 dyn_clone::clone_trait_object!(AdHocSubProcessTypeMut);
 impl_downcast!(AdHocSubProcessTypeMut);
@@ -810,10 +810,10 @@ pub struct Assignment {
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:from")]
     #[tia("AssignmentType",rg*="from","AssignmentTypeMut",s,rmg*="from_mut")]
-    pub from: Expression,
+    pub from: Expr,
     #[xml(child = "bpmn:to")]
     #[tia("AssignmentType",rg*="to","AssignmentTypeMut",s,rmg*="to_mut")]
-    pub to: Expression,
+    pub to: Expr,
 }
 #[cast_to]
 impl DocumentElement for Assignment {
@@ -861,9 +861,9 @@ castable_to! {Assignment => BaseElementType,BaseElementTypeMut}
 /// Access to `assignment`
 pub trait AssignmentType: BaseElementType + Downcast + Debug + Send + DynClone {
     /// Get value of `from` child
-    fn from(&self) -> &Expression;
+    fn from(&self) -> &Expr;
     /// Get value of `to` child
-    fn to(&self) -> &Expression;
+    fn to(&self) -> &Expr;
 }
 dyn_clone::clone_trait_object!(AssignmentType);
 impl_downcast!(AssignmentType);
@@ -872,13 +872,13 @@ pub trait AssignmentTypeMut:
     BaseElementTypeMut + Downcast + Debug + Send + DynClone + AssignmentType
 {
     /// Get a mutable value of `from` child
-    fn from_mut(&mut self) -> &mut Expression;
+    fn from_mut(&mut self) -> &mut Expr;
     /// Set value of `from` child
-    fn set_from(&mut self, value: Expression);
+    fn set_from(&mut self, value: Expr);
     /// Get a mutable value of `to` child
-    fn to_mut(&mut self) -> &mut Expression;
+    fn to_mut(&mut self) -> &mut Expr;
     /// Set value of `to` child
-    fn set_to(&mut self, value: Expression);
+    fn set_to(&mut self, value: Expr);
 }
 dyn_clone::clone_trait_object!(AssignmentTypeMut);
 impl_downcast!(AssignmentTypeMut);
@@ -2942,7 +2942,7 @@ pub struct ComplexGateway {
     pub default: Option<String>,
     #[xml(child = "bpmn:activationCondition")]
     #[tia("ComplexGatewayType",rg*="activation_condition","ComplexGatewayTypeMut",s,rmg*="activation_condition_mut")]
-    pub activation_condition: Option<Expression>,
+    pub activation_condition: Option<Expr>,
 }
 #[cast_to]
 impl DocumentElement for ComplexGateway {
@@ -2989,7 +2989,7 @@ pub trait ComplexGatewayType: GatewayType + Downcast + Debug + Send + DynClone {
     /// Get value of attribute `default`
     fn default(&self) -> &Option<String>;
     /// Get value of `activationCondition` child
-    fn activation_condition(&self) -> &Option<Expression>;
+    fn activation_condition(&self) -> &Option<Expr>;
 }
 dyn_clone::clone_trait_object!(ComplexGatewayType);
 impl_downcast!(ComplexGatewayType);
@@ -3000,9 +3000,9 @@ pub trait ComplexGatewayTypeMut:
     /// Set value of attribute `default`
     fn set_default(&mut self, value: Option<String>);
     /// Get a mutable value of `activationCondition` child
-    fn activation_condition_mut(&mut self) -> &mut Option<Expression>;
+    fn activation_condition_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `activationCondition` child
-    fn set_activation_condition(&mut self, value: Option<Expression>);
+    fn set_activation_condition(&mut self, value: Option<Expr>);
 }
 dyn_clone::clone_trait_object!(ComplexGatewayTypeMut);
 impl_downcast!(ComplexGatewayTypeMut);
@@ -3023,7 +3023,7 @@ pub struct ConditionalEventDefinition {
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:condition")]
     #[tia("ConditionalEventDefinitionType",rg*="condition","ConditionalEventDefinitionTypeMut",s,rmg*="condition_mut")]
-    pub condition: Expression,
+    pub condition: Expr,
 }
 #[cast_to]
 impl DocumentElement for ConditionalEventDefinition {
@@ -3079,7 +3079,7 @@ pub trait ConditionalEventDefinitionType:
     EventDefinitionType + Downcast + Debug + Send + DynClone
 {
     /// Get value of `condition` child
-    fn condition(&self) -> &Expression;
+    fn condition(&self) -> &Expr;
 }
 dyn_clone::clone_trait_object!(ConditionalEventDefinitionType);
 impl_downcast!(ConditionalEventDefinitionType);
@@ -3088,9 +3088,9 @@ pub trait ConditionalEventDefinitionTypeMut:
     EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + ConditionalEventDefinitionType
 {
     /// Get a mutable value of `condition` child
-    fn condition_mut(&mut self) -> &mut Expression;
+    fn condition_mut(&mut self) -> &mut Expr;
     /// Set value of `condition` child
-    fn set_condition(&mut self, value: Expression);
+    fn set_condition(&mut self, value: Expr);
 }
 dyn_clone::clone_trait_object!(ConditionalEventDefinitionTypeMut);
 impl_downcast!(ConditionalEventDefinitionTypeMut);
@@ -5781,15 +5781,6 @@ pub struct Expression {
     #[xml(child = "bpmn:extensionElements")]
     #[tia("BaseElementWithMixedContentType",rg*="extension_elements","BaseElementWithMixedContentTypeMut",s,rmg*="extension_elements_mut")]
     pub extension_elements: Option<ExtensionElements>,
-    // FIXME: This is a hack because obviously there's nothing about xsi:type
-    // in BPMN schema (and rightfully so)
-    #[tia(rg*="xsi_type",s)]
-    #[xml(attr = "xsi:type")]
-    pub xsi_type: Option<String>,
-    #[tia("DocumentElementWithContent",rg*="content",
-                    "DocumentElementWithContentMut",s,rmg*="content_mut")]
-    #[xml(text)]
-    pub content: Option<String>,
 }
 #[cast_to]
 impl DocumentElement for Expression {
@@ -6396,6 +6387,10 @@ pub struct FormalExpression {
     #[xml(attr = "evaluatesToTypeRef")]
     #[tia("FormalExpressionType",rg*="evaluates_totype_ref","FormalExpressionTypeMut",s)]
     pub evaluates_totype_ref: Option<String>,
+    #[tia("DocumentElementWithContent",rg*="content",
+                    "DocumentElementWithContentMut",s,rmg*="content_mut")]
+    #[xml(text)]
+    pub content: Option<String>,
 }
 #[cast_to]
 impl DocumentElement for FormalExpression {
@@ -9264,7 +9259,7 @@ pub struct MultiInstanceLoopCharacteristics {
     pub none_behavior_event_ref: Option<String>,
     #[xml(child = "bpmn:loopCardinality")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_cardinality","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="loop_cardinality_mut")]
-    pub loop_cardinality: Option<Expression>,
+    pub loop_cardinality: Option<Expr>,
     #[xml(flatten_text = "bpmn:loopDataInputRef")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="loop_data_input_ref","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="loop_data_input_ref_mut")]
     pub loop_data_input_ref: Option<String>,
@@ -9282,7 +9277,7 @@ pub struct MultiInstanceLoopCharacteristics {
     pub complex_behavior_definitions: Vec<ComplexBehaviorDefinition>,
     #[xml(child = "bpmn:completionCondition")]
     #[tia("MultiInstanceLoopCharacteristicsType",rg*="completion_condition","MultiInstanceLoopCharacteristicsTypeMut",s,rmg*="completion_condition_mut")]
-    pub completion_condition: Option<Expression>,
+    pub completion_condition: Option<Expr>,
 }
 #[cast_to]
 impl DocumentElement for MultiInstanceLoopCharacteristics {
@@ -9364,7 +9359,7 @@ pub trait MultiInstanceLoopCharacteristicsType:
     /// Get value of attribute `noneBehaviorEventRef`
     fn none_behavior_event_ref(&self) -> &Option<String>;
     /// Get value of `loopCardinality` child
-    fn loop_cardinality(&self) -> &Option<Expression>;
+    fn loop_cardinality(&self) -> &Option<Expr>;
     /// Get value of `loopDataInputRef` child
     fn loop_data_input_ref(&self) -> &Option<String>;
     /// Get value of `loopDataOutputRef` child
@@ -9376,7 +9371,7 @@ pub trait MultiInstanceLoopCharacteristicsType:
     /// Get value of `complexBehaviorDefinition` child
     fn complex_behavior_definitions(&self) -> &Vec<ComplexBehaviorDefinition>;
     /// Get value of `completionCondition` child
-    fn completion_condition(&self) -> &Option<Expression>;
+    fn completion_condition(&self) -> &Option<Expr>;
 }
 dyn_clone::clone_trait_object!(MultiInstanceLoopCharacteristicsType);
 impl_downcast!(MultiInstanceLoopCharacteristicsType);
@@ -9398,9 +9393,9 @@ pub trait MultiInstanceLoopCharacteristicsTypeMut:
     /// Set value of attribute `noneBehaviorEventRef`
     fn set_none_behavior_event_ref(&mut self, value: Option<String>);
     /// Get a mutable value of `loopCardinality` child
-    fn loop_cardinality_mut(&mut self) -> &mut Option<Expression>;
+    fn loop_cardinality_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `loopCardinality` child
-    fn set_loop_cardinality(&mut self, value: Option<Expression>);
+    fn set_loop_cardinality(&mut self, value: Option<Expr>);
     /// Get a mutable value of `loopDataInputRef` child
     fn loop_data_input_ref_mut(&mut self) -> &mut Option<String>;
     /// Set value of `loopDataInputRef` child
@@ -9422,9 +9417,9 @@ pub trait MultiInstanceLoopCharacteristicsTypeMut:
     /// Set value of `complexBehaviorDefinition` child
     fn set_complex_behavior_definitions(&mut self, value: Vec<ComplexBehaviorDefinition>);
     /// Get a mutable value of `completionCondition` child
-    fn completion_condition_mut(&mut self) -> &mut Option<Expression>;
+    fn completion_condition_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `completionCondition` child
-    fn set_completion_condition(&mut self, value: Option<Expression>);
+    fn set_completion_condition(&mut self, value: Option<Expr>);
 }
 dyn_clone::clone_trait_object!(MultiInstanceLoopCharacteristicsTypeMut);
 impl_downcast!(MultiInstanceLoopCharacteristicsTypeMut);
@@ -11069,7 +11064,7 @@ pub struct ResourceAssignmentExpression {
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:expression")]
     #[tia("ResourceAssignmentExpressionType",rg*="expression","ResourceAssignmentExpressionTypeMut",s,rmg*="expression_mut")]
-    pub expression: Expression,
+    pub expression: Expr,
 }
 #[cast_to]
 impl DocumentElement for ResourceAssignmentExpression {
@@ -11113,7 +11108,7 @@ pub trait ResourceAssignmentExpressionType:
     BaseElementType + Downcast + Debug + Send + DynClone
 {
     /// Get value of `expression` child
-    fn expression(&self) -> &Expression;
+    fn expression(&self) -> &Expr;
 }
 dyn_clone::clone_trait_object!(ResourceAssignmentExpressionType);
 impl_downcast!(ResourceAssignmentExpressionType);
@@ -11122,9 +11117,9 @@ pub trait ResourceAssignmentExpressionTypeMut:
     BaseElementTypeMut + Downcast + Debug + Send + DynClone + ResourceAssignmentExpressionType
 {
     /// Get a mutable value of `expression` child
-    fn expression_mut(&mut self) -> &mut Expression;
+    fn expression_mut(&mut self) -> &mut Expr;
     /// Set value of `expression` child
-    fn set_expression(&mut self, value: Expression);
+    fn set_expression(&mut self, value: Expr);
 }
 dyn_clone::clone_trait_object!(ResourceAssignmentExpressionTypeMut);
 impl_downcast!(ResourceAssignmentExpressionTypeMut);
@@ -11230,7 +11225,7 @@ pub struct ResourceParameterBinding {
     pub parameter_ref: String,
     #[xml(child = "bpmn:expression")]
     #[tia("ResourceParameterBindingType",rg*="expression","ResourceParameterBindingTypeMut",s,rmg*="expression_mut")]
-    pub expression: Expression,
+    pub expression: Expr,
 }
 #[cast_to]
 impl DocumentElement for ResourceParameterBinding {
@@ -11276,7 +11271,7 @@ pub trait ResourceParameterBindingType:
     /// Get value of attribute `parameterRef`
     fn parameter_ref(&self) -> &String;
     /// Get value of `expression` child
-    fn expression(&self) -> &Expression;
+    fn expression(&self) -> &Expr;
 }
 dyn_clone::clone_trait_object!(ResourceParameterBindingType);
 impl_downcast!(ResourceParameterBindingType);
@@ -11287,9 +11282,9 @@ pub trait ResourceParameterBindingTypeMut:
     /// Set value of attribute `parameterRef`
     fn set_parameter_ref(&mut self, value: String);
     /// Get a mutable value of `expression` child
-    fn expression_mut(&mut self) -> &mut Expression;
+    fn expression_mut(&mut self) -> &mut Expr;
     /// Set value of `expression` child
-    fn set_expression(&mut self, value: Expression);
+    fn set_expression(&mut self, value: Expr);
 }
 dyn_clone::clone_trait_object!(ResourceParameterBindingTypeMut);
 impl_downcast!(ResourceParameterBindingTypeMut);
@@ -12003,7 +11998,7 @@ pub struct SequenceFlow {
     pub is_immediate: Option<bool>,
     #[xml(child = "bpmn:conditionExpression")]
     #[tia("SequenceFlowType",rg*="condition_expression","SequenceFlowTypeMut",s,rmg*="condition_expression_mut")]
-    pub condition_expression: Option<Expression>,
+    pub condition_expression: Option<Expr>,
 }
 #[cast_to]
 impl DocumentElement for SequenceFlow {
@@ -12052,7 +12047,7 @@ pub trait SequenceFlowType: FlowElementType + Downcast + Debug + Send + DynClone
     /// Get value of attribute `isImmediate`
     fn is_immediate(&self) -> &Option<bool>;
     /// Get value of `conditionExpression` child
-    fn condition_expression(&self) -> &Option<Expression>;
+    fn condition_expression(&self) -> &Option<Expr>;
 }
 dyn_clone::clone_trait_object!(SequenceFlowType);
 impl_downcast!(SequenceFlowType);
@@ -12067,9 +12062,9 @@ pub trait SequenceFlowTypeMut:
     /// Set value of attribute `isImmediate`
     fn set_is_immediate(&mut self, value: Option<bool>);
     /// Get a mutable value of `conditionExpression` child
-    fn condition_expression_mut(&mut self) -> &mut Option<Expression>;
+    fn condition_expression_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `conditionExpression` child
-    fn set_condition_expression(&mut self, value: Option<Expression>);
+    fn set_condition_expression(&mut self, value: Option<Expr>);
 }
 dyn_clone::clone_trait_object!(SequenceFlowTypeMut);
 impl_downcast!(SequenceFlowTypeMut);
@@ -12394,7 +12389,7 @@ pub struct StandardLoopCharacteristics {
     pub loop_maximum: Option<Integer>,
     #[xml(child = "bpmn:loopCondition")]
     #[tia("StandardLoopCharacteristicsType",rg*="loop_condition","StandardLoopCharacteristicsTypeMut",s,rmg*="loop_condition_mut")]
-    pub loop_condition: Option<Expression>,
+    pub loop_condition: Option<Expr>,
 }
 #[cast_to]
 impl DocumentElement for StandardLoopCharacteristics {
@@ -12448,7 +12443,7 @@ pub trait StandardLoopCharacteristicsType:
     /// Get value of attribute `loopMaximum`
     fn loop_maximum(&self) -> &Option<Integer>;
     /// Get value of `loopCondition` child
-    fn loop_condition(&self) -> &Option<Expression>;
+    fn loop_condition(&self) -> &Option<Expr>;
 }
 dyn_clone::clone_trait_object!(StandardLoopCharacteristicsType);
 impl_downcast!(StandardLoopCharacteristicsType);
@@ -12461,9 +12456,9 @@ pub trait StandardLoopCharacteristicsTypeMut:
     /// Set value of attribute `loopMaximum`
     fn set_loop_maximum(&mut self, value: Option<Integer>);
     /// Get a mutable value of `loopCondition` child
-    fn loop_condition_mut(&mut self) -> &mut Option<Expression>;
+    fn loop_condition_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `loopCondition` child
-    fn set_loop_condition(&mut self, value: Option<Expression>);
+    fn set_loop_condition(&mut self, value: Option<Expr>);
 }
 dyn_clone::clone_trait_object!(StandardLoopCharacteristicsTypeMut);
 impl_downcast!(StandardLoopCharacteristicsTypeMut);
@@ -13434,13 +13429,13 @@ pub struct TimerEventDefinition {
     pub extension_elements: Option<ExtensionElements>,
     #[xml(child = "bpmn:timeDate")]
     #[tia("TimerEventDefinitionType",rg*="time_date","TimerEventDefinitionTypeMut",s,rmg*="time_date_mut")]
-    pub time_date: Option<Expression>,
+    pub time_date: Option<Expr>,
     #[xml(child = "bpmn:timeDuration")]
     #[tia("TimerEventDefinitionType",rg*="time_duration","TimerEventDefinitionTypeMut",s,rmg*="time_duration_mut")]
-    pub time_duration: Option<Expression>,
+    pub time_duration: Option<Expr>,
     #[xml(child = "bpmn:timeCycle")]
     #[tia("TimerEventDefinitionType",rg*="time_cycle","TimerEventDefinitionTypeMut",s,rmg*="time_cycle_mut")]
-    pub time_cycle: Option<Expression>,
+    pub time_cycle: Option<Expr>,
 }
 #[cast_to]
 impl DocumentElement for TimerEventDefinition {
@@ -13508,11 +13503,11 @@ pub trait TimerEventDefinitionType:
     EventDefinitionType + Downcast + Debug + Send + DynClone
 {
     /// Get value of `timeDate` child
-    fn time_date(&self) -> &Option<Expression>;
+    fn time_date(&self) -> &Option<Expr>;
     /// Get value of `timeDuration` child
-    fn time_duration(&self) -> &Option<Expression>;
+    fn time_duration(&self) -> &Option<Expr>;
     /// Get value of `timeCycle` child
-    fn time_cycle(&self) -> &Option<Expression>;
+    fn time_cycle(&self) -> &Option<Expr>;
 }
 dyn_clone::clone_trait_object!(TimerEventDefinitionType);
 impl_downcast!(TimerEventDefinitionType);
@@ -13521,17 +13516,17 @@ pub trait TimerEventDefinitionTypeMut:
     EventDefinitionTypeMut + Downcast + Debug + Send + DynClone + TimerEventDefinitionType
 {
     /// Get a mutable value of `timeDate` child
-    fn time_date_mut(&mut self) -> &mut Option<Expression>;
+    fn time_date_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `timeDate` child
-    fn set_time_date(&mut self, value: Option<Expression>);
+    fn set_time_date(&mut self, value: Option<Expr>);
     /// Get a mutable value of `timeDuration` child
-    fn time_duration_mut(&mut self) -> &mut Option<Expression>;
+    fn time_duration_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `timeDuration` child
-    fn set_time_duration(&mut self, value: Option<Expression>);
+    fn set_time_duration(&mut self, value: Option<Expr>);
     /// Get a mutable value of `timeCycle` child
-    fn time_cycle_mut(&mut self) -> &mut Option<Expression>;
+    fn time_cycle_mut(&mut self) -> &mut Option<Expr>;
     /// Set value of `timeCycle` child
-    fn set_time_cycle(&mut self, value: Option<Expression>);
+    fn set_time_cycle(&mut self, value: Option<Expr>);
 }
 dyn_clone::clone_trait_object!(TimerEventDefinitionTypeMut);
 impl_downcast!(TimerEventDefinitionTypeMut);

@@ -158,9 +158,9 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "throw", "s1", None)
+            .establish_sequence_flow("start", "throw", "s1", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("throw", "end", "s2", None)
+            .establish_sequence_flow("throw", "end", "s2", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;
@@ -222,9 +222,9 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "throw", "s1", None)
+            .establish_sequence_flow("start", "throw", "s1", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("throw", "end", "s2", None)
+            .establish_sequence_flow("throw", "end", "s2", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;

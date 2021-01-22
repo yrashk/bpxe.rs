@@ -240,16 +240,15 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "excl", "s1", None)
+            .establish_sequence_flow("start", "excl", "s1", None::<FormalExpression>)
             .unwrap()
             .establish_sequence_flow(
                 "excl",
                 "f1",
                 "f1s",
-                Some(Expression {
+                Some(FormalExpression {
                     #[cfg(feature = "rhai")]
                     content: Some("false".into()),
-                    xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
             )
@@ -258,17 +257,16 @@ mod tests {
                 "excl",
                 "f2",
                 "f2s",
-                Some(Expression {
+                Some(FormalExpression {
                     #[cfg(feature = "rhai")]
                     content: Some("true".into()),
-                    xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
             )
             .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None)
+            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None)
+            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;
@@ -390,18 +388,17 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "excl", "s1", None)
+            .establish_sequence_flow("start", "excl", "s1", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("excl", "f0", "f0s", None)
+            .establish_sequence_flow("excl", "f0", "f0s", None::<FormalExpression>)
             .unwrap()
             .establish_sequence_flow(
                 "excl",
                 "f1",
                 "f1s",
-                Some(Expression {
+                Some(FormalExpression {
                     #[cfg(feature = "rhai")]
                     content: Some("false".into()),
-                    xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
             )
@@ -410,19 +407,18 @@ mod tests {
                 "excl",
                 "f2",
                 "f2s",
-                Some(Expression {
+                Some(FormalExpression {
                     #[cfg(feature = "rhai")]
                     content: Some("false".into()),
-                    xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
             )
             .unwrap()
-            .establish_sequence_flow("f0", "end", "e0", None)
+            .establish_sequence_flow("f0", "end", "e0", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None)
+            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None)
+            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;
@@ -529,16 +525,15 @@ mod tests {
             .unwrap()
             .downcast_mut::<Process>()
             .unwrap()
-            .establish_sequence_flow("start", "excl", "s1", None)
+            .establish_sequence_flow("start", "excl", "s1", None::<FormalExpression>)
             .unwrap()
             .establish_sequence_flow(
                 "excl",
                 "f1",
                 "f1s",
-                Some(Expression {
+                Some(FormalExpression {
                     #[cfg(feature = "rhai")]
                     content: Some("false".into()),
-                    xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
             )
@@ -547,17 +542,16 @@ mod tests {
                 "excl",
                 "f2",
                 "f2s",
-                Some(Expression {
+                Some(FormalExpression {
                     #[cfg(feature = "rhai")]
                     content: Some("false".into()),
-                    xsi_type: Some("tFormalExpression".into()),
                     ..Default::default()
                 }),
             )
             .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None)
+            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
             .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None)
+            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
             .unwrap();
 
         let model = model::Model::new(definitions).spawn().await;
