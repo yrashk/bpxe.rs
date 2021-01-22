@@ -1,7 +1,8 @@
 //! # Flow Node
 use crate::bpmn::schema::{
     DocumentElement, Element, EndEvent, EventBasedGateway, ExclusiveGateway, FlowNodeType,
-    IntermediateCatchEvent, IntermediateThrowEvent, ParallelGateway, SequenceFlow, StartEvent,
+    InclusiveGateway, IntermediateCatchEvent, IntermediateThrowEvent, ParallelGateway,
+    SequenceFlow, StartEvent,
 };
 use crate::event::{end_event, intermediate_catch_event, intermediate_throw_event, start_event};
 use crate::gateway;
@@ -27,6 +28,7 @@ pub enum State {
     IntermediateCatchEvent(intermediate_catch_event::State),
     ParallelGateway(gateway::parallel::State),
     ExclusiveGateway(gateway::exclusive::State),
+    InclusiveGateway(gateway::inclusive::State),
     EventBasedGateway(gateway::event_based::State),
 }
 
@@ -135,6 +137,15 @@ pub trait FlowNode: Stream<Item = Action> + Send + Unpin {
     #[allow(unused_variables)]
     fn incoming(&mut self, index: IncomingIndex) {}
 
+    /// Reports token count at ingress.
+    ///
+    /// Useful for complex flow node behaviours where it needs to know how many outstanding tokens
+    /// there are.
+    ///
+    /// Default implementation does nothing.
+    #[allow(unused_variables)]
+    fn tokens(&mut self, count: usize) {}
+
     /// Returns a flow element
     fn element(&self) -> Box<dyn FlowNodeType>;
 }
@@ -153,6 +164,7 @@ pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
         >(element),
         Element::ParallelGateway => make::<ParallelGateway, gateway::parallel::Gateway>(element),
         Element::ExclusiveGateway => make::<ExclusiveGateway, gateway::exclusive::Gateway>(element),
+        Element::InclusiveGateway => make::<InclusiveGateway, gateway::inclusive::Gateway>(element),
         Element::EventBasedGateway => {
             make::<EventBasedGateway, gateway::event_based::Gateway>(element)
         }
