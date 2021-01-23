@@ -1,0 +1,25 @@
+[package]
+name = "bpxe-bpmn-schema"
+version = "0.1.2-dev"
+authors = ["Yurii Rashkovskii <yrashk@gmail.com>"]
+edition = "2018"
+license = "Apache-2.0"
+keywords = ["bpmn", "workflow"]
+repository = "https://github.com/bpxe/bpxe"
+readme = "README.md"
+description = "Business Process eXecution Engine's BPMN schema"
+
+[dependencies]
+thiserror = "1.0"
+# Used to parse BPMN to a typed schema
+strong-xml = "0.6.0"
+num-bigint = { version = "0.3.1", features = ["serde"] }
+# Used for schema traversals
+downcast-rs = "1.2"
+# Used for casting between traits
+intertrait = "0.2"
+# Used for intertrait
+linkme = "0.2"
+dyn-clone = "1.0.4"
+tia = "1.0.0"
+serde = { version = "1.0.119", features = ["derive"] }
