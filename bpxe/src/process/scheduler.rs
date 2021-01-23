@@ -2,7 +2,8 @@
 //!
 //! This is where the magic happens
 use crate::bpmn::schema::{
-    DocumentElementContainer, Element as E, Expr, FormalExpression, ProcessType, SequenceFlow,
+    DocumentElementContainer, Element as E, Expr, FormalExpression, Process, ProcessType,
+    SequenceFlow,
 };
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
@@ -12,6 +13,7 @@ use futures::future::FutureExt;
 use futures::stream::{FuturesUnordered, StreamExt, StreamFuture};
 use std::future::Future;
 use std::pin::Pin;
+use std::sync::Arc;
 
 use std::task::{Context, Poll};
 use tokio::sync::{broadcast, mpsc, oneshot};
@@ -23,6 +25,10 @@ pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,
     process: Handle,
     flow_nodes: FuturesUnordered<FlowNode>,
+    expression_evaluator: ExpressionEvaluator,
+    default_expression_language: Option<String>,
+    element: Arc<Process>,
+    log_broadcast: broadcast::Sender<Log>,
 }
 
 // FIXME: We're using this structure to be able to find flow nodes by their identifier
@@ -75,6 +81,14 @@ impl Future for FlowNode {
     }
 }
 
+/// Internal flow node scheduler control
+enum Control {
+    // Continue with this action
+    Proceed(Option<flow_node::Action>),
+    // Stop
+    Drop,
+}
+
 impl Scheduler {
     pub(crate) fn new(receiver: mpsc::Receiver<Request>, process: Handle) -> Self {
         let flow_nodes = process
@@ -98,56 +112,31 @@ impl Scheduler {
                 })
             })
             .collect();
+
+        let expression_evaluator: ExpressionEvaluator = Default::default();
+
+        let default_expression_language = process.model().definitions().expression_language.clone();
+        let element = process.element();
+        let log_broadcast = process.log_broadcast();
+
         Self {
             receiver,
             process,
             flow_nodes,
+            expression_evaluator,
+            default_expression_language,
+            element,
+            log_broadcast,
         }
     }
 
     // Main loop
     pub async fn run(mut self) {
         let mut join_handle = None;
-        let element = self.process.element();
-        let log_broadcast = self.process.log_broadcast();
-        let expression_evaluator: ExpressionEvaluator = Default::default();
-        let default_expression_language = self
-            .process
-            .model()
-            .definitions()
-            .expression_language
-            .clone();
-
-        // This function is async even though nothing in it is asynchronous
-        // at this moment. This is done with an expectation that expression
-        // evaluation *might* become asynchronous in the future.
-        async fn probe_sequence_flow(
-            expression_evaluator: &ExpressionEvaluator,
-            seq_flow: &SequenceFlow,
-            default_expression_language: Option<&String>,
-            log_broadcast: broadcast::Sender<Log>,
-        ) -> bool {
-            if let Some(Expr::FormalExpression(FormalExpression {
-                content: Some(ref content),
-                ..
-            })) = seq_flow.condition_expression
-            {
-                match expression_evaluator.eval_expr(default_expression_language, content) {
-                    Ok(result) => result,
-                    Err(err) => {
-                        let _ = log_broadcast.send(Log::ExpressionError {
-                            error: format!("{:?}", err),
-                        });
-                        false
-                    }
-                }
-            } else {
-                true
-            }
-        }
         loop {
             task::yield_now().await;
             tokio::select! {
+               // Handle request processing
                next = self.receiver.recv()  =>
                    match next {
                        Some(Request::JoinHandle(handle)) => join_handle = Some(handle),
@@ -160,118 +149,181 @@ impl Scheduler {
                        }
                        None => {}
                    },
+               // Flow node processing
                next = self.flow_nodes.next() => {
-                   if let Some(Next{id, item: (action, mut flow_node), tokens}) = next  {
-                       // Figure out if this action should be transformed, kept as is, or dropped
-                       enum Control {
-                           Proceed(Option<flow_node::Action>),
-                           Drop
-                       }
-                       let control = flow_node.element().incomings().iter().
-                           fold(Control::Proceed(action), |control, incoming| {
-                               match control {
-                                   // once the action has been dropped, it's not checked against
-                                   // any other incoming flows
-                                   Control::Drop => control,
-                                   Control::Proceed(action) => {
-                                       let mut matching_predecessor = self.flow_nodes.iter_mut().find(|node|
-                                           node.element().outgoings().iter()
-                                           .any(|outgoing| outgoing == incoming));
-                                           if let Some(ref mut node) = matching_predecessor {
-                                               // it's ok to unwrap here because we already know such
-                                               // predecessor exists
-                                               let index = node.element().outgoings().iter().
-                                                   enumerate().find_map(|(i, name)| if name == incoming {
-                                                       Some(i)
-                                                   } else {
-                                                       None
-                                                   }).unwrap();
-                                               match node.handle_outgoing_action(index, action) {
-                                                   None => Control::Drop,
-                                                   Some(action) => Control::Proceed(action),
-                                                   }
-                                           } else {
-                                               Control::Proceed(action)
-                                           }
-                                   }
-                               }
-                           });
-                       match control {
-                           Control::Proceed(Some(flow_node::Action::ProbeOutgoingSequenceFlows(indices))) => {
-                               let outgoings = flow_node.element().outgoings().clone();
-                               for index in indices {
-                                   let seq_flow = {
-                                       element.find_by_id(&outgoings[index])
-                                           .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
-                                   };
-                                   if let Some(seq_flow) = seq_flow {
-                                       let success = probe_sequence_flow(&expression_evaluator, &seq_flow,
-                                           default_expression_language.as_ref(),
-                                           log_broadcast.clone()).await;
-                                       flow_node.sequence_flow(index, &seq_flow, success);
-                                   }
-                               }
-                           }
-                           Control::Proceed(Some(flow_node::Action::Flow(ref indices))) => {
-                               let el = flow_node.element();
-                               let outgoings = el.outgoings();
-                               for index in indices {
-                                   // FIXME: see above about ID-less flow nodes
-                                   let seq_flow = {
-                                       element.find_by_id(&outgoings[*index])
-                                           .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
-                                   };
-
-                                   if let Some(seq_flow) = seq_flow {
-                                       let success = probe_sequence_flow(&expression_evaluator, &seq_flow,
-                                           default_expression_language.as_ref(),
-                                           log_broadcast.clone()).await;
-                                       if success {
-                                           for next_node in self.flow_nodes.iter_mut() {
-                                               if next_node.id == seq_flow.target_ref {
-                                                   let target_node = &mut next_node.future;
-                                                   if let Some(node) = target_node.get_mut() {
-                                                       let index = node.element().incomings().iter().enumerate().
-                                                           find_map(|(index, incoming)|
-                                                               if incoming == seq_flow.id.as_ref().unwrap() {
-                                                                   Some(index)
-                                                               } else {
-                                                                   None
-                                                               });
-
-                                                       if let Some(index) = index {
-                                                           let _ = log_broadcast.send(Log::FlowNodeIncoming {
-                                                               node: node.element().clone(),
-                                                               incoming_index: index
-                                                           });
-                                                           // increase the number of tokens by a number of added flows
-                                                           next_node.tokens += indices.len();
-                                                           node.tokens(next_node.tokens);
-                                                           node.incoming(index);
-                                                       }
-                                                   }
-                                               }
-                                           }
-                                       }
-                                   }
-                               }
-                           }
-                           Control::Proceed(Some(flow_node::Action::Complete)) => {
-                               let _ = log_broadcast.send(Log::FlowNodeCompleted { node: flow_node.element().clone() });
-                           }
-                           Control::Proceed(None) => {
-                               if self.flow_nodes.is_empty() {
-                                   let _ = log_broadcast.send(Log::Done);
-                               }
-                               continue
-                           }
-                           Control::Drop => {}
-                       }
-                       // Reschedule the flow node
-                       self.flow_nodes.push(FlowNode{id, future: flow_node.into_future(), tokens});
-                   }
-               },
+                   self.process_flow_node_next(next).await;
+               }
             }
+        }
+    }
+
+    // This function is async even though nothing in it is asynchronous
+    // at this moment. This is done with an expectation that expression
+    // evaluation *might* become asynchronous in the future.
+    async fn probe_sequence_flow(&mut self, seq_flow: &SequenceFlow) -> bool {
+        if let Some(Expr::FormalExpression(FormalExpression {
+            content: Some(ref content),
+            ..
+        })) = seq_flow.condition_expression
+        {
+            match self
+                .expression_evaluator
+                .eval_expr(self.default_expression_language.as_ref(), content)
+            {
+                Ok(result) => result,
+                Err(err) => {
+                    let _ = self.log_broadcast.send(Log::ExpressionError {
+                        error: format!("{:?}", err),
+                    });
+                    false
+                }
+            }
+        } else {
+            true
+        }
+    }
+
+    /// Figure out what should be the next course of action
+    fn next_action(
+        &mut self,
+        action: Option<flow_node::Action>,
+        flow_node: &dyn flow_node::FlowNode,
+    ) -> Control {
+        flow_node.element().incomings().iter().fold(
+            Control::Proceed(action),
+            |control, incoming| {
+                match control {
+                    // once the action has been dropped, it's not checked against
+                    // any other incoming flows
+                    Control::Drop => control,
+                    Control::Proceed(action) => {
+                        let mut matching_predecessor = self.flow_nodes.iter_mut().find(|node| {
+                            node.element()
+                                .outgoings()
+                                .iter()
+                                .any(|outgoing| outgoing == incoming)
+                        });
+                        if let Some(ref mut node) = matching_predecessor {
+                            // it's ok to unwrap here because we already know such
+                            // predecessor exists
+                            let index = node
+                                .element()
+                                .outgoings()
+                                .iter()
+                                .enumerate()
+                                .find_map(|(i, name)| if name == incoming { Some(i) } else { None })
+                                .unwrap();
+                            match node.handle_outgoing_action(index, action) {
+                                None => Control::Drop,
+                                Some(action) => Control::Proceed(action),
+                            }
+                        } else {
+                            Control::Proceed(action)
+                        }
+                    }
+                }
+            },
+        )
+    }
+
+    async fn process_flow_node_next(&mut self, next: Option<Next>) {
+        if let Some(Next {
+            id,
+            item: (action, mut flow_node),
+            tokens,
+        }) = next
+        {
+            let next_action = self.next_action(action, &*flow_node);
+            match next_action {
+                // We're good to proceed with the following probing action
+                Control::Proceed(Some(flow_node::Action::ProbeOutgoingSequenceFlows(indices))) => {
+                    let outgoings = flow_node.element().outgoings().clone();
+                    for index in indices {
+                        let seq_flow = self
+                            .element
+                            .find_by_id(&outgoings[index])
+                            .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
+                            .cloned();
+                        if let Some(seq_flow) = seq_flow {
+                            let success = self.probe_sequence_flow(&seq_flow).await;
+                            flow_node.sequence_flow(index, &seq_flow, success);
+                        }
+                    }
+                }
+                // We're good to proceed with the following flow action
+                Control::Proceed(Some(flow_node::Action::Flow(ref indices))) => {
+                    let el = flow_node.element();
+                    let outgoings = el.outgoings();
+                    for index in indices {
+                        let seq_flow = self
+                            .element
+                            .find_by_id(&outgoings[*index])
+                            .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
+                            .cloned();
+                        if let Some(seq_flow) = seq_flow {
+                            let success = self.probe_sequence_flow(&seq_flow).await;
+                            if !success {
+                                continue;
+                            }
+                            if let Some(next_node) = self
+                                .flow_nodes
+                                .iter_mut()
+                                .find(|next_node| next_node.id == seq_flow.target_ref)
+                            {
+                                let target_node = &mut next_node.future;
+                                if let Some(node) = target_node.get_mut() {
+                                    // match target's node incoming index for this sequence flow
+                                    let index =
+                                        node.element().incomings().iter().enumerate().find_map(
+                                            |(index, incoming)| {
+                                                if incoming == seq_flow.id.as_ref().unwrap() {
+                                                    Some(index)
+                                                } else {
+                                                    None
+                                                }
+                                            },
+                                        );
+                                    // if there's one (and there better be!)
+                                    if let Some(index) = index {
+                                        // there's an incoming
+                                        let _ = self.log_broadcast.send(Log::FlowNodeIncoming {
+                                            node: node.element().clone(),
+                                            incoming_index: index,
+                                        });
+                                        // increase the number of tokens by a number of added flows
+                                        next_node.tokens += indices.len();
+                                        // report it to the target node
+                                        node.tokens(next_node.tokens);
+                                        // and report the incoming
+                                        node.incoming(index);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // flow node completion
+                Control::Proceed(Some(flow_node::Action::Complete)) => {
+                    let _ = self.log_broadcast.send(Log::FlowNodeCompleted {
+                        node: flow_node.element().clone(),
+                    });
+                }
+                // nothing, don't reschedule this flow node anymore
+                Control::Proceed(None) => {
+                    if self.flow_nodes.is_empty() {
+                        let _ = self.log_broadcast.send(Log::Done);
+                    }
+                    return;
+                }
+                // no action to be taken
+                Control::Drop => {}
+            }
+            // Reschedule the flow node
+            self.flow_nodes.push(FlowNode {
+                id,
+                future: flow_node.into_future(),
+                tokens,
+            });
         }
     }
 
