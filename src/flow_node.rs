@@ -41,6 +41,22 @@ pub enum StateError {
 pub type IncomingIndex = usize;
 pub type OutgoingIndex = usize;
 
+/// Hard-coded size limit for [`smallvec::SmallVec`]`<[IncomingIndex; _]>`
+///
+/// This is a default expectation for maintaining small arrays of incomings
+/// that can grow into a heap allocation if it gets over it.
+///
+/// It's chosen as a somewhat arbitrary guess for what can constitute a "normal" flow count.
+pub const SMALL_INCOMING: usize = 8;
+
+/// Hard-coded size limit for [`smallvec::SmallVec`]`<[OutgoingIndex; _]>`
+///
+/// This is a default expectation for maintaining small arrays of outgoings
+/// that can grow into a heap allocation if it gets over it.
+///
+/// It's chosen as a somewhat arbitrary guess for what can constitute a "normal" flow count.
+pub const SMALL_OUTGOING: usize = 8;
+
 /// Determination of next action by flow nodes
 #[derive(Debug)]
 pub enum Action {
@@ -48,11 +64,11 @@ pub enum Action {
     ///
     /// This is useful if the flow node needs to know whether certain outputs
     /// *will flow.
-    ProbeOutgoingSequenceFlows(SmallVec<[OutgoingIndex; 8]>),
+    ProbeOutgoingSequenceFlows(SmallVec<[OutgoingIndex; SMALL_OUTGOING]>),
     /// Enact flow through given outputs
     ///
     /// This action will still check whether given outputs *can* flow.
-    Flow(SmallVec<[OutgoingIndex; 8]>),
+    Flow(SmallVec<[OutgoingIndex; SMALL_OUTGOING]>),
     /// Mark flow node as complete, no further action necessary.
     Complete,
 }

@@ -36,7 +36,7 @@ pub enum State {
     Ready,
     Probing,
     AwaitingProbing {
-        probed: SmallVec<[(OutgoingIndex, bool); 8]>,
+        probed: SmallVec<[(OutgoingIndex, bool); flow_node::SMALL_OUTGOING]>,
     },
     Done {
         selected_outgoing: OutgoingIndex,

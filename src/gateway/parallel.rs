@@ -34,7 +34,7 @@ impl Gateway {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum State {
     Ready {
-        incoming_completed: SmallVec<[bool; 8]>,
+        incoming_completed: SmallVec<[bool; flow_node::SMALL_INCOMING]>,
     },
     Complete,
 }
