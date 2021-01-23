@@ -8,6 +8,7 @@ use strong_xml::*;
 /// BPMN expressions are often hot-patched with `xsi:type`
 /// to re-type them to formal expressions. This type handles this case.
 #[derive(Hash, Clone, PartialEq, Debug, Deserialize, Serialize)]
+#[serde(tag = "type")]
 pub enum Expr {
     Expression(Expression),
     FormalExpression(FormalExpression),
