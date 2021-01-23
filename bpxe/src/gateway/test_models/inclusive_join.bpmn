@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_05pdmic" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_0i30aoo</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0i30aoo" sourceRef="start" targetRef="incl" />
+    <bpmn:inclusiveGateway id="incl">
+      <bpmn:incoming>Flow_0i30aoo</bpmn:incoming>
+      <bpmn:outgoing>Flow_07xveq8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0ld9ay2</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_07xveq8" sourceRef="incl" targetRef="f1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateThrowEvent id="f1">
+      <bpmn:incoming>Flow_07xveq8</bpmn:incoming>
+      <bpmn:outgoing>Flow_10q33do</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_03zjbqk" signalRef="f1sig" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_0ld9ay2" sourceRef="incl" targetRef="f2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:intermediateThrowEvent id="f2">
+      <bpmn:incoming>Flow_0ld9ay2</bpmn:incoming>
+      <bpmn:outgoing>Flow_04sifn3</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_179x1tf" signalRef="f2sig" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="end">
+      <bpmn:incoming>Flow_1q1epva</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1q1epva" sourceRef="join" targetRef="end" />
+    <bpmn:sequenceFlow id="Flow_10q33do" sourceRef="f1" targetRef="join" />
+    <bpmn:sequenceFlow id="Flow_04sifn3" sourceRef="f2" targetRef="join" />
+    <bpmn:inclusiveGateway id="join">
+      <bpmn:incoming>Flow_10q33do</bpmn:incoming>
+      <bpmn:incoming>Flow_04sifn3</bpmn:incoming>
+      <bpmn:outgoing>Flow_1q1epva</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:textAnnotation id="TextAnnotation_0fn1jde">
+      <bpmn:text>The end will be reached because the join will be performed, even though one of the branches didn't flow (because the condition is false)</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_18c8s09" sourceRef="end" targetRef="TextAnnotation_0fn1jde" />
+  </bpmn:process>
+  <bpmn:signal id="f1sig" name="f1sig" />
+  <bpmn:signal id="f2sig" name="f2sig" />
+  <bpmn:signal id="f0sig" name="f0sig" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNEdge id="Flow_04sifn3_di" bpmnElement="Flow_04sifn3">
+        <di:waypoint x="408" y="320" />
+        <di:waypoint x="500" y="320" />
+        <di:waypoint x="500" y="272" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10q33do_di" bpmnElement="Flow_10q33do">
+        <di:waypoint x="408" y="170" />
+        <di:waypoint x="500" y="170" />
+        <di:waypoint x="500" y="222" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q1epva_di" bpmnElement="Flow_1q1epva">
+        <di:waypoint x="525" y="247" />
+        <di:waypoint x="602" y="247" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ld9ay2_di" bpmnElement="Flow_0ld9ay2">
+        <di:waypoint x="290" y="272" />
+        <di:waypoint x="290" y="320" />
+        <di:waypoint x="372" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07xveq8_di" bpmnElement="Flow_07xveq8">
+        <di:waypoint x="290" y="222" />
+        <di:waypoint x="290" y="170" />
+        <di:waypoint x="372" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0i30aoo_di" bpmnElement="Flow_0i30aoo">
+        <di:waypoint x="215" y="247" />
+        <di:waypoint x="265" y="247" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="229" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1axg12e_di" bpmnElement="incl">
+        <dc:Bounds x="265" y="222" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xfuoq4_di" bpmnElement="f1">
+        <dc:Bounds x="372" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1udzw4u_di" bpmnElement="f2">
+        <dc:Bounds x="372" y="302" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_05uzb2w_di" bpmnElement="end">
+        <dc:Bounds x="602" y="229" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_05ha0nq_di" bpmnElement="join">
+        <dc:Bounds x="475" y="222" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0fn1jde_di" bpmnElement="TextAnnotation_0fn1jde">
+        <dc:Bounds x="580" y="110" width="230" height="68" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_18c8s09_di" bpmnElement="Association_18c8s09">
+        <di:waypoint x="628" y="231" />
+        <di:waypoint x="653" y="178" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

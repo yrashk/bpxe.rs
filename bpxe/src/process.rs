@@ -8,8 +8,7 @@ use crate::flow_node;
 use crate::language::ExpressionEvaluator;
 use crate::model;
 use futures::future::FutureExt;
-use futures::stream::{FuturesUnordered, Stream, StreamExt, StreamFuture};
-
+use futures::stream::{FuturesUnordered, StreamExt, StreamFuture};
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -63,6 +62,12 @@ pub enum Log {
     },
     /// Flow node execution has been completed
     FlowNodeCompleted { node: Box<dyn FlowNodeType> },
+    #[cfg(test)]
+    /// Flow node report of tokens (for testing)
+    FlowNodeTokens {
+        node: Box<dyn FlowNodeType>,
+        count: usize,
+    },
     /// No default path is available for a node
     NoDefaultPath { node: Box<dyn FlowNodeType> },
     /// Expression evaluation error
@@ -159,50 +164,56 @@ impl Handle {
 struct Scheduler {
     receiver: mpsc::Receiver<Request>,
     process: Handle,
-    flow_nodes: FuturesUnordered<NamedStreamFuture<Box<dyn flow_node::FlowNode>>>,
+    flow_nodes: FuturesUnordered<FlowNode>,
 }
 
 // FIXME: We're using this structure to be able to find flow nodes by their identifier
 // in `FuturesUnordered` (`Scheduler.flow_nodes`). It's a linear search and is probably
 // fine when there's a small number of flow nodes, but should it become large, this approach
 // should probably be rethought.
-struct NamedStreamFuture<T>(String, StreamFuture<T>);
+struct FlowNode {
+    id: String,
+    future: StreamFuture<Box<dyn flow_node::FlowNode>>,
+    tokens: usize,
+}
 
 use std::ops::{Deref, DerefMut};
 
-impl<T> Deref for NamedStreamFuture<T>
-where
-    T: Unpin + Stream,
-{
-    type Target = T;
+impl Deref for FlowNode {
+    type Target = Box<dyn flow_node::FlowNode>;
 
     fn deref(&self) -> &Self::Target {
         // FIXME: is there any better way to do this?
         // I *think* it's reasonable to assume it won't panic in runtime
         // because when it's used, scheduler is not doing anything with the future.
         // However, I am not confident in this.
-        self.1.get_ref().unwrap()
+        self.future.get_ref().unwrap()
     }
 }
 
-impl<T> DerefMut for NamedStreamFuture<T>
-where
-    T: Unpin + Stream,
-{
+impl DerefMut for FlowNode {
     fn deref_mut(&mut self) -> &mut Self::Target {
         // FIXME: see above in `Deref` implementation
-        self.1.get_mut().unwrap()
+        self.future.get_mut().unwrap()
     }
 }
 
-impl<T> Future for NamedStreamFuture<T>
-where
-    T: Unpin + Stream,
-{
-    type Output = (String, <StreamFuture<T> as Future>::Output);
+/// This encapsulates an item produced by flow node (as a Stream)
+struct Next {
+    id: String,
+    item: <StreamFuture<Box<dyn flow_node::FlowNode>> as Future>::Output,
+    tokens: usize,
+}
+
+impl Future for FlowNode {
+    type Output = Next;
 
     fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        self.1.poll_unpin(cx).map(|v| (self.0.clone(), v))
+        self.future.poll_unpin(cx).map(|v| Next {
+            id: self.id.clone(),
+            item: v,
+            tokens: self.tokens,
+        })
     }
 }
 
@@ -217,14 +228,15 @@ impl Scheduler {
                 flow_node::new(e.as_ref()).map(|mut flow_node| {
                     flow_node.set_process(process.clone());
                     let e = flow_node.element();
-                    NamedStreamFuture(
+                    FlowNode {
                         // FIXME: decide what should we do with flow nodes that don't have ID.
                         // They can't be connected with other nodes (there's no way to refer to
                         // them), but they can still be operational in a single flow node operation
                         // (even though this might be a degenerative case)
-                        e.id().as_ref().unwrap_or(&"".to_string()).to_string(),
-                        flow_node.into_future(),
-                    )
+                        id: e.id().as_ref().unwrap_or(&"".to_string()).to_string(),
+                        future: flow_node.into_future(),
+                        tokens: 0,
+                    }
                 })
             })
             .collect();
@@ -291,7 +303,7 @@ impl Scheduler {
                        None => {}
                    },
                next = self.flow_nodes.next() => {
-                   if let Some((id, (action, mut flow_node))) = next  {
+                   if let Some(Next{id, item: (action, mut flow_node), tokens}) = next  {
                        // Figure out if this action should be transformed, kept as is, or dropped
                        enum Control {
                            Proceed(Option<flow_node::Action>),
@@ -342,12 +354,13 @@ impl Scheduler {
                                    }
                                }
                            }
-                           Control::Proceed(Some(flow_node::Action::Flow(indices))) => {
-                               let outgoings = flow_node.element().outgoings().clone();
+                           Control::Proceed(Some(flow_node::Action::Flow(ref indices))) => {
+                               let el = flow_node.element();
+                               let outgoings = el.outgoings();
                                for index in indices {
                                    // FIXME: see above about ID-less flow nodes
                                    let seq_flow = {
-                                       element.find_by_id(&outgoings[index])
+                                       element.find_by_id(&outgoings[*index])
                                            .and_then(|seq_flow| seq_flow.downcast_ref::<SequenceFlow>())
                                    };
 
@@ -357,25 +370,28 @@ impl Scheduler {
                                            log_broadcast.clone()).await;
                                        if success {
                                            for next_node in self.flow_nodes.iter_mut() {
-                                               if next_node.0 == seq_flow.target_ref {
-                                                   let target_node = &mut next_node.1;
-                                                   let node = target_node.get_mut();
-                                                   node.and_then(|node|
-                                                       node.element().incomings().iter().enumerate().
-                                                       find_map(|(index, incoming)|
-                                                           if incoming == seq_flow.id.as_ref().unwrap() {
-                                                               Some(index)
-                                                           } else {
-                                                               None
-                                                           })
-                                                       .map(|index| {
+                                               if next_node.id == seq_flow.target_ref {
+                                                   let target_node = &mut next_node.future;
+                                                   if let Some(node) = target_node.get_mut() {
+                                                       let index = node.element().incomings().iter().enumerate().
+                                                           find_map(|(index, incoming)|
+                                                               if incoming == seq_flow.id.as_ref().unwrap() {
+                                                                   Some(index)
+                                                               } else {
+                                                                   None
+                                                               });
+
+                                                       if let Some(index) = index {
                                                            let _ = log_broadcast.send(Log::FlowNodeIncoming {
                                                                node: node.element().clone(),
                                                                incoming_index: index
                                                            });
-                                                           node.incoming(index)
-                                                       }));
-
+                                                           // increase the number of tokens by a number of added flows
+                                                           next_node.tokens += indices.len();
+                                                           node.tokens(next_node.tokens);
+                                                           node.incoming(index);
+                                                       }
+                                                   }
                                                }
                                            }
                                        }
@@ -394,7 +410,7 @@ impl Scheduler {
                            Control::Drop => {}
                        }
                        // Reschedule the flow node
-                       self.flow_nodes.push(NamedStreamFuture(id, flow_node.into_future()));
+                       self.flow_nodes.push(FlowNode{id, future: flow_node.into_future(), tokens});
                    }
                },
             }
