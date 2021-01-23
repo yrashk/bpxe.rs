@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+## [0.1.2] - 2021-01-23
+
 ### Added
 
 - Support for `bpmn:tFormalExpression` type name used by Camunda Modeler
@@ -43,7 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rudimentary expression language evaluation (`bpmn::language`)
 
 <!-- next-url -->
-[Unreleased]: https://github.com/bpxe/bpxe/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/bpxe/bpxe/compare/bpxe-v0.1.2...HEAD
+[0.1.2]: https://github.com/bpxe/bpxe/compare/v0.1.1...bpxe-v0.1.2
 [0.1.1]: https://github.com/bpxe/bpxe/compare/v0.1.0...v0.1.1
 
 [i1]: https://github.com/bpxe/bpxe/issues/1
