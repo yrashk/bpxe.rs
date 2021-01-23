@@ -60,14 +60,14 @@ pub const SMALL_OUTGOING: usize = 8;
 /// Determination of next action by flow nodes
 #[derive(Debug)]
 pub enum Action {
-    /// Check whether given outputs will flow
+    /// Check whether given outgoings will flow
     ///
-    /// This is useful if the flow node needs to know whether certain outputs
+    /// This is useful if the flow node needs to know whether certain outgoings
     /// *will flow.
     ProbeOutgoingSequenceFlows(SmallVec<[OutgoingIndex; SMALL_OUTGOING]>),
-    /// Enact flow through given outputs
+    /// Enact flow through given outgoings
     ///
-    /// This action will still check whether given outputs *can* flow.
+    /// This action will still check whether given outgoings *can* flow.
     Flow(SmallVec<[OutgoingIndex; SMALL_OUTGOING]>),
     /// Mark flow node as complete, no further action necessary.
     Complete,
@@ -105,7 +105,7 @@ pub trait FlowNode: Stream<Item = Action> + Send + Unpin {
     #[allow(unused_variables)]
     fn sequence_flow(
         &mut self,
-        output: OutgoingIndex,
+        outgoing: OutgoingIndex,
         sequence_flow: &SequenceFlow,
         condition_result: bool,
     ) {
