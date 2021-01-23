@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0fugjn9" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_1sib8ni</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateThrowEvent id="throw">
+      <bpmn:incoming>Flow_1sib8ni</bpmn:incoming>
+      <bpmn:outgoing>Flow_15ao09k</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1sib8ni" sourceRef="start" targetRef="throw" />
+    <bpmn:endEvent id="end">
+      <bpmn:incoming>Flow_15ao09k</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_15ao09k" sourceRef="throw" targetRef="end" />
+    <bpmn:textAnnotation id="TextAnnotation_1srrobs">
+      <bpmn:text>Testing that this will throw a None Event</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_01ih9k6" sourceRef="throw" targetRef="TextAnnotation_1srrobs" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNShape id="TextAnnotation_1srrobs_di" bpmnElement="TextAnnotation_1srrobs">
+        <dc:Bounds x="310" y="70" width="167" height="53" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1sib8ni_di" bpmnElement="Flow_1sib8ni">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="272" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15ao09k_di" bpmnElement="Flow_15ao09k">
+        <di:waypoint x="308" y="177" />
+        <di:waypoint x="372" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11ywzm0_di" bpmnElement="throw">
+        <dc:Bounds x="272" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0zhgprw_di" bpmnElement="end">
+        <dc:Bounds x="372" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_01ih9k6_di" bpmnElement="Association_01ih9k6">
+        <di:waypoint x="301" y="163" />
+        <di:waypoint x="331" y="123" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_19uo47e" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_1h8qo4k</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="end">
+      <bpmn:incoming>Flow_1h8qo4k</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1h8qo4k" sourceRef="start" targetRef="end" />
+    <bpmn:textAnnotation id="TextAnnotation_0m1cj8a">
+      <bpmn:text>Testing that endEvent will throw an EndEvent</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1c286q4" sourceRef="end" targetRef="TextAnnotation_0m1cj8a" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNShape id="TextAnnotation_0m1cj8a_di" bpmnElement="TextAnnotation_0m1cj8a">
+        <dc:Bounds x="310" y="80" width="274" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1h8qo4k_di" bpmnElement="Flow_1h8qo4k">
+        <di:waypoint x="215" y="187" />
+        <di:waypoint x="272" y="187" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="169" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0jc3cjt_di" bpmnElement="end">
+        <dc:Bounds x="272" y="169" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1c286q4_di" bpmnElement="Association_1c286q4">
+        <di:waypoint x="301" y="173" />
+        <di:waypoint x="349" y="110" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

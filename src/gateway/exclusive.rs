@@ -166,6 +166,7 @@ impl Stream for Gateway {
 
 #[cfg(test)]
 mod tests {
+    use crate::bpmn::parse;
     use crate::bpmn::schema::*;
     use crate::event::ProcessEvent;
     use crate::model;
@@ -177,98 +178,7 @@ mod tests {
     #[tokio::test]
     #[cfg(any(feature = "rhai"))]
     async fn choose_one() {
-        let mut definitions = Definitions {
-            root_elements: vec![
-                Process {
-                    id: Some("proc1".into()),
-                    flow_elements: vec![
-                        StartEvent {
-                            id: Some("start".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        ExclusiveGateway {
-                            id: Some("excl".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f1".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f1sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f2".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f2sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        EndEvent {
-                            id: Some("end".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                    ],
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f1sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f2sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-            ],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "excl", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow(
-                "excl",
-                "f1",
-                "f1s",
-                Some(FormalExpression {
-                    #[cfg(feature = "rhai")]
-                    content: Some("false".into()),
-                    ..Default::default()
-                }),
-            )
-            .unwrap()
-            .establish_sequence_flow(
-                "excl",
-                "f2",
-                "f2s",
-                Some(FormalExpression {
-                    #[cfg(feature = "rhai")]
-                    content: Some("true".into()),
-                    ..Default::default()
-                }),
-            )
-            .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/exclusive_choose_one.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -309,118 +219,8 @@ mod tests {
 
     #[tokio::test]
     #[cfg(any(feature = "rhai"))]
-    async fn default_if_cant_choose_condition() {
-        let mut definitions = Definitions {
-            root_elements: vec![
-                Process {
-                    id: Some("proc1".into()),
-                    flow_elements: vec![
-                        StartEvent {
-                            id: Some("start".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        ExclusiveGateway {
-                            id: Some("excl".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f0".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f0sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f1".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f1sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f2".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f2sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        EndEvent {
-                            id: Some("end".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                    ],
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f0sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f1sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f2sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-            ],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "excl", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("excl", "f0", "f0s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow(
-                "excl",
-                "f1",
-                "f1s",
-                Some(FormalExpression {
-                    #[cfg(feature = "rhai")]
-                    content: Some("false".into()),
-                    ..Default::default()
-                }),
-            )
-            .unwrap()
-            .establish_sequence_flow(
-                "excl",
-                "f2",
-                "f2s",
-                Some(FormalExpression {
-                    #[cfg(feature = "rhai")]
-                    content: Some("false".into()),
-                    ..Default::default()
-                }),
-            )
-            .unwrap()
-            .establish_sequence_flow("f0", "end", "e0", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
-            .unwrap();
-
+    async fn default() {
+        let definitions = parse(include_str!("test_models/exclusive_default.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -462,98 +262,8 @@ mod tests {
     #[tokio::test]
     #[cfg(any(feature = "rhai"))]
     async fn no_default_path() {
-        let mut definitions = Definitions {
-            root_elements: vec![
-                Process {
-                    id: Some("proc1".into()),
-                    flow_elements: vec![
-                        StartEvent {
-                            id: Some("start".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        ExclusiveGateway {
-                            id: Some("excl".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f1".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f1sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f2".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f2sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        EndEvent {
-                            id: Some("end".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                    ],
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f1sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f2sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-            ],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "excl", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow(
-                "excl",
-                "f1",
-                "f1s",
-                Some(FormalExpression {
-                    #[cfg(feature = "rhai")]
-                    content: Some("false".into()),
-                    ..Default::default()
-                }),
-            )
-            .unwrap()
-            .establish_sequence_flow(
-                "excl",
-                "f2",
-                "f2s",
-                Some(FormalExpression {
-                    #[cfg(feature = "rhai")]
-                    content: Some("false".into()),
-                    ..Default::default()
-                }),
-            )
-            .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions =
+            parse(include_str!("test_models/exclusive_no_default_path.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

@@ -8,11 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+- Support for `bpmn:tFormalExpression` type name used by Camunda Modeler
+
 ## [0.1.1] - 2021-01-22
 
 ### Changed
 
-- single-field BPMN schema structures were changed to the contained types
+- Single-field BPMN schema structures were changed to the contained types
 
 ### Fixed
 

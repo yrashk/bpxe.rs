@@ -83,7 +83,18 @@ impl<'a> XmlRead<'a> for Expr {
                         ..
                     }) if prefix.as_str() == "xsi"
                         && local.as_str() == "type"
-                        && value.as_str() == "tFormalExpression" =>
+                        // OMG's own https://www.omg.org/cgi-bin/doc?dtc/10-06-02.pdf shows this
+                        // example:
+                        //
+                        // ```xml
+                        // <conditionExpression xsi:type="tFormalExpression">
+                        // ${getDataObject("TicketDataObject").status == "Open"}
+                        // </conditionExpression>
+                        // ```
+                        //
+                        // However, Camunda Modeler uses `bpmn:tFormalExpression`
+                        && (value.as_str() == "bpmn:tFormalExpression"
+                            || value.as_str() == "tFormalExpression") =>
                     {
                         formal = true;
                     }

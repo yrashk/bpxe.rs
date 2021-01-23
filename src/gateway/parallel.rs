@@ -106,65 +106,15 @@ impl Stream for Gateway {
 
 #[cfg(test)]
 mod tests {
-    use crate::bpmn::schema::*;
+    use crate::bpmn::parse;
     use crate::event::ProcessEvent;
     use crate::model;
+    use crate::process::Log;
     use crate::test::*;
 
     #[tokio::test]
     async fn fork() {
-        let mut definitions = Definitions {
-            root_elements: vec![Process {
-                id: Some("proc1".into()),
-                flow_elements: vec![
-                    StartEvent {
-                        id: Some("start".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    ParallelGateway {
-                        id: Some("fork".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f1".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f2".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    EndEvent {
-                        id: Some("end".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                ],
-                ..Default::default()
-            }
-            .into()],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "fork", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("fork", "f1", "f1s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("fork", "f2", "f2s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f1", "end", "e1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "end", "e2", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/parallel_fork.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -184,72 +134,7 @@ mod tests {
 
     #[tokio::test]
     async fn join() {
-        let mut definitions = Definitions {
-            root_elements: vec![Process {
-                id: Some("proc1".into()),
-                flow_elements: vec![
-                    StartEvent {
-                        id: Some("start".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    ParallelGateway {
-                        id: Some("fork".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f1".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f2".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    ParallelGateway {
-                        id: Some("join".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f3".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    EndEvent {
-                        id: Some("end".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                ],
-                ..Default::default()
-            }
-            .into()],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "fork", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("fork", "f1", "f1s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("fork", "f2", "f2s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f1", "join", "j1s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "join", "j2s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("join", "f3", "f3s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f3", "end", "e", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/parallel_join.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -269,84 +154,13 @@ mod tests {
 
     #[tokio::test]
     async fn not_enough_to_join() {
-        let mut definitions = Definitions {
-            root_elements: vec![Process {
-                id: Some("proc1".into()),
-                flow_elements: vec![
-                    StartEvent {
-                        id: Some("start".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    ParallelGateway {
-                        id: Some("fork".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f1".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f2".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    ParallelGateway {
-                        id: Some("join".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    IntermediateThrowEvent {
-                        id: Some("f3".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    EndEvent {
-                        id: Some("end".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    EndEvent {
-                        id: Some("alt_end".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                ],
-                ..Default::default()
-            }
-            .into()],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "fork", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("fork", "f1", "f1s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("fork", "f2", "f2s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f1", "join", "j1s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "alt_end", "j2e", None::<FormalExpression>)
-            .unwrap()
-            // EndEvent will not flow, so the join won't succeeed
-            .establish_sequence_flow("alt_end", "join", "j2es", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("join", "f3", "f3s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f3", "end", "e", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions =
+            parse(include_str!("test_models/parallel_not_enough_to_join.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
         let mut mailbox = Mailbox::new(handle.event_receiver());
+        let mut log_mailbox = Mailbox::new(handle.log_receiver());
 
         assert!(handle.start().await.is_ok());
 
@@ -359,8 +173,13 @@ mod tests {
             );
         }
 
-        // f2 -> end
-        assert!(mailbox.receive(|e| matches!(e, ProcessEvent::End)).await);
+        // f2 flows to a dead_end that will not join
+        assert!(
+            log_mailbox
+                .receive(|log| matches!(log, Log::FlowNodeIncoming { node, .. }
+                        if node.id().as_ref().unwrap() == "dead_end"))
+                .await
+        );
 
         // but third NoneEvent should not happen as the join didn't occur
         use std::time::Duration;

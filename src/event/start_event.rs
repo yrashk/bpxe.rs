@@ -158,6 +158,7 @@ impl Stream for StartEvent {
 
 #[cfg(test)]
 mod tests {
+    use crate::bpmn::parse;
     use crate::bpmn::schema::*;
     use crate::model;
     use crate::process::Log;
@@ -165,35 +166,7 @@ mod tests {
 
     #[tokio::test]
     async fn start_flows() {
-        let mut definitions = Definitions {
-            root_elements: vec![Process {
-                id: Some("proc1".into()),
-                flow_elements: vec![
-                    StartEvent {
-                        id: Some("start".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    EndEvent {
-                        id: Some("end".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                ],
-                ..Default::default()
-            }
-            .into()],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "end", "s1", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/start_flows.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

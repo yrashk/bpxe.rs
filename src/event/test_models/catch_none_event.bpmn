@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_03g8smj" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_0z3tdsp</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0z3tdsp" sourceRef="start" targetRef="catch" />
+    <bpmn:intermediateCatchEvent id="catch">
+      <bpmn:incoming>Flow_0z3tdsp</bpmn:incoming>
+      <bpmn:outgoing>Flow_03azq63</bpmn:outgoing>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_03azq63" sourceRef="catch" targetRef="throw" />
+    <bpmn:intermediateThrowEvent id="throw">
+      <bpmn:incoming>Flow_03azq63</bpmn:incoming>
+      <bpmn:outgoing>Flow_12sbzek</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_1wiomul" signalRef="signal" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="end">
+      <bpmn:incoming>Flow_12sbzek</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_12sbzek" sourceRef="throw" targetRef="end" />
+    <bpmn:textAnnotation id="TextAnnotation_1opcikp">
+      <bpmn:text>Testing that this will catch a None Event</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0he8qse" sourceRef="catch" targetRef="TextAnnotation_1opcikp" />
+    <bpmn:textAnnotation id="TextAnnotation_01swzip">
+      <bpmn:text>This is how we test that the previous catch flowed forward</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_14igp60" sourceRef="throw" targetRef="TextAnnotation_01swzip" />
+  </bpmn:process>
+  <bpmn:signal id="signal" name="signal" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNShape id="TextAnnotation_1opcikp_di" bpmnElement="TextAnnotation_1opcikp">
+        <dc:Bounds x="310" y="80" width="238" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_01swzip_di" bpmnElement="TextAnnotation_01swzip">
+        <dc:Bounds x="370" y="250" width="202" height="45" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0z3tdsp_di" bpmnElement="Flow_0z3tdsp">
+        <di:waypoint x="215" y="187" />
+        <di:waypoint x="272" y="187" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03azq63_di" bpmnElement="Flow_03azq63">
+        <di:waypoint x="308" y="187" />
+        <di:waypoint x="372" y="187" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12sbzek_di" bpmnElement="Flow_12sbzek">
+        <di:waypoint x="408" y="187" />
+        <di:waypoint x="472" y="187" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="169" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1hjz7j2_di" bpmnElement="catch">
+        <dc:Bounds x="272" y="169" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1oy8s68_di" bpmnElement="throw">
+        <dc:Bounds x="372" y="169" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="387" y="212" width="7" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0dj3xbp_di" bpmnElement="end">
+        <dc:Bounds x="472" y="169" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0he8qse_di" bpmnElement="Association_0he8qse">
+        <di:waypoint x="301" y="173" />
+        <di:waypoint x="344" y="116" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_14igp60_di" bpmnElement="Association_14igp60">
+        <di:waypoint x="396" y="204" />
+        <di:waypoint x="414" y="250" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

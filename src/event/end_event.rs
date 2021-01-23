@@ -100,42 +100,14 @@ impl Stream for EndEvent {
 
 #[cfg(test)]
 mod tests {
-    use crate::bpmn::schema::*;
+    use crate::bpmn::parse;
     use crate::event::ProcessEvent;
     use crate::model;
     use crate::test::Mailbox;
 
     #[tokio::test]
     async fn end_throws_event() {
-        let mut definitions = Definitions {
-            root_elements: vec![Process {
-                id: Some("proc1".into()),
-                flow_elements: vec![
-                    StartEvent {
-                        id: Some("start".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                    EndEvent {
-                        id: Some("end".into()),
-                        ..Default::default()
-                    }
-                    .into(),
-                ],
-                ..Default::default()
-            }
-            .into()],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "end", "s1", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/start_flows.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

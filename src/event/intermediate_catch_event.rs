@@ -219,7 +219,7 @@ impl Stream for IntermediateCatchEvent {
 
 #[cfg(test)]
 mod tests {
-    use crate::bpmn::schema::*;
+    use crate::bpmn::parse;
     use crate::event::ProcessEvent;
     use crate::model;
     use crate::process::Log;
@@ -227,61 +227,7 @@ mod tests {
 
     #[tokio::test]
     async fn catch_none_event() {
-        let mut definitions = Definitions {
-            root_elements: vec![
-                Process {
-                    id: Some("proc1".into()),
-                    flow_elements: vec![
-                        StartEvent {
-                            id: Some("start".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateCatchEvent {
-                            id: Some("catch".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("throw".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("signal".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        EndEvent {
-                            id: Some("end".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                    ],
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("signal".into()),
-                    ..Default::default()
-                }
-                .into(),
-            ],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "catch", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("catch", "throw", "s2", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("throw", "end", "s3", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/catch_none_event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
@@ -305,71 +251,7 @@ mod tests {
 
     #[tokio::test]
     async fn catch_signal_event() {
-        let mut definitions = Definitions {
-            root_elements: vec![
-                Process {
-                    id: Some("proc1".into()),
-                    flow_elements: vec![
-                        StartEvent {
-                            id: Some("start".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateCatchEvent {
-                            id: Some("catch".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("signal".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("report".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("report".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        EndEvent {
-                            id: Some("end".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                    ],
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("signal".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("report".into()),
-                    ..Default::default()
-                }
-                .into(),
-            ],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "catch", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("catch", "report", "s3", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("report", "end", "s4", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/catch_signal_event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();

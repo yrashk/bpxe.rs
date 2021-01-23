@@ -125,6 +125,7 @@ impl Stream for Gateway {
 
 #[cfg(test)]
 mod tests {
+    use crate::bpmn::parse;
     use crate::bpmn::schema::*;
     use crate::event::ProcessEvent;
     use crate::model;
@@ -135,114 +136,7 @@ mod tests {
 
     #[tokio::test]
     async fn event() {
-        let mut definitions = Definitions {
-            root_elements: vec![
-                Process {
-                    id: Some("proc1".into()),
-                    flow_elements: vec![
-                        StartEvent {
-                            id: Some("start".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        EventBasedGateway {
-                            id: Some("ev".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateCatchEvent {
-                            id: Some("f1".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f1sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateCatchEvent {
-                            id: Some("f2".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f2sig".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f1t".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f1report".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        IntermediateThrowEvent {
-                            id: Some("f2t".into()),
-                            event_definitions: vec![SignalEventDefinition {
-                                signal_ref: Some("f2report".into()),
-                                ..Default::default()
-                            }
-                            .into()],
-                            ..Default::default()
-                        }
-                        .into(),
-                        EndEvent {
-                            id: Some("end".into()),
-                            ..Default::default()
-                        }
-                        .into(),
-                    ],
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f1sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f2sig".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f1report".into()),
-                    ..Default::default()
-                }
-                .into(),
-                Signal {
-                    id: Some("f2report".into()),
-                    ..Default::default()
-                }
-                .into(),
-            ],
-            ..Default::default()
-        };
-
-        definitions
-            .find_by_id_mut("proc1")
-            .unwrap()
-            .downcast_mut::<Process>()
-            .unwrap()
-            .establish_sequence_flow("start", "ev", "s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("ev", "f1", "f1s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("ev", "f2", "f2s", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f1", "f1t", "f1s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2", "f2t", "f2s1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f1t", "end", "e1", None::<FormalExpression>)
-            .unwrap()
-            .establish_sequence_flow("f2t", "end", "e2", None::<FormalExpression>)
-            .unwrap();
-
+        let definitions = parse(include_str!("test_models/event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
 
         let handle = model.processes().await.unwrap().pop().unwrap();
