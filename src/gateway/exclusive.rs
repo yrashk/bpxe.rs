@@ -83,29 +83,28 @@ impl FlowNode for Gateway {
     ) {
         if let State::AwaitingProbing { ref mut probed } = self.state {
             probed.push((output, condition_result));
-            // If this sequence flow has an expression (not a default one)
-            if sequence_flow.condition_expression.is_some() {
-                // and it has resolved to `true`, proceed with it
-                if condition_result {
-                    self.state = State::Done {
-                        selected_outgoing: output,
-                    };
+            // If sequence flow has resolved to `true`, proceed with it
+            // (as long as it is not a default path)
+            if condition_result && self.element.default == sequence_flow.id {
+                self.state = State::Done {
+                    selected_outgoing: output,
+                };
 
-                    if let Some(waker) = self.waker.take() {
-                        waker.wake();
-                    }
-
-                    return;
+                if let Some(waker) = self.waker.take() {
+                    waker.wake();
                 }
+
+                return;
             }
             // if we've probed everything
             if probed.len() == self.element.outgoings().len() {
-                // and if there was something successful
+                // and if there was something successful then this means it was a default path
                 if let Some(output) =
                     probed.iter().find_map(
                         |(result_index, result)| if *result { Some(result_index) } else { None },
                     )
                 {
+                    // therefore, we can proceed with it
                     self.state = State::Done {
                         selected_outgoing: *output,
                     };

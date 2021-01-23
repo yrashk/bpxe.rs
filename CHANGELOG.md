@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for `bpmn:tFormalExpression` type name used by Camunda Modeler
 
+### Fixed
+
+- Implementation of default path handling in exclusive gateways
+
 ## [0.1.1] - 2021-01-22
 
 ### Changed
