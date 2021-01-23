@@ -41,6 +41,7 @@ jobs:
         cargo doc --all-features
         mkdir -p content
         mv target/doc/* content
+        find content -type f -exec touch -t 203401010000 {} +
 
     - name: Deploy
       run: |-
