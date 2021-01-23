@@ -262,7 +262,7 @@ impl Scheduler {
                 ..
             })) = seq_flow.condition_expression
             {
-                match expression_evaluator.eval(default_expression_language, content) {
+                match expression_evaluator.eval_expr(default_expression_language, content) {
                     Ok(result) => result,
                     Err(err) => {
                         let _ = log_broadcast.send(Log::ExpressionError {

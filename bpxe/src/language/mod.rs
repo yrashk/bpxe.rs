@@ -64,14 +64,18 @@ impl ExpressionEvaluator {
     /// Evaluates an expression using an engine for a given language
     ///
     /// If `language` is None, default engine will be used.
-    pub fn eval<T>(&self, language: Option<&String>, expression: &str) -> Result<T, EvaluationError>
+    pub fn eval_expr<T>(
+        &self,
+        language: Option<&String>,
+        expression: &str,
+    ) -> Result<T, EvaluationError>
     where
         T: Clone + Send + Sync + 'static,
     {
         let language = language.unwrap_or(&self.default_engine);
         #[cfg(feature = "rhai")]
         if language == RHAI_URI {
-            return self.rhai.eval(expression).map_err(|e| match *e {
+            return self.rhai.eval_expression(expression).map_err(|e| match *e {
                 rhai::EvalAltResult::ErrorMismatchOutputType(expected, got, _) => {
                     EvaluationError::ResultTypeError { expected, got }
                 }
@@ -95,7 +99,7 @@ impl Default for ExpressionEvaluator {
 fn unsupported_language() {
     let e = ExpressionEvaluator::new();
     assert!(
-        matches!(e.eval::<bool>(Some(&"unknown".to_string()), "test").unwrap_err(),
+        matches!(e.eval_expr::<bool>(Some(&"unknown".to_string()), "test").unwrap_err(),
         EvaluationError::UnsupportedLanguage { language } if language == "unknown")
     );
 }
@@ -104,7 +108,9 @@ fn unsupported_language() {
 #[test]
 fn rhai_evaluation() {
     let e = ExpressionEvaluator::new();
-    assert!(e.eval::<bool>(Some(&RHAI_URI.to_string()), "true").unwrap());
+    assert!(e
+        .eval_expr::<bool>(Some(&RHAI_URI.to_string()), "true")
+        .unwrap());
 }
 
 #[cfg(all(test, feature = "rhai"))]
@@ -112,7 +118,18 @@ fn rhai_evaluation() {
 fn rhai_return_type_mismatch() {
     let e = ExpressionEvaluator::new();
     assert!(
-        matches!(e.eval::<bool>(Some(&RHAI_URI.to_string()), "3").unwrap_err(), 
+        matches!(e.eval_expr::<bool>(Some(&RHAI_URI.to_string()), "3").unwrap_err(), 
                  EvaluationError::ResultTypeError { expected, got } if expected == "bool" && got == "i64")
     );
+}
+
+#[cfg(all(test, feature = "rhai"))]
+#[test]
+fn rhai_not_expr() {
+    let e = ExpressionEvaluator::new();
+    assert!(matches!(
+        e.eval_expr::<bool>(Some(&RHAI_URI.to_string()), "a = true")
+            .unwrap_err(),
+        EvaluationError::EvaluationError { .. }
+    ));
 }
