@@ -4,6 +4,7 @@
 use crate::bpmn::schema::FormalExpression;
 use async_trait::async_trait;
 use std::collections::HashMap;
+#[cfg(feature = "rhai")]
 use std::sync::Arc;
 use thiserror::Error;
 use tokio::task;
@@ -137,6 +138,7 @@ where
 
     /// Creates a new engine with all builtin engines
     pub fn new_with_builtin_engines() -> Self {
+        #[allow(unused_mut)]
         let mut engine = MultiLanguageEngine::new();
         #[cfg(feature = "rhai")]
         engine.register_language(RHAI_URI, Rhai::default());

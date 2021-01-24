@@ -164,6 +164,7 @@ impl Stream for Gateway {
 }
 
 #[cfg(test)]
+#[allow(unused_imports)]
 mod tests {
     use crate::bpmn::parse;
     use crate::bpmn::schema::*;
