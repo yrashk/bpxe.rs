@@ -25,7 +25,7 @@ intertrait = "0.2"
 linkme = "0.2"
 dyn-clone = "1.0.4"
 tia = "1.0.0"
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = "1.1", features = ["full"] }
 futures = "0.3.12"
 serde = { version = "1.0.119", features = ["derive"] }
 smallvec = { version = "1.6.1", features = ["serde"] }
