@@ -1,9 +1,9 @@
 //! # Flow Node
 use crate::activity;
 use crate::bpmn::schema::{
-    DocumentElement, Element, EndEvent, EventBasedGateway, ExclusiveGateway, FlowNodeType,
-    InclusiveGateway, IntermediateCatchEvent, IntermediateThrowEvent, ParallelGateway, ScriptTask,
-    SequenceFlow, StartEvent,
+    ActivityType, DocumentElement, Element, EndEvent, EventBasedGateway, ExclusiveGateway,
+    FlowNodeType, InclusiveGateway, IntermediateCatchEvent, IntermediateThrowEvent,
+    ParallelGateway, ScriptTask, SequenceFlow, StartEvent,
 };
 use crate::event::{end_event, intermediate_catch_event, intermediate_throw_event, start_event};
 use crate::gateway;
@@ -21,7 +21,7 @@ use thiserror::Error;
 /// All flow nodes' state is combined into one "big" enum so that [`FlowNode`] doesn't need to have
 /// any associated types (which makes the final type be sized differently, and this makes it
 /// problematic for runtime dispatching.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum State {
     StartEvent(start_event::State),
     EndEvent(end_event::State),
@@ -32,6 +32,7 @@ pub enum State {
     InclusiveGateway(gateway::inclusive::State),
     EventBasedGateway(gateway::event_based::State),
     ScriptTask(activity::script_task::State),
+    ActivityState(activity::State),
 }
 
 /// State handling errors
@@ -187,12 +188,11 @@ where
 
 fn make_activity<E, F>(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>>
 where
-    E: DocumentElement + FlowNodeType + Clone + Default,
+    E: DocumentElement + ActivityType + Clone + Default + Unpin,
     F: 'static + From<E> + activity::Activity,
 {
     element
         .downcast_ref::<E>()
-        .map(|e| F::from(e.clone()))
-        .map(activity::ActivityContainer::new)
+        .map(|e| activity::ActivityContainer::new(e.clone(), F::from))
         .map(|e| Box::new(e) as Box<dyn FlowNode>)
 }

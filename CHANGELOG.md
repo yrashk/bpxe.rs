@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Inclusive gateway support
 - `scriptTask` activity support
+- `standardLoopCharacteristics` support for activities
 
 ### Fixed
 

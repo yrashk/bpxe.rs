@@ -2,11 +2,12 @@
 //!
 //! Model is a central entrypoint to BPMN execution. It contains all definitions of a BPMN document
 //! and orchestrates process instantiation and execution.
-use crate::bpmn::schema::{Definitions, RootElement, ScriptTask};
+use crate::bpmn::schema::{Definitions, RootElement};
 use crate::language::MultiLanguageEngine;
 use crate::process;
 use factory::Factory;
 use futures::future::join_all;
+
 use std::sync::Arc;
 use thiserror::Error;
 use tokio::sync::{broadcast, mpsc, oneshot};
@@ -24,54 +25,59 @@ pub enum Error {
 }
 
 /// Script engine factory
-pub trait ScriptEngineFactory:
-    Factory<Item = MultiLanguageEngine<(), ScriptTask>> + Send + Sync
-{
-}
+pub trait LanguageEngineFactory: Factory<Item = MultiLanguageEngine> + Send + Sync {}
 
 /// Function/closure script engine factory
-pub struct FnScriptEngineFactory<F>(pub F)
+pub struct FnLanguageEngineFactory<F>(pub F)
 where
-    F: Fn() -> MultiLanguageEngine<(), ScriptTask> + Send + Sync;
+    F: Fn() -> MultiLanguageEngine + Send + Sync;
 
-impl<F> Factory for FnScriptEngineFactory<F>
+impl<F> Factory for FnLanguageEngineFactory<F>
 where
-    F: Fn() -> MultiLanguageEngine<(), ScriptTask> + Send + Sync,
+    F: Fn() -> MultiLanguageEngine + Send + Sync,
 {
-    type Item = MultiLanguageEngine<(), ScriptTask>;
+    type Item = MultiLanguageEngine;
 
     fn create(&self) -> Self::Item {
         self.0()
     }
 }
 
-impl<F> ScriptEngineFactory for FnScriptEngineFactory<F> where
-    F: Fn() -> MultiLanguageEngine<(), ScriptTask> + Send + Sync
+impl<F> LanguageEngineFactory for FnLanguageEngineFactory<F> where
+    F: Fn() -> MultiLanguageEngine + Send + Sync
 {
 }
 
 /// Default script engine factory
-#[derive(Clone)]
-pub struct DefaultScriptEngineFactory;
+pub struct DefaultLanguageEngineFactory;
 
-impl Factory for DefaultScriptEngineFactory {
-    type Item = MultiLanguageEngine<(), ScriptTask>;
+impl Factory for DefaultLanguageEngineFactory {
+    type Item = MultiLanguageEngine;
 
     fn create(&self) -> Self::Item {
-        MultiLanguageEngine::new_with_builtin_engines()
+        MultiLanguageEngine::new()
     }
 }
 
-impl ScriptEngineFactory for DefaultScriptEngineFactory {}
+impl LanguageEngineFactory for DefaultLanguageEngineFactory {}
+
+/// Expression engine factory
+pub trait ExpressionEngineFactory<T>: Factory<Item = MultiLanguageEngine> + Send + Sync
+where
+    T: Send + Sync + 'static,
+{
+}
 
 /// Model is a container for a BPMN document
-pub struct Model<ScriptEngine>
+pub struct Model<ScriptEngine, ExpressionEngine>
 where
-    ScriptEngine: ScriptEngineFactory,
+    ScriptEngine: LanguageEngineFactory,
+    ExpressionEngine: LanguageEngineFactory,
 {
     definitions: Arc<Definitions>,
     processes: Vec<process::Handle>,
     script_engine_factory: Option<ScriptEngine>,
+    expression_engine_factory: Option<ExpressionEngine>,
 }
 
 /// Control handle for a running model
@@ -80,7 +86,8 @@ pub struct Handle {
     definitions: Arc<Definitions>,
     sender: mpsc::Sender<Request>,
     log_broadcast: broadcast::Sender<Log>,
-    script_engine_factory: Arc<Box<dyn ScriptEngineFactory>>,
+    script_engine_factory: Arc<Box<dyn LanguageEngineFactory>>,
+    expression_engine_factory: Arc<Box<dyn LanguageEngineFactory>>,
 }
 
 /// Model events
@@ -93,7 +100,7 @@ enum Request {
     Processes(oneshot::Sender<Vec<process::Handle>>),
 }
 
-impl Model<DefaultScriptEngineFactory> {
+impl Model<DefaultLanguageEngineFactory, DefaultLanguageEngineFactory> {
     /// Initializes a model
     ///
     /// In order to make it operational, use [`Model::spawn`]
@@ -101,25 +108,44 @@ impl Model<DefaultScriptEngineFactory> {
         Self {
             definitions: Arc::new(definitions),
             processes: vec![],
-            script_engine_factory: Some(DefaultScriptEngineFactory),
+            script_engine_factory: Some(DefaultLanguageEngineFactory),
+            expression_engine_factory: Some(DefaultLanguageEngineFactory),
         }
     }
 }
 
-impl<ScriptEngine> Model<ScriptEngine>
+impl<ScriptEngine, ExpressionEngine> Model<ScriptEngine, ExpressionEngine>
 where
-    ScriptEngine: ScriptEngineFactory + 'static,
+    ScriptEngine: LanguageEngineFactory + 'static,
+    ExpressionEngine: LanguageEngineFactory + 'static,
 {
     /// Consumes model and returns it updated with a new script engine factory
     pub fn with_script_engine_factory<Factory>(
         self,
         script_engine_factory: Factory,
-    ) -> Model<Factory>
+    ) -> Model<Factory, ExpressionEngine>
     where
-        Factory: ScriptEngineFactory,
+        Factory: LanguageEngineFactory,
     {
         Model {
             script_engine_factory: Some(script_engine_factory),
+            expression_engine_factory: self.expression_engine_factory,
+            definitions: self.definitions,
+            processes: self.processes,
+        }
+    }
+
+    /// Consumes model and returns it updated with a new expression engine factory
+    pub fn with_expression_engine_factory<Factory>(
+        self,
+        expression_engine_factory: Factory,
+    ) -> Model<ScriptEngine, Factory>
+    where
+        Factory: LanguageEngineFactory,
+    {
+        Model {
+            script_engine_factory: self.script_engine_factory,
+            expression_engine_factory: Some(expression_engine_factory),
             definitions: self.definitions,
             processes: self.processes,
         }
@@ -134,9 +160,12 @@ where
             definitions: self.definitions.clone(),
             sender: sender.clone(),
             log_broadcast,
-            // this unwrap should be ok because we don't use `None` for `script_engine_factory`
-            // anywhere
+            // these unwraps should be ok because we don't use `None` for `script_engine_factory`
+            // and `script_expression_factory` anywhere
             script_engine_factory: Arc::new(Box::new(self.script_engine_factory.take().unwrap())),
+            expression_engine_factory: Arc::new(Box::new(
+                self.expression_engine_factory.take().unwrap(),
+            )),
         };
 
         let handle_clone = handle.clone();
@@ -218,8 +247,13 @@ impl Handle {
     }
 
     /// Returns model's script engine factory
-    pub fn script_engine_factory(&self) -> Arc<Box<dyn ScriptEngineFactory>> {
+    pub fn script_engine_factory(&self) -> Arc<Box<dyn LanguageEngineFactory>> {
         self.script_engine_factory.clone()
+    }
+
+    /// Returns model's expression engine factory
+    pub fn expression_engine_factory(&self) -> Arc<Box<dyn LanguageEngineFactory>> {
+        self.expression_engine_factory.clone()
     }
 }
 

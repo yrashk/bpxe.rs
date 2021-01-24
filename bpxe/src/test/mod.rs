@@ -3,6 +3,10 @@
 mod mailbox;
 pub(crate) use mailbox::Mailbox;
 
+use std::future::Future;
+use std::str::FromStr;
+use std::time::Duration;
+use thiserror::Error;
 use tokio::sync::broadcast;
 use tokio::task;
 
@@ -24,4 +28,24 @@ where
             }
         }
     });
+}
+
+/// Timeout error
+#[derive(Error, Debug, Clone)]
+pub enum Timeout {
+    #[error("timeout after {0:?}")]
+    Elapsed(Duration),
+}
+
+/// Times out in 100ms or whatever `TIMEOUT` env var is set to
+pub async fn timeout<F, T>(future: F) -> Result<T, Timeout>
+where
+    F: Future<Output = T>,
+{
+    let env = std::env::var("TIMEOUT").or_else(|_| Ok("100".to_owned()))?;
+    let ms = u64::from_str(&env).or_else(|_| Ok(100))?;
+    let timeout = Duration::from_millis(ms);
+    tokio::time::timeout(timeout, future)
+        .await
+        .map_err(|_| Timeout::Elapsed(timeout))
 }

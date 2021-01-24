@@ -2,7 +2,7 @@
 use crate::activity::Activity;
 use crate::bpmn::schema::{FlowNodeType, ScriptTask as Element};
 
-use crate::flow_node::{self, Action, FlowNode, IncomingIndex};
+use crate::flow_node::{self, Action, FlowNode};
 use crate::language::{Engine as _, MultiLanguageEngine};
 use crate::process::Log;
 use futures::stream::Stream;
@@ -17,7 +17,7 @@ use tokio::task;
 pub struct Task {
     element: Arc<Element>,
     state: State,
-    engine: Arc<MultiLanguageEngine<(), Element>>,
+    engine: Arc<MultiLanguageEngine>,
     waker: Option<Waker>,
     notifier: broadcast::Sender<Completion>,
     notifier_receiver: broadcast::Receiver<Completion>,
@@ -90,16 +90,14 @@ impl FlowNode for Task {
             self.wake();
         }
     }
-
-    fn incoming(&mut self, _index: IncomingIndex) {
-        if let State::Ready = self.state {
-            self.state = State::Execute;
-            self.wake();
-        }
-    }
 }
 
-impl Activity for Task {}
+impl Activity for Task {
+    fn execute(&mut self) {
+        self.state = State::Execute;
+        self.wake();
+    }
+}
 
 impl From<Element> for Task {
     fn from(element: Element) -> Self {
@@ -196,17 +194,14 @@ mod tests {
         let sender_clone = sender.clone();
         let model =
             model::Model::new(definitions).with_script_engine_factory(
-                model::FnScriptEngineFactory(move || {
-                    use rhai::RegisterFn;
+                model::FnLanguageEngineFactory(move || {
+                    use ::rhai::RegisterFn;
                     let mut engine = MultiLanguageEngine::new();
-                    let mut rhai = Rhai::new();
-                    let rhai_engine = rhai.engine_mut().unwrap();
+                    let rhai_engine = engine.rhai.engine_mut().unwrap();
                     let sender_clone = sender_clone.clone();
                     rhai_engine.register_fn("notify", move || {
                         while let Err(_) = sender_clone.try_send(()) {}
                     });
-                    engine.register_language("text/x-rhai", rhai);
-                    engine.set_default_language("text/x-rhai");
                     engine
                 }),
             );

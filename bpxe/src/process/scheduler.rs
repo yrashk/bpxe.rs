@@ -25,7 +25,7 @@ pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,
     process: Handle,
     flow_nodes: FuturesUnordered<FlowNode>,
-    expression_evaluator: MultiLanguageEngine<bool, FormalExpression>,
+    expression_evaluator: MultiLanguageEngine,
     element: Arc<Process>,
     log_broadcast: broadcast::Sender<Log>,
 }
@@ -112,11 +112,12 @@ impl Scheduler {
             })
             .collect();
 
-        let mut expression_evaluator = MultiLanguageEngine::new_with_builtin_engines();
+        let mut expression_evaluator = process.model().expression_engine_factory().create();
+
         if let Some(ref default_expression_language) =
             process.model().definitions().expression_language
         {
-            expression_evaluator.set_default_language(default_expression_language);
+            expression_evaluator.set_default_namespace(default_expression_language);
         }
 
         let element = process.element();
@@ -164,7 +165,7 @@ impl Scheduler {
             seq_flow.condition_expression
         {
             let expr = expr.clone();
-            match self.expression_evaluator.eval_expr(&expr).await {
+            match self.expression_evaluator.eval::<bool>(&expr).await {
                 Ok(result) => result,
                 Err(err) => {
                     let _ = self.log_broadcast.send(Log::ExpressionError {
