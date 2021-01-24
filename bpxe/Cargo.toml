@@ -30,9 +30,9 @@ futures = "0.3.12"
 serde = { version = "1.0.119", features = ["derive"] }
 smallvec = { version = "1.6.1", features = ["serde"] }
 rhai = { version = "0.19.10", features = ["sync", "serde"], optional = true }
+async-trait = "0.1"
 
 [dev-dependencies]
-async-trait = "0.1"
 serde_yaml = "0.8"
 serde_json = "1.0"
 toml = "0.5"

@@ -7,7 +7,7 @@ use crate::bpmn::schema::{
 };
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
-use crate::language::ExpressionEvaluator;
+use crate::language::{Engine as _, MultiLanguageEngine};
 
 use futures::future::FutureExt;
 use futures::stream::{FuturesUnordered, StreamExt, StreamFuture};
@@ -25,8 +25,7 @@ pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,
     process: Handle,
     flow_nodes: FuturesUnordered<FlowNode>,
-    expression_evaluator: ExpressionEvaluator,
-    default_expression_language: Option<String>,
+    expression_evaluator: MultiLanguageEngine<bool>,
     element: Arc<Process>,
     log_broadcast: broadcast::Sender<Log>,
 }
@@ -113,9 +112,13 @@ impl Scheduler {
             })
             .collect();
 
-        let expression_evaluator: ExpressionEvaluator = Default::default();
+        let mut expression_evaluator = MultiLanguageEngine::new_with_builtin_engines();
+        if let Some(ref default_expression_language) =
+            process.model().definitions().expression_language
+        {
+            expression_evaluator.set_default_language(default_expression_language);
+        }
 
-        let default_expression_language = process.model().definitions().expression_language.clone();
         let element = process.element();
         let log_broadcast = process.log_broadcast();
 
@@ -124,7 +127,6 @@ impl Scheduler {
             process,
             flow_nodes,
             expression_evaluator,
-            default_expression_language,
             element,
             log_broadcast,
         }
@@ -157,19 +159,12 @@ impl Scheduler {
         }
     }
 
-    // This function is async even though nothing in it is asynchronous
-    // at this moment. This is done with an expectation that expression
-    // evaluation *might* become asynchronous in the future.
     async fn probe_sequence_flow(&mut self, seq_flow: &SequenceFlow) -> bool {
-        if let Some(Expr::FormalExpression(FormalExpression {
-            content: Some(ref content),
-            ..
-        })) = seq_flow.condition_expression
+        if let Some(Expr::FormalExpression(ref expr @ FormalExpression { .. })) =
+            seq_flow.condition_expression
         {
-            match self
-                .expression_evaluator
-                .eval_expr(self.default_expression_language.as_ref(), content)
-            {
+            let expr = expr.clone();
+            match self.expression_evaluator.eval_expr(&expr).await {
                 Ok(result) => result,
                 Err(err) => {
                     let _ = self.log_broadcast.send(Log::ExpressionError {
