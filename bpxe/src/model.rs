@@ -2,14 +2,15 @@
 //!
 //! Model is a central entrypoint to BPMN execution. It contains all definitions of a BPMN document
 //! and orchestrates process instantiation and execution.
-use crate::bpmn::schema::{Definitions, RootElement};
+use crate::bpmn::schema::{Definitions, RootElement, ScriptTask};
+use crate::language::MultiLanguageEngine;
 use crate::process;
+use factory::Factory;
 use futures::future::join_all;
 use std::sync::Arc;
+use thiserror::Error;
 use tokio::sync::{broadcast, mpsc, oneshot};
 use tokio::task::{self, JoinHandle};
-
-use thiserror::Error;
 
 /// Model error
 #[derive(Error, Debug)]
@@ -22,18 +23,64 @@ pub enum Error {
     },
 }
 
+/// Script engine factory
+pub trait ScriptEngineFactory:
+    Factory<Item = MultiLanguageEngine<(), ScriptTask>> + Send + Sync
+{
+}
+
+/// Function/closure script engine factory
+pub struct FnScriptEngineFactory<F>(pub F)
+where
+    F: Fn() -> MultiLanguageEngine<(), ScriptTask> + Send + Sync;
+
+impl<F> Factory for FnScriptEngineFactory<F>
+where
+    F: Fn() -> MultiLanguageEngine<(), ScriptTask> + Send + Sync,
+{
+    type Item = MultiLanguageEngine<(), ScriptTask>;
+
+    fn create(&self) -> Self::Item {
+        self.0()
+    }
+}
+
+impl<F> ScriptEngineFactory for FnScriptEngineFactory<F> where
+    F: Fn() -> MultiLanguageEngine<(), ScriptTask> + Send + Sync
+{
+}
+
+/// Default script engine factory
+#[derive(Clone)]
+pub struct DefaultScriptEngineFactory;
+
+impl Factory for DefaultScriptEngineFactory {
+    type Item = MultiLanguageEngine<(), ScriptTask>;
+
+    fn create(&self) -> Self::Item {
+        MultiLanguageEngine::new_with_builtin_engines()
+    }
+}
+
+impl ScriptEngineFactory for DefaultScriptEngineFactory {}
+
 /// Model is a container for a BPMN document
-pub struct Model {
+pub struct Model<ScriptEngine>
+where
+    ScriptEngine: ScriptEngineFactory,
+{
     definitions: Arc<Definitions>,
     processes: Vec<process::Handle>,
+    script_engine_factory: Option<ScriptEngine>,
 }
 
 /// Control handle for a running model
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Handle {
     definitions: Arc<Definitions>,
     sender: mpsc::Sender<Request>,
     log_broadcast: broadcast::Sender<Log>,
+    script_engine_factory: Arc<Box<dyn ScriptEngineFactory>>,
 }
 
 /// Model events
@@ -46,7 +93,7 @@ enum Request {
     Processes(oneshot::Sender<Vec<process::Handle>>),
 }
 
-impl Model {
+impl Model<DefaultScriptEngineFactory> {
     /// Initializes a model
     ///
     /// In order to make it operational, use [`Model::spawn`]
@@ -54,11 +101,32 @@ impl Model {
         Self {
             definitions: Arc::new(definitions),
             processes: vec![],
+            script_engine_factory: Some(DefaultScriptEngineFactory),
+        }
+    }
+}
+
+impl<ScriptEngine> Model<ScriptEngine>
+where
+    ScriptEngine: ScriptEngineFactory + 'static,
+{
+    /// Consumes model and returns it updated with a new script engine factory
+    pub fn with_script_engine_factory<Factory>(
+        self,
+        script_engine_factory: Factory,
+    ) -> Model<Factory>
+    where
+        Factory: ScriptEngineFactory,
+    {
+        Model {
+            script_engine_factory: Some(script_engine_factory),
+            definitions: self.definitions,
+            processes: self.processes,
         }
     }
 
     /// Spawns model operation task
-    pub async fn spawn(self) -> Handle {
+    pub async fn spawn(mut self) -> Handle {
         let (sender, receiver) = mpsc::channel(1);
         let (log_broadcast, _) = broadcast::channel(128);
         let log_sender = log_broadcast.clone();
@@ -66,6 +134,9 @@ impl Model {
             definitions: self.definitions.clone(),
             sender: sender.clone(),
             log_broadcast,
+            // this unwrap should be ok because we don't use `None` for `script_engine_factory`
+            // anywhere
+            script_engine_factory: Arc::new(Box::new(self.script_engine_factory.take().unwrap())),
         };
 
         let handle_clone = handle.clone();
@@ -144,6 +215,11 @@ impl Handle {
         let (sender, receiver) = oneshot::channel();
         let _ = self.sender.send(Request::Processes(sender)).await;
         Ok(receiver.await?)
+    }
+
+    /// Returns model's script engine factory
+    pub fn script_engine_factory(&self) -> Arc<Box<dyn ScriptEngineFactory>> {
+        self.script_engine_factory.clone()
     }
 }
 

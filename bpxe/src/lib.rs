@@ -12,6 +12,7 @@
 //! multi-tenancy capabilities (ensuring that a great deal of processes should be able to operate
 //! even on a single server concurrently) and resistant to failures so that workflows can be
 //! resumed with little to no consideration when a failure happen.
+pub mod activity;
 pub mod bpmn;
 pub mod event;
 pub mod flow_node;

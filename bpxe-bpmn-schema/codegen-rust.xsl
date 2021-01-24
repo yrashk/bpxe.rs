@@ -312,8 +312,15 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug, Serialize, Deserialize)]</xsl:text>
-                <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                <xsl:choose>
+                        <xsl:when test="local:struct-case($typeName) = 'Script'">
+                                <xsl:text>#[derive(Tia, Hash, Default, Clone, PartialEq, Debug, Serialize, Deserialize)]</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                                <xsl:text>#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug, Serialize, Deserialize)]</xsl:text>
+                                <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
+                        </xsl:otherwise>
+                </xsl:choose>
                 <xsl:text xml:space="preserve">pub struct </xsl:text>
                 <xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text> {</xsl:text>
@@ -329,6 +336,14 @@
                     "DocumentElementWithContentMut",s,rmg*="content_mut")]</xsl:text>
                     <xsl:text>#[xml(text)]pub content: Option&lt;String&gt;,</xsl:text>
                 </xsl:if>
+
+                <xsl:if test="$typeName = 'tScript'">
+                    <xsl:text>#[tia("DocumentElementWithContent",rg*="content",
+                    "DocumentElementWithContentMut",s,rmg*="content_mut")]</xsl:text>
+                    <xsl:text>pub content: Option&lt;String&gt;,</xsl:text>
+                </xsl:if>
+                
+
                 
                 <xsl:text>}</xsl:text>
                 

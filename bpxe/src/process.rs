@@ -69,6 +69,8 @@ pub enum Log {
     NoDefaultPath { node: Box<dyn FlowNodeType> },
     /// Expression evaluation error
     ExpressionError { error: String },
+    /// Script evaluation error
+    ScriptError { error: String },
     /// There are no more flow nodes to schedule, ever
     Done,
 }

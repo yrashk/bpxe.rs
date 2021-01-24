@@ -11796,9 +11796,12 @@ impl_downcast!(ScriptTaskTypeMut);
 /// Auto-generated from BPNM schema
 ///
 /// (See codegen-rust.xsl)
-#[derive(Tia, Hash, Default, Clone, XmlRead, PartialEq, Debug, Serialize, Deserialize)]
-#[xml(tag = "bpmn:script")]
-pub struct Script {}
+#[derive(Tia, Hash, Default, Clone, PartialEq, Debug, Serialize, Deserialize)]
+pub struct Script {
+    #[tia("DocumentElementWithContent",rg*="content",
+                    "DocumentElementWithContentMut",s,rmg*="content_mut")]
+    pub content: Option<String>,
+}
 #[cast_to]
 impl DocumentElement for Script {
     fn element(&self) -> Element {

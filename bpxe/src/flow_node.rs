@@ -1,7 +1,8 @@
 //! # Flow Node
+use crate::activity;
 use crate::bpmn::schema::{
     DocumentElement, Element, EndEvent, EventBasedGateway, ExclusiveGateway, FlowNodeType,
-    InclusiveGateway, IntermediateCatchEvent, IntermediateThrowEvent, ParallelGateway,
+    InclusiveGateway, IntermediateCatchEvent, IntermediateThrowEvent, ParallelGateway, ScriptTask,
     SequenceFlow, StartEvent,
 };
 use crate::event::{end_event, intermediate_catch_event, intermediate_throw_event, start_event};
@@ -30,6 +31,7 @@ pub enum State {
     ExclusiveGateway(gateway::exclusive::State),
     InclusiveGateway(gateway::inclusive::State),
     EventBasedGateway(gateway::event_based::State),
+    ScriptTask(activity::script_task::State),
 }
 
 /// State handling errors
@@ -168,6 +170,7 @@ pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
         Element::EventBasedGateway => {
             make::<EventBasedGateway, gateway::event_based::Gateway>(element)
         }
+        Element::ScriptTask => make_activity::<ScriptTask, activity::script_task::Task>(element),
         _ => None,
     }
 }
@@ -180,4 +183,16 @@ where
     element
         .downcast_ref::<E>()
         .map(|e| Box::new(F::from(e.clone())) as Box<dyn FlowNode>)
+}
+
+fn make_activity<E, F>(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>>
+where
+    E: DocumentElement + FlowNodeType + Clone + Default,
+    F: 'static + From<E> + activity::Activity,
+{
+    element
+        .downcast_ref::<E>()
+        .map(|e| F::from(e.clone()))
+        .map(activity::ActivityContainer::new)
+        .map(|e| Box::new(e) as Box<dyn FlowNode>)
 }

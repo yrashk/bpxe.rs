@@ -31,6 +31,7 @@ serde = { version = "1.0.119", features = ["derive"] }
 smallvec = { version = "1.6.1", features = ["serde"] }
 rhai = { version = "0.19.10", features = ["sync", "serde"], optional = true }
 async-trait = "0.1"
+factory = "0.1.2"
 
 [dev-dependencies]
 serde_yaml = "0.8"

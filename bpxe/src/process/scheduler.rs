@@ -25,7 +25,7 @@ pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,
     process: Handle,
     flow_nodes: FuturesUnordered<FlowNode>,
-    expression_evaluator: MultiLanguageEngine<bool>,
+    expression_evaluator: MultiLanguageEngine<bool, FormalExpression>,
     element: Arc<Process>,
     log_broadcast: broadcast::Sender<Log>,
 }

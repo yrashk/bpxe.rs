@@ -1,9 +1,12 @@
 //! # Language expressions
 //!
 //! These are used for condition expressions and scripts
-use crate::bpmn::schema::FormalExpression;
+use crate::bpmn::schema::{FormalExpression, Script, ScriptTask};
 use async_trait::async_trait;
 use std::collections::HashMap;
+use std::marker::PhantomData;
+#[cfg(feature = "rhai")]
+use std::ops::Deref;
 #[cfg(feature = "rhai")]
 use std::sync::Arc;
 use thiserror::Error;
@@ -18,9 +21,9 @@ where
     /// Types of accepted expressions
     type Expr: ?Sized;
     /// Evaluates an expression using an engine for a given language
-    async fn eval_expr(&mut self, expr: &Self::Expr) -> Result<T, EvaluationError>;
+    async fn eval_expr(&self, expr: &Self::Expr) -> Result<T, EvaluationError>;
     /// Evaluates a program using an engine for a given language
-    async fn eval(&mut self, code: &Self::Expr) -> Result<T, EvaluationError>;
+    async fn eval(&self, code: &Self::Expr) -> Result<T, EvaluationError>;
 }
 
 /// Rhai language engine
@@ -34,6 +37,25 @@ impl Rhai {
     /// Creates a new Rhai engine
     pub fn new() -> Self {
         Default::default()
+    }
+}
+
+#[cfg(feature = "rhai")]
+impl Deref for Rhai {
+    type Target = rhai::Engine;
+
+    fn deref(&self) -> &Self::Target {
+        &self.engine
+    }
+}
+
+#[cfg(feature = "rhai")]
+impl Rhai {
+    /// Tries to get a mutable reference to the engine
+    ///
+    /// Primarily useful for custom setup, tests, etc.
+    pub fn engine_mut(&mut self) -> Option<&mut rhai::Engine> {
+        Arc::get_mut(&mut self.engine)
     }
 }
 
@@ -66,12 +88,12 @@ where
     T: Send + Sync + Clone + 'static,
 {
     type Expr = str;
-    async fn eval_expr(&mut self, expr: &Self::Expr) -> Result<T, EvaluationError> {
+    async fn eval_expr(&self, expr: &Self::Expr) -> Result<T, EvaluationError> {
         let expr = expr.to_string();
         let engine = self.engine.clone();
         Ok(task::spawn_blocking(move || engine.eval_expression(&expr)).await??)
     }
-    async fn eval(&mut self, expr: &Self::Expr) -> Result<T, EvaluationError> {
+    async fn eval(&self, expr: &Self::Expr) -> Result<T, EvaluationError> {
         let expr = expr.to_string();
         let engine = self.engine.clone();
         Ok(task::spawn_blocking(move || engine.eval(&expr)).await??)
@@ -119,15 +141,19 @@ impl From<task::JoinError> for EvaluationError {
     }
 }
 
-pub struct MultiLanguageEngine<T> {
+pub struct MultiLanguageEngine<T, E> {
     languages: HashMap<String, Box<dyn Engine<T, Expr = str>>>,
     default_language: Option<String>,
+    phantom_data: PhantomData<E>,
 }
 
 #[cfg(feature = "rhai")]
 pub(crate) const RHAI_URI: &str = "https://rhaiscript.github.io/";
 
-impl<T> MultiLanguageEngine<T>
+#[cfg(feature = "rhai")]
+pub(crate) const RHAI_MIME: &str = "text/x-rhai";
+
+impl<T, E> MultiLanguageEngine<T, E>
 where
     T: Send + Sync + Clone + 'static,
 {
@@ -141,7 +167,10 @@ where
         #[allow(unused_mut)]
         let mut engine = MultiLanguageEngine::new();
         #[cfg(feature = "rhai")]
-        engine.register_language(RHAI_URI, Rhai::default());
+        {
+            engine.register_language(RHAI_URI, Rhai::default());
+            engine.register_language(RHAI_MIME, Rhai::default());
+        }
         #[cfg(feature = "rhai")]
         engine.set_default_language(RHAI_URI);
         engine
@@ -159,18 +188,44 @@ where
     }
 
     /// Registers a language engine
-    pub fn register_language<S, E>(&mut self, name: S, engine: E)
+    pub fn register_language<S, Eng>(&mut self, name: S, engine: Eng)
     where
         S: Into<String>,
-        E: Engine<T, Expr = str> + 'static,
+        Eng: Engine<T, Expr = str> + 'static,
     {
         self.languages.insert(name.into(), Box::new(engine));
     }
+}
 
-    fn get_engine_mut(
-        &mut self,
+impl<T, E> Default for MultiLanguageEngine<T, E>
+where
+    T: Send + Sync + Clone + 'static,
+{
+    fn default() -> Self {
+        Self {
+            languages: HashMap::new(),
+            default_language: None,
+            phantom_data: PhantomData,
+        }
+    }
+}
+
+trait EngineRetrieval<T, Type>
+where
+    Type: Send + Sync + 'static,
+{
+    #[allow(clippy::borrowed_box)]
+    fn get_engine(&self, item: &T) -> Result<&Box<dyn Engine<Type, Expr = str>>, EvaluationError>;
+}
+
+impl<T> EngineRetrieval<FormalExpression, T> for MultiLanguageEngine<T, FormalExpression>
+where
+    T: Send + Sync + 'static,
+{
+    fn get_engine(
+        &self,
         expr: &FormalExpression,
-    ) -> Result<&mut Box<dyn Engine<T, Expr = str>>, EvaluationError> {
+    ) -> Result<&Box<dyn Engine<T, Expr = str>>, EvaluationError> {
         let language = match expr.language {
             None => match self.default_language {
                 None => {
@@ -182,7 +237,7 @@ where
             },
             Some(ref uri) => uri,
         };
-        match self.languages.get_mut(language) {
+        match self.languages.get(language) {
             None => Err(EvaluationError::UnsupportedLanguage {
                 language: language.to_string(),
             }),
@@ -191,39 +246,90 @@ where
     }
 }
 
-impl<T> Default for MultiLanguageEngine<T>
+impl<T> EngineRetrieval<ScriptTask, T> for MultiLanguageEngine<T, ScriptTask>
 where
-    T: Send + Sync + Clone + 'static,
+    T: Send + Sync + 'static,
 {
-    fn default() -> Self {
-        Self {
-            languages: HashMap::new(),
-            default_language: None,
+    fn get_engine(
+        &self,
+        script: &ScriptTask,
+    ) -> Result<&Box<dyn Engine<T, Expr = str>>, EvaluationError> {
+        let language = match script.script_format {
+            None => match self.default_language {
+                None => {
+                    return Err(EvaluationError::UnsupportedLanguage {
+                        language: "".into(),
+                    })
+                }
+                Some(ref language) => language,
+            },
+            Some(ref mime_type) => mime_type,
+        };
+        match self.languages.get(language) {
+            None => Err(EvaluationError::UnsupportedLanguage {
+                language: language.to_string(),
+            }),
+            Some(engine) => Ok(engine),
         }
     }
 }
 
 #[async_trait]
-impl<T> Engine<T> for MultiLanguageEngine<T>
+impl<T> Engine<T> for MultiLanguageEngine<T, FormalExpression>
 where
     T: Send + Sync + Clone + 'static,
 {
     type Expr = FormalExpression;
-    async fn eval_expr(&mut self, expr: &Self::Expr) -> Result<T, EvaluationError> {
+    async fn eval_expr(&self, expr: &Self::Expr) -> Result<T, EvaluationError> {
         match expr.content {
             None => Err(EvaluationError::Empty),
             Some(ref e) => {
-                let engine = self.get_engine_mut(expr)?;
+                let engine = self.get_engine(expr)?;
                 engine.eval_expr(&e).await
             }
         }
     }
-    async fn eval(&mut self, expr: &Self::Expr) -> Result<T, EvaluationError> {
+    async fn eval(&self, expr: &Self::Expr) -> Result<T, EvaluationError> {
         match expr.content {
             None => Err(EvaluationError::Empty),
             Some(ref e) => {
-                let engine = self.get_engine_mut(expr)?;
-                engine.eval_expr(&e).await
+                let engine = self.get_engine(expr)?;
+                engine.eval(&e).await
+            }
+        }
+    }
+}
+
+#[async_trait]
+impl Engine<()> for MultiLanguageEngine<(), ScriptTask> {
+    type Expr = ScriptTask;
+    async fn eval_expr(&self, script: &Self::Expr) -> Result<(), EvaluationError> {
+        match script.script {
+            None => Err(EvaluationError::Empty),
+            Some(Script { content: None }) => Err(EvaluationError::Empty),
+            Some(Script {
+                content: Some(ref e),
+            }) => {
+                let engine = self.get_engine(script)?;
+                match engine.eval_expr(&e).await {
+                    Err(EvaluationError::ResultTypeError { .. }) => Ok(()),
+                    other => other.map(|_| ()),
+                }
+            }
+        }
+    }
+    async fn eval(&self, script: &Self::Expr) -> Result<(), EvaluationError> {
+        match script.script {
+            None => Err(EvaluationError::Empty),
+            Some(Script { content: None }) => Err(EvaluationError::Empty),
+            Some(Script {
+                content: Some(ref e),
+            }) => {
+                let engine = self.get_engine(script)?;
+                match engine.eval(&e).await {
+                    Err(EvaluationError::ResultTypeError { .. }) => Ok(()),
+                    other => other.map(|_| ()),
+                }
             }
         }
     }
@@ -232,12 +338,10 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::bpmn::schema::FormalExpression;
 
-    #[cfg(test)]
     #[tokio::test]
     async fn unsupported_language() {
-        let mut e = MultiLanguageEngine::<bool>::new();
+        let e = MultiLanguageEngine::<bool, FormalExpression>::new();
         assert!(matches!(e.eval_expr(&FormalExpression {
             content: Some("true".into()),
             ..Default::default()
@@ -245,10 +349,9 @@ mod tests {
         EvaluationError::UnsupportedLanguage { language } if language == ""));
     }
 
-    #[cfg(test)]
     #[tokio::test]
     async fn empty() {
-        let mut e = MultiLanguageEngine::<bool>::new();
+        let e = MultiLanguageEngine::<bool, FormalExpression>::new();
         assert!(matches!(
             e.eval_expr(&FormalExpression {
                 ..Default::default()
@@ -259,10 +362,47 @@ mod tests {
         ));
     }
 
-    #[cfg(all(test, feature = "rhai"))]
+    #[tokio::test]
+    async fn script_task_empty() {
+        let e = MultiLanguageEngine::<(), ScriptTask>::new();
+        assert!(matches!(
+            e.eval_expr(&ScriptTask {
+                script: None,
+                ..Default::default()
+            })
+            .await
+            .unwrap_err(),
+            EvaluationError::Empty
+        ));
+        assert!(matches!(
+            e.eval_expr(&ScriptTask {
+                script: Some(Script { content: None }),
+                ..Default::default()
+            })
+            .await
+            .unwrap_err(),
+            EvaluationError::Empty
+        ));
+    }
+
+    #[tokio::test]
+    async fn script_task() {
+        let e = MultiLanguageEngine::<(), ScriptTask>::new_with_builtin_engines();
+        assert!(e
+            .eval_expr(&ScriptTask {
+                script: Some(Script {
+                    content: Some("true".into())
+                }),
+                ..Default::default()
+            })
+            .await
+            .is_ok());
+    }
+
+    #[cfg(feature = "rhai")]
     #[tokio::test]
     async fn dispatch_to_rhai_evaluation() {
-        let mut e = MultiLanguageEngine::<bool>::new_with_builtin_engines();
+        let e = MultiLanguageEngine::<bool, FormalExpression>::new_with_builtin_engines();
         assert!(e
             .eval_expr(&FormalExpression {
                 language: Some(RHAI_URI.to_string()),
@@ -273,18 +413,18 @@ mod tests {
             .unwrap());
     }
 
-    #[cfg(all(test, feature = "rhai"))]
+    #[cfg(feature = "rhai")]
     #[tokio::test]
     async fn rhai_return_type_mismatch() {
-        let mut e: Box<dyn Engine<bool, Expr = str>> = Box::new(Rhai::new());
+        let e: Box<dyn Engine<bool, Expr = str>> = Box::new(Rhai::new());
         assert!(matches!(e.eval_expr("3").await.unwrap_err(),
                  EvaluationError::ResultTypeError { expected, got } if expected == "bool" && got == "i64"));
     }
 
-    #[cfg(all(test, feature = "rhai"))]
+    #[cfg(feature = "rhai")]
     #[tokio::test]
     async fn rhai_not_expr() {
-        let mut e: Box<dyn Engine<bool, Expr = str>> = Box::new(Rhai::new());
+        let e: Box<dyn Engine<bool, Expr = str>> = Box::new(Rhai::new());
         assert!(matches!(
                 e.eval_expr("a = true")
                 .await
@@ -293,10 +433,10 @@ mod tests {
         ));
     }
 
-    #[cfg(all(test, feature = "rhai"))]
+    #[cfg(feature = "rhai")]
     #[tokio::test]
     async fn rhai_eval_program() {
-        let mut e: Box<dyn Engine<bool, Expr = str>> = Box::new(Rhai::new());
+        let e: Box<dyn Engine<bool, Expr = str>> = Box::new(Rhai::new());
         assert!(e.eval("let a = false; !a ").await.unwrap());
     }
 }
