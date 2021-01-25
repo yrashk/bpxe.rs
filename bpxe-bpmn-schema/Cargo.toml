@@ -21,7 +21,6 @@ intertrait = "0.2"
 # Used for intertrait
 linkme = "0.2"
 dyn-clone = "1.0.4"
-tia = "1.0.0"
-# Affix `syn` to this version until https://github.com/usagi/tia/pull/3 is resolved
-syn = "=1.0.59"
+tia = "1.0.1"
+syn = "1.0.60"
 serde = { version = "1.0.119", features = ["derive"] }
