@@ -12,9 +12,8 @@ pub type Integer = num_bigint::BigInt;
 pub type Int = i32;
 
 use downcast_rs::{impl_downcast, Downcast};
-use intertrait::*;
 
-pub trait DocumentElementContainer: Downcast + CastFrom {
+pub trait DocumentElementContainer: Downcast {
     /// Find an element by ID
     #[allow(unused_variables)]
     fn find_by_id(&self, _id: &str) -> Option<&dyn DocumentElement> {
@@ -69,11 +68,14 @@ where
     }
 }
 
-pub trait DocumentElement: DocumentElementContainer + Send {
-    fn element(&self) -> Element;
+pub trait Cast<T: ?Sized> {
+    fn cast(&self) -> Option<&T> {
+        None
+    }
+    fn cast_mut(&mut self) -> Option<&mut T> {
+        None
+    }
 }
-
-impl_downcast!(DocumentElement);
 
 pub trait DocumentElementWithContent: DocumentElement {
     /// Gets document element's content
@@ -121,19 +123,18 @@ impl Process {
         id: &str,
         condition_expression: Option<E>,
     ) -> Result<&mut Self, EstablishSequenceFlowError> {
-        use intertrait::cast::CastMut;
         // The main reason why this method is written in a somewhat convoluted fashion (not saving
         // source and target nodes when we check for their presence) has to do
         // with the need to avoid multiple mutable borrows.
 
         // check source element presence
         self.find_by_id_mut(source)
-            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .and_then(|e| Cast::<dyn FlowNodeTypeMut>::cast(e))
             .ok_or(EstablishSequenceFlowError::SourceNotFound)?;
 
         // check target element presence
         self.find_by_id_mut(target)
-            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .and_then(|e| Cast::<dyn FlowNodeTypeMut>::cast(e))
             .ok_or(EstablishSequenceFlowError::TargetNotFound)?;
 
         let sequence_flow = SequenceFlow {
@@ -151,7 +152,7 @@ impl Process {
         // add outgoing
         let source_node = self
             .find_by_id_mut(source)
-            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .and_then(|e| Cast::<dyn FlowNodeTypeMut>::cast_mut(e))
             .unwrap();
 
         source_node.outgoings_mut().push(id.into());
@@ -159,7 +160,7 @@ impl Process {
         // add incoming
         let target_node = self
             .find_by_id_mut(target)
-            .and_then(|e| e.cast::<dyn FlowNodeTypeMut>())
+            .and_then(|e| Cast::<dyn FlowNodeTypeMut>::cast_mut(e))
             .unwrap();
         target_node.incomings_mut().push(id.into());
 
@@ -170,7 +171,6 @@ impl Process {
 #[cfg(test)]
 #[test]
 fn establishing_sequence_flow_in_process() {
-    use intertrait::cast::CastRef;
     let mut process = Process {
         id: Some("proc1".to_string()),
         flow_elements: vec![
@@ -212,18 +212,10 @@ fn establishing_sequence_flow_in_process() {
         matches!(expr, Expr::FormalExpression(FormalExpression { content, ..}) if content.as_ref().unwrap() == "condition")
     );
 
-    let start = process
-        .find_by_id("start")
-        .unwrap()
-        .cast::<dyn FlowNodeType>()
-        .unwrap();
+    let start = Cast::<dyn FlowNodeType>::cast(process.find_by_id("start").unwrap()).unwrap();
     assert_eq!(start.outgoings(), &vec!["test".to_string()]);
 
-    let end = process
-        .find_by_id("end")
-        .unwrap()
-        .cast::<dyn FlowNodeType>()
-        .unwrap();
+    let end = Cast::<dyn FlowNodeType>::cast(process.find_by_id("end").unwrap()).unwrap();
     assert_eq!(end.incomings(), &vec!["test".to_string()]);
 }
 

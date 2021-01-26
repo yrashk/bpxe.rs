@@ -42,7 +42,6 @@ impl From<FormalExpression> for Expr {
     }
 }
 
-#[cast_to]
 impl DocumentElementContainer for Expr {
     fn find_by_id_mut(&mut self, id: &str) -> Option<&mut dyn DocumentElement> {
         match self {
@@ -58,7 +57,7 @@ impl DocumentElementContainer for Expr {
         }
     }
 }
-#[cast_to]
+
 impl DocumentElement for Expr {
     fn element(&self) -> Element {
         match self {

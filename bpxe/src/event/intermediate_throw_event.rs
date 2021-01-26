@@ -1,5 +1,7 @@
 //! # Intermediate Throw Event flow node
-use crate::bpmn::schema::{EventDefinitionType, FlowNodeType, IntermediateThrowEvent as Element};
+use crate::bpmn::schema::{
+    Cast, EventDefinitionType, FlowNodeType, IntermediateThrowEvent as Element,
+};
 use crate::event::ProcessEvent;
 use crate::flow_node::{self, Action, FlowNode, IncomingIndex};
 use futures::stream::Stream;
@@ -91,12 +93,9 @@ impl Stream for IntermediateThrowEvent {
                         let _ = event_broadcaster.send(ProcessEvent::NoneEvent);
                     } else {
                         for event_definition in &self.element.event_definitions {
-                            use intertrait::cast::CastBox;
-                            if let Ok(definition) = event_definition
-                                .clone()
-                                .into_inner()
-                                .cast::<dyn EventDefinitionType>()
-                            {
+                            if let Some(definition) = Cast::<dyn EventDefinitionType>::cast(
+                                event_definition.clone().into_inner().as_ref(),
+                            ) {
                                 use std::convert::TryFrom;
                                 if let Ok(event) = ProcessEvent::try_from(definition) {
                                     let _ = event_broadcaster.send(event);

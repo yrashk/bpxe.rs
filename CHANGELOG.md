@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Rhai-based condition expressions shouldn't be full scripts
 - Parsing of `script` element (`bpxe-bpmn-schema` crate)
+- Dependency on platform-dependent `linkme` crate (`bpxe-bpmn-schema` crate)
 
 ## [0.1.2] - 2021-01-23
 
