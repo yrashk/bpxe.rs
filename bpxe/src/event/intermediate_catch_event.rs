@@ -1,5 +1,7 @@
 //! # Intermediate Catch Event flow node
-use crate::bpmn::schema::{EventDefinitionType, FlowNodeType, IntermediateCatchEvent as Element};
+use crate::bpmn::schema::{
+    Cast, EventDefinitionType, FlowNodeType, IntermediateCatchEvent as Element,
+};
 use crate::event::ProcessEvent;
 use crate::flow_node::{self, Action, FlowNode, IncomingIndex};
 use crate::process;
@@ -156,12 +158,9 @@ impl Stream for IntermediateCatchEvent {
                             let events: Vec<ProcessEvent> = event_definitions
                                 .iter()
                                 .filter_map(|event_definition| {
-                                    use intertrait::cast::CastBox;
-                                    if let Ok(definition) = event_definition
-                                        .clone()
-                                        .into_inner()
-                                        .cast::<dyn EventDefinitionType>()
-                                    {
+                                    if let Some(definition) = Cast::<dyn EventDefinitionType>::cast(
+                                        event_definition.clone().into_inner().as_ref(),
+                                    ) {
                                         use std::convert::TryFrom;
                                         if let Ok(event) = ProcessEvent::try_from(definition) {
                                             if event == e {

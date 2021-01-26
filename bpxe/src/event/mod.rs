@@ -142,51 +142,38 @@ impl<T> From<Box<T>> for ConversionError {
     }
 }
 
-impl TryFrom<Box<dyn EventDefinitionType>> for ProcessEvent {
+impl TryFrom<&dyn EventDefinitionType> for ProcessEvent {
     type Error = ConversionError;
-    fn try_from(mut event_definition: Box<dyn EventDefinitionType>) -> Result<Self, Self::Error> {
-        match event_definition.downcast::<CancelEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+    fn try_from(event_definition: &dyn EventDefinitionType) -> Result<Self, Self::Error> {
+        if let Some(e) = event_definition.downcast_ref::<CancelEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        match event_definition.downcast::<TerminateEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<TerminateEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        match event_definition.downcast::<CompensateEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<CompensateEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        match event_definition.downcast::<MessageEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<MessageEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-
-        match event_definition.downcast::<EscalationEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<EscalationEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-
-        match event_definition.downcast::<LinkEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<LinkEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        match event_definition.downcast::<ErrorEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<ErrorEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        match event_definition.downcast::<ConditionalEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<ConditionalEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        match event_definition.downcast::<TimerEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(e) => event_definition = e,
+        if let Some(e) = event_definition.downcast_ref::<TimerEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
-        #[allow(clippy::single_match)] // want to keep using the same pattern
-        match event_definition.downcast::<SignalEventDefinition>() {
-            Ok(e) => return ProcessEvent::try_from(*e),
-            Err(_) => {}
+        if let Some(e) = event_definition.downcast_ref::<SignalEventDefinition>() {
+            return ProcessEvent::try_from(e.clone());
         }
 
         Err(ConversionError::NotImplemented)

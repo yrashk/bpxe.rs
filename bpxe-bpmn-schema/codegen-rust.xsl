@@ -174,12 +174,35 @@
         </xsl:for-each-group>
         <xsl:text>}</xsl:text>
         
+        <xsl:text>
+            pub trait DocumentElement:
+        </xsl:text>
+        <xsl:for-each select="$schema/xs:complexType">
+            <xsl:text xml:space="preserve">Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>Type&gt;</xsl:text>
+            <xsl:text>+</xsl:text>
+            <xsl:text xml:space="preserve">Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>TypeMut&gt;</xsl:text>
+            <xsl:text>+</xsl:text>
+        </xsl:for-each>
+        <xsl:text>DocumentElementContainer + Send + std::fmt::Debug {
+            fn element(&amp; self) -> Element;
+            }
+            impl_downcast!(DocumentElement);
+        </xsl:text>
+        
         <xsl:for-each select="$schema/xs:complexType[@name]">
             <xsl:call-template name="type">
                 <xsl:with-param name="type" select="." />
             </xsl:call-template>
         </xsl:for-each>
-    
+        
+        <!-- Special case for handling Expr -->
+        
+        <xsl:call-template name="enum-cast-impl">
+            <xsl:with-param name="typeName" select="'Expr'"/>
+            <xsl:with-param name="els" select="($elements[@name = 'expression'], $elements[@name = 'formalExpression'])"/>
+        </xsl:call-template>
+        
+      
     </xsl:template>
     
     
@@ -235,7 +258,6 @@
                 <xsl:text>}}}</xsl:text>
                 
                 <xsl:text xml:space="preserve">
-                    #[cast_to]
                     impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
                         #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
                         fn find_by_id_mut(&amp;mut self, id: &amp;str) -> Option&lt;&amp;mut dyn DocumentElement&gt; {
@@ -304,7 +326,13 @@
                 <xsl:text>}</xsl:text>
                 
                 <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
-                <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>                
+                <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
+               
+                <xsl:call-template name="enum-cast">
+                    <xsl:with-param name="type" select="$type"/>
+                </xsl:call-template>
+                
+                
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text xml:space="preserve">
@@ -410,6 +438,10 @@
                 <xsl:text>dyn_clone::clone_trait_object!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
                 <xsl:text>impl_downcast!(</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text>TypeMut);</xsl:text>
                 
+                <xsl:call-template name="cast">
+                    <xsl:with-param name="type" select="$type"/>
+                </xsl:call-template>
+                
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -417,28 +449,33 @@
     <xsl:template name="traits">
         <xsl:param name="type"></xsl:param>
         <xsl:param name="typeName"></xsl:param>
+        
+        <xsl:if test="$type/@name = $typeName">
+            <xsl:if test="empty(local:attributes($type)) and empty(local:elements($type))">
+                <xsl:text xml:space="preserve">impl </xsl:text>
+                <xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text>{}</xsl:text>
+                <xsl:text xml:space="preserve">impl </xsl:text>
+                <xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text xml:space="preserve">TypeMut for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+                <xsl:text>{}</xsl:text>
+            </xsl:if>
+        </xsl:if>
+        
         <xsl:if test="exists($type//xs:extension)">
             <xsl:variable name="extTypeName" select="$type//xs:extension/@base"/>
             <xsl:variable name="extType" select="$schema/xs:complexType[@name=$extTypeName]"/>
             <xsl:if test="empty(local:attributes($extType)) and empty(local:elements($extType))">
-                <xsl:text xml:space="preserve">#[cast_to] impl </xsl:text>
+                <xsl:text xml:space="preserve">impl </xsl:text>
                 <xsl:value-of select="local:struct-case($extTypeName)"/>
                 <xsl:text xml:space="preserve">Type for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{}</xsl:text>
-                <xsl:text xml:space="preserve">#[cast_to] impl </xsl:text>
+                <xsl:text xml:space="preserve">impl </xsl:text>
                 <xsl:value-of select="local:struct-case($extTypeName)"/>
                 <xsl:text xml:space="preserve">TypeMut for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
                 <xsl:text>{}</xsl:text>
-                <xsl:text>castable_to! {</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve"> => PartialEq&lt;</xsl:text>
-                <xsl:value-of select="local:struct-case($typeName)"/>
-                <xsl:text>&gt; }</xsl:text>
             </xsl:if>
-            <xsl:text>castable_to! {</xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve"> => </xsl:text>
-            <xsl:value-of select="local:struct-case($extTypeName)"/>
-            <xsl:text xml:space="preserve">Type,</xsl:text>
-            <xsl:value-of select="local:struct-case($extTypeName)"/>
-            <xsl:text xml:space="preserve">TypeMut</xsl:text>
-            <xsl:text>}</xsl:text>
             
             <xsl:call-template name="traits">
                 <xsl:with-param name="type" select="$schema/xs:complexType[@name = $extTypeName]"></xsl:with-param>
@@ -512,7 +549,7 @@
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
         <xsl:param name="skipContainer" required="yes" />
-        <xsl:text xml:space="preserve">#[cast_to] impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
+        <xsl:text xml:space="preserve">impl DocumentElement for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {
             fn element(&amp;self) -> Element {
             Element::</xsl:text><xsl:value-of select="local:struct-case($name)"/><xsl:text>
                 }
@@ -532,7 +569,7 @@
         <xsl:param name="typeName" required="yes"/>
         <xsl:param name="elements" required="yes"/>
         <xsl:param name="id" required="yes"/>
-        <xsl:text xml:space="preserve">#[allow(unused_variables)]#[cast_to] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
+        <xsl:text xml:space="preserve">#[allow(unused_variables)] impl DocumentElementContainer for </xsl:text><xsl:value-of select="local:struct-case($typeName)"/>
         <xsl:choose>
             <!-- use default implementation -->
             <xsl:when test="empty($elements) and not($id)">{}</xsl:when>
@@ -660,6 +697,168 @@
             
         </xsl:for-each>
     </xsl:template>
+    
+    <xsl:function name="local:can-cast">
+        <xsl:param name="type"/>
+        <xsl:param name="typeName"/>
+        <xsl:choose>
+            <xsl:when test="$type/@name = $typeName">
+                <xsl:value-of select="true()"/>
+            </xsl:when>
+            <xsl:when test="$type//xs:extension/@base = $typeName">
+                <xsl:value-of select="true()"/>
+            </xsl:when>
+            <xsl:when test="exists($type//xs:extension)">
+                <xsl:value-of select="local:can-cast($schema/xs:complexType[@name = $type//xs:extension/@base], $typeName)"/>
+            </xsl:when>
+            <xsl:when test="not($type//xs:extension)">
+                <xsl:value-of select="false()"/>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:template name="cast">
+        <xsl:param name="type"/>
+        
+        <xsl:for-each select="$schema/xs:complexType">
+            
+            <xsl:variable name="can-cast" select="local:can-cast($type, ./@name) = true()"/>
+            
+            <!-- Type -->
+            
+            <xsl:text xml:space="preserve">impl Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/>Type<xsl:text xml:space="preserve">&gt; for </xsl:text>
+            <xsl:value-of select="local:struct-case($type/@name)"/>
+            <xsl:text>{</xsl:text>
+            <xsl:if test="$can-cast">
+                <xsl:text xml:space="preserve">
+                    fn cast(&amp; self) -> Option&lt;&amp;(dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>Type + 'static)&gt; {
+                        Some(self)
+                    }
+                    </xsl:text>
+            
+            <xsl:text xml:space="preserve">
+                fn cast_mut(&amp; mut self) -> Option&lt;&amp; mut (dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>Type + 'static)&gt; {
+                    Some(self)
+            }
+            </xsl:text>
+            </xsl:if>
+            
+            <xsl:text>}</xsl:text>
+            
+            <!-- TypeMut -->
+            
+            <xsl:text xml:space="preserve">impl Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/>TypeMut<xsl:text xml:space="preserve">&gt; for </xsl:text>
+            <xsl:value-of select="local:struct-case($type/@name)"/>
+            <xsl:text>{</xsl:text>
+            <xsl:if test="$can-cast">
+            <xsl:text xml:space="preserve">
+                fn cast(&amp; self) -> Option&lt;&amp; (dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>TypeMut + 'static)&gt; {
+                    Some(self)
+               }</xsl:text>
+            
+            <xsl:text xml:space="preserve">
+                fn cast_mut(&amp; mut self) -> Option&lt;&amp; mut (dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>TypeMut + 'static)&gt; {
+                    Some(self)
+                }
+             </xsl:text>
+            </xsl:if>
+            
+            <xsl:text>}</xsl:text>
+            
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="enum-cast">
+        <xsl:param name="type"/>
+        <xsl:variable name="typeName" select="$type/@name"/>
+        <xsl:variable name="element" select="$schema/xs:element[@type = $typeName]"/>
+        <xsl:variable name="name" select="$element/@name"/>
+        
+        <xsl:call-template name="enum-cast-impl">
+            <xsl:with-param name="typeName" select="$typeName"/>
+            <xsl:with-param name="els" select="$elements[@substitutionGroup = $name]"/>
+        </xsl:call-template>
+        
+    </xsl:template>
+    
+    <xsl:template name="enum-cast-impl">
+        <xsl:param name="typeName"/>
+        <xsl:param name="els" />
+        
+        <xsl:for-each select="$schema/xs:complexType">
+            
+            <xsl:variable name="target" select="."/>
+            
+            <!-- Type -->
+            
+            <xsl:text xml:space="preserve">impl Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/>Type<xsl:text xml:space="preserve">&gt; for </xsl:text>
+            <xsl:value-of select="local:struct-case($typeName)"/>
+            <xsl:text>{</xsl:text>
+            
+            <xsl:if test="not(empty($els))">
+                
+                <xsl:text xml:space="preserve">
+                    fn cast(&amp; self) -> Option&lt;&amp;(dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/><xsl:text>Type + 'static)&gt; {
+                        match self {</xsl:text>
+                <xsl:for-each select="$els">
+                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>
+                    <xsl:text>(e) => Cast::&lt;dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/>Type<xsl:text xml:space="preserve">&gt;::cast(e),</xsl:text>
+                </xsl:for-each><xsl:text>}</xsl:text>
+                
+                <xsl:text>}</xsl:text>
+                
+                <xsl:text xml:space="preserve">
+                    fn cast_mut(&amp; mut self) -> Option&lt;&amp; mut (dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>Type + 'static)&gt; {
+                        match self {</xsl:text>
+                <xsl:for-each select="$els">
+                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>
+                    <xsl:text>(e) => Cast::&lt;dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/>Type<xsl:text xml:space="preserve">&gt;::cast_mut(e),</xsl:text>
+                </xsl:for-each><xsl:text>}</xsl:text>
+                
+                <xsl:text>}</xsl:text>
+                
+            </xsl:if>
+            
+            
+            <xsl:text>}</xsl:text>
+            
+            <!-- TypeMut -->
+            
+            <xsl:text xml:space="preserve">impl Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/>TypeMut<xsl:text xml:space="preserve">&gt; for </xsl:text>
+            <xsl:value-of select="local:struct-case($typeName)"/>
+            <xsl:text>{</xsl:text>
+            
+            <xsl:if test="not(empty($els))">
+                
+                <xsl:text xml:space="preserve">
+                    fn cast(&amp; self) -> Option&lt;&amp;(dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/><xsl:text>TypeMut + 'static)&gt; {
+                        match self {</xsl:text>
+                <xsl:for-each select="$els">
+                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>
+                    <xsl:text>(e) => Cast::&lt;dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/>TypeMut<xsl:text xml:space="preserve">&gt;::cast(e),</xsl:text>
+                </xsl:for-each><xsl:text>}</xsl:text>
+                
+                <xsl:text>}</xsl:text>
+                
+                <xsl:text xml:space="preserve">
+                    fn cast_mut(&amp; mut self) -> Option&lt;&amp; mut (dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>TypeMut + 'static)&gt; {
+                        match self {</xsl:text>
+                <xsl:for-each select="$els">
+                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text>::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/>
+                    <xsl:text>(e) => Cast::&lt;dyn </xsl:text><xsl:value-of select="local:struct-case($target/@name)"/>TypeMut<xsl:text xml:space="preserve">&gt;::cast_mut(e),</xsl:text>
+                </xsl:for-each><xsl:text>}</xsl:text>
+                
+                <xsl:text>}</xsl:text>
+                
+            </xsl:if>
+            
+            
+            <xsl:text>}</xsl:text>
+            
+            
+        </xsl:for-each>
+    </xsl:template>
+    
     
     
     
