@@ -21,7 +21,7 @@ thiserror = "1.0"
 downcast-rs = "1.2"
 dyn-clone = "1.0.4"
 tia = "1.0.0"
-tokio = { version = "1.1", features = ["full"] }
+tokio = { version = "1.1", features = ["macros", "rt-multi-thread", "time", "sync"] }
 futures = "0.3.12"
 serde = { version = "1.0.119", features = ["derive"] }
 smallvec = { version = "1.6.1", features = ["serde"] }
@@ -37,5 +37,15 @@ toml = "0.5"
 ron = "0.6"
 rmp-serde = "0.15"
 
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.2"
+
 [features]
 default = ["rhai"]
+
+[lib]
+crate-type = ["cdylib","lib"]
+
+[target.'cfg(target_arch = "wasm32")'.dependencies.tokio]
+version = "1.1"
+features = ["macros","rt","time","sync"]
