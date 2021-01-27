@@ -8,9 +8,11 @@ use crate::bpmn::schema::{
 use crate::event::{end_event, intermediate_catch_event, intermediate_throw_event, start_event};
 use crate::gateway;
 use crate::process::{self};
+use factory::ParameterizedFactory;
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use smallvec::SmallVec;
+use std::marker::PhantomData;
 
 use thiserror::Error;
 
@@ -88,7 +90,10 @@ pub trait FlowNode: Stream<Item = Action> + Send + Unpin {
     fn set_state(&mut self, state: State) -> Result<(), StateError>;
 
     /// Gets durable state
-    fn get_state(&self) -> State;
+    ///
+    /// The reason why it's mutable is that in some cases some activites might want to change their
+    /// data or simply get mutable access to it during state retrieval
+    fn get_state(&mut self) -> State;
 
     /// Sets process handle
     ///
@@ -153,8 +158,9 @@ pub trait FlowNode: Stream<Item = Action> + Send + Unpin {
     fn element(&self) -> Box<dyn FlowNodeType>;
 }
 
-pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
-    match element.element() {
+pub(crate) fn new(element: Box<dyn DocumentElement>) -> Option<Box<dyn FlowNode>> {
+    let e = element.element();
+    match e {
         Element::StartEvent => make::<StartEvent, start_event::StartEvent>(element),
         Element::EndEvent => make::<EndEvent, end_event::EndEvent>(element),
         Element::IntermediateThrowEvent => make::<
@@ -176,23 +182,55 @@ pub(crate) fn new(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>> {
     }
 }
 
-fn make<E, F>(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>>
+fn make<E, F>(element: Box<dyn DocumentElement>) -> Option<Box<dyn FlowNode>>
 where
     E: DocumentElement + FlowNodeType + Clone + Default,
     F: 'static + From<E> + FlowNode,
 {
     element
-        .downcast_ref::<E>()
-        .map(|e| Box::new(F::from(e.clone())) as Box<dyn FlowNode>)
+        .downcast::<E>()
+        .ok()
+        .map(|e| Box::new(F::from((*e).clone())) as Box<dyn FlowNode>)
 }
 
-fn make_activity<E, F>(element: &dyn DocumentElement) -> Option<Box<dyn FlowNode>>
+struct ActivityFactory<F, E>(PhantomData<(F, E)>)
+where
+    E: DocumentElement + ActivityType + Clone + Default + Unpin,
+    F: 'static + From<E> + activity::Activity;
+
+impl<F, E> Clone for ActivityFactory<F, E>
 where
     E: DocumentElement + ActivityType + Clone + Default + Unpin,
     F: 'static + From<E> + activity::Activity,
 {
-    element
-        .downcast_ref::<E>()
-        .map(|e| activity::ActivityContainer::new(e.clone(), F::from))
-        .map(|e| Box::new(e) as Box<dyn FlowNode>)
+    fn clone(&self) -> Self {
+        ActivityFactory::<F, E>(PhantomData)
+    }
+}
+
+impl<F, E> ParameterizedFactory for ActivityFactory<F, E>
+where
+    E: DocumentElement + ActivityType + Clone + Default + Unpin,
+    F: 'static + From<E> + activity::Activity,
+{
+    type Item = F;
+    type Parameter = E;
+    fn create(&self, param: Self::Parameter) -> Self::Item {
+        F::from(param)
+    }
+}
+
+fn make_activity<E, F>(element: Box<dyn DocumentElement>) -> Option<Box<dyn FlowNode>>
+where
+    E: DocumentElement + ActivityType + Clone + Default + Unpin,
+    F: 'static + From<E> + activity::Activity,
+{
+    if let Ok(e) = element.downcast::<E>() {
+        Some(Box::new(activity::ActivityContainer::new(
+            (*e).clone(),
+            ActivityFactory::<F, E>(PhantomData),
+        )) as Box<dyn FlowNode>)
+    } else {
+        None
+    }
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0xyzmm8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_0sjaqj0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:dataObjectReference id="data_object" dataObjectRef="DataObject" />
+    <bpmn:dataObject id="DataObject" />
+    <bpmn:endEvent id="end">
+      <bpmn:incoming>Flow_0sjaqj0</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0sjaqj0" sourceRef="start" targetRef="end" />
+    <bpmn:textAnnotation id="TextAnnotation_0ovfv6g">
+      <bpmn:text>We're testing access to data objects</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1sywrg9" sourceRef="data_object" targetRef="TextAnnotation_0ovfv6g" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNEdge id="Flow_0sjaqj0_di" bpmnElement="Flow_0sjaqj0">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="272" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_01dehym_di" bpmnElement="data_object">
+        <dc:Bounds x="224" y="185" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0z7zlv8_di" bpmnElement="end">
+        <dc:Bounds x="272" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0ovfv6g_di" bpmnElement="TextAnnotation_0ovfv6g">
+        <dc:Bounds x="340" y="180" width="100" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1sywrg9_di" bpmnElement="Association_1sywrg9">
+        <di:waypoint x="260" y="208" />
+        <di:waypoint x="340" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

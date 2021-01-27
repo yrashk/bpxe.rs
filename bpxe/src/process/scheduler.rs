@@ -1,25 +1,24 @@
 //! Process scheduler
 //!
 //! This is where the magic happens
+use super::{DataObjectContainer, DataObjectError, Handle, Log, Request, StartError};
 use crate::bpmn::schema::{
-    DocumentElementContainer, Element as E, Expr, FormalExpression, Process, ProcessType,
+    self, DocumentElementContainer, Element as E, Expr, FormalExpression, Process, ProcessType,
     SequenceFlow,
 };
+use crate::data_object::{self, DataObject};
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
 use crate::language::{Engine as _, MultiLanguageEngine};
-
 use futures::future::FutureExt;
 use futures::stream::{FuturesUnordered, StreamExt, StreamFuture};
+use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
-
 use std::task::{Context, Poll};
-use tokio::sync::{broadcast, mpsc, oneshot};
+use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
 use tokio::task::{self};
-
-use super::{Handle, Log, Request, StartError};
 
 pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,
@@ -28,6 +27,7 @@ pub(crate) struct Scheduler {
     expression_evaluator: MultiLanguageEngine,
     element: Arc<Process>,
     log_broadcast: broadcast::Sender<Log>,
+    data_objects: HashMap<String, DataObjectContainer>,
 }
 
 // FIXME: We're using this structure to be able to find flow nodes by their identifier
@@ -96,7 +96,7 @@ impl Scheduler {
             .iter()
             .map(|e| e.clone().into_inner())
             .filter_map(|e| {
-                flow_node::new(e.as_ref()).map(|mut flow_node| {
+                flow_node::new(e).map(|mut flow_node| {
                     flow_node.set_process(process.clone());
                     let e = flow_node.element();
                     FlowNode {
@@ -111,6 +111,51 @@ impl Scheduler {
                 })
             })
             .collect();
+
+        let mut data_objects: HashMap<String, DataObjectContainer> = process
+            .element()
+            .flow_elements()
+            .iter()
+            .map(|e| e.clone().into_inner())
+            .filter_map(|e| {
+                if let Ok(schema::DataObject { id: Some(id), .. }) =
+                    e.downcast::<schema::DataObject>().map(|e| *e)
+                {
+                    Some((
+                        id,
+                        Arc::new(RwLock::new(
+                            Box::new(data_object::Empty) as Box<dyn DataObject>
+                        )),
+                    ))
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        // Now we can add data object references
+        for (id, reference) in process
+            .element()
+            .flow_elements()
+            .iter()
+            .map(|e| e.clone().into_inner())
+            .filter_map(|e| {
+                if let Ok(schema::DataObjectReference {
+                    id: Some(id),
+                    data_object_ref: Some(reference),
+                    ..
+                }) = e.downcast::<schema::DataObjectReference>().map(|e| *e)
+                {
+                    Some((id, reference))
+                } else {
+                    None
+                }
+            })
+        {
+            if let Some(container) = data_objects.get(&reference).cloned() {
+                data_objects.insert(id, container);
+            }
+        }
 
         let mut expression_evaluator = process.model().expression_engine_factory().create();
 
@@ -130,6 +175,7 @@ impl Scheduler {
             expression_evaluator,
             element,
             log_broadcast,
+            data_objects,
         }
     }
 
@@ -149,6 +195,9 @@ impl Scheduler {
                        }
                        Some(Request::Start(sender)) => {
                            self.start(sender);
+                       }
+                       Some(Request::DataObject(id, sender)) => {
+                           self.get_data_object(&id, sender);
                        }
                        None => {}
                    },
@@ -337,6 +386,18 @@ impl Scheduler {
             let event_broadcast = self.process.event_broadcast();
             let _ = event_broadcast.send(Event::Start);
             let _ = sender.send(Ok(()));
+        }
+    }
+
+    fn get_data_object(
+        &self,
+        id: &str,
+        sender: oneshot::Sender<Result<DataObjectContainer, DataObjectError>>,
+    ) {
+        if let Some(container) = self.data_objects.get(id) {
+            let _ = sender.send(Ok(container.clone()));
+        } else {
+            let _ = sender.send(Err(DataObjectError::NotFound));
         }
     }
 }
