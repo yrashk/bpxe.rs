@@ -14,7 +14,7 @@ ones. The motivation behind the creation of BPXE was to create an engine with
 a particular focus on type and memory safety, performance and multi-tenancy capabilities
 (ensuring that a great deal of processes should be able to operate even on
 a single server concurrently) and resistant to failures so that workflows can
-be resumed with little to no consideration when a failure happen.
+be resumed with little to no consideration when a failure happens.
 
 ## Usage
 
