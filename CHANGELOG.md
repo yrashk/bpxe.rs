@@ -13,14 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Inclusive gateway support
 - `scriptTask` activity support
 - `standardLoopCharacteristics` support for activities
-- `multiInstanceLoopCharacteristics` support for activities
-- Basic support for data objects
+- Limited support for data objects
+- Limited support for `multiInstanceLoopCharacteristics`
+- Limited support for `dataInputAssociation`, `dataOutputAssociation` and `ioSpecification`
 
 ### Fixed
 
 - Rhai-based condition expressions shouldn't be full scripts
 - Parsing of `script` element (`bpxe-bpmn-schema` crate)
 - Dependency on platform-dependent `linkme` crate (`bpxe-bpmn-schema` crate)
+- Improper pluralization for elements like `properties` and `.._refs` (`bxpe-bpmn-schema` crate)
+- Parsing of child elements with names different from their type (`bpxe-bpmn-schema` create)
 
 ## [0.1.2] - 2021-01-23
 

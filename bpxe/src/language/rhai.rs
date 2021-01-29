@@ -1,13 +1,16 @@
 //! # Rhai Language support
 //!
 //! These are used for condition expressions and scripts
-use super::{Engine, EngineInfo, EvaluationError};
+use super::{Engine, EngineContext, EngineContextProvider, EngineInfo, EvaluationError};
 use crate::bpmn::schema::{FormalExpression, Script, ScriptTask};
+use crate::data_object::{self, DataObject};
 use async_trait::async_trait;
 use num_bigint::BigInt;
+use rhai::{Dynamic, RegisterFn, RegisterResultFn};
 use std::any::{Any, TypeId};
 use std::ops::Deref;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
+use thiserror::Error;
 use tokio::task;
 
 /// Rhai language engine
@@ -53,6 +56,10 @@ macro_rules! type_translation {
     }};
 }
 
+#[derive(Error, Debug)]
+#[error("mutex error")]
+struct MutexError;
+
 impl Rhai {
     /// Tries to get a mutable reference to the engine
     ///
@@ -62,25 +69,141 @@ impl Rhai {
     }
 
     #[inline]
-    fn internal_eval<T>(&self, expr: &str) -> Result<T, Box<rhai::EvalAltResult>>
+    fn internal_eval<T>(&self, expr: &str, context: Context) -> Result<T, Box<rhai::EvalAltResult>>
     where
         T: Clone + Send + Sync + 'static,
     {
-        type_translation!(self.engine.eval(expr))
+        type_translation!(self.engine.eval_with_scope(
+            &mut *context
+                .0
+                .lock()
+                .map_err(|_| rhai::EvalAltResult::ErrorSystem(
+                    "mutex error".to_owned(),
+                    Box::new(MutexError)
+                ))?,
+            expr
+        ))
     }
 
     #[inline]
-    fn internal_eval_expression<T>(&self, expr: &str) -> Result<T, Box<rhai::EvalAltResult>>
+    fn internal_eval_expression<T>(
+        &self,
+        expr: &str,
+        context: Context,
+    ) -> Result<T, Box<rhai::EvalAltResult>>
     where
         T: Clone + Send + Sync + 'static,
     {
-        type_translation!(self.engine.eval_expression(expr))
+        type_translation!(self.engine.eval_expression_with_scope(
+            &mut *context
+                .0
+                .lock()
+                .map_err(|_| rhai::EvalAltResult::ErrorSystem(
+                    "mutex error".to_owned(),
+                    Box::new(MutexError)
+                ))?,
+            expr
+        ))
+    }
+
+    fn unveil(value: &mut Box<dyn DataObject>) -> Result<Dynamic, Box<rhai::EvalAltResult>> {
+        let value = dyn_clone::clone_box(value);
+        if let Some(data_object::Container(v)) = value.downcast_ref::<data_object::Container<u8>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<i8>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<u16>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<i16>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<u32>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<i32>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<u64>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<i64>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<usize>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Container(v)) =
+            value.downcast_ref::<data_object::Container<isize>>()
+        {
+            Ok(Dynamic::from(*v))
+        } else if let Some(data_object::Empty) = value.downcast_ref::<data_object::Empty>() {
+            Ok(Dynamic::UNIT)
+        } else if let Some(json) = value.downcast_ref::<serde_json::Value>() {
+            rhai::serde::to_dynamic(json)
+        } else if let Ok(data_object::Collection(mut c)) =
+            value.downcast::<data_object::Collection>().map(|v| *v)
+        {
+            let mut arr = vec![];
+            for mut v in c.drain(..) {
+                let item = Rhai::unveil(&mut v)?;
+                arr.push(item);
+            }
+            Ok(Dynamic::from(arr))
+        } else {
+            Err("unsupported type".into())
+        }
+    }
+
+    fn data_object<T: Send + Sync + Clone + Into<Dynamic> + 'static>(
+        value: T,
+    ) -> Box<dyn DataObject> {
+        Box::new(data_object::Container(value))
+    }
+
+    fn output(array: rhai::Array) -> Result<Dynamic, Box<rhai::EvalAltResult>> {
+        let mut result = Vec::new();
+        for element in array {
+            let type_name = element.type_name().to_string();
+            if let Some(data_object) = element.try_cast::<Box<dyn DataObject>>() {
+                result.push(data_object);
+            } else {
+                return Err(format!("unsupported type {}, expected DataObject", type_name).into());
+            }
+        }
+        Ok(Dynamic::from(result))
     }
 }
 
 impl Default for Rhai {
     fn default() -> Self {
-        let engine = rhai::Engine::new();
+        let mut engine = rhai::Engine::new();
+        engine
+            .register_type_with_name::<Box<dyn DataObject>>("DataObject")
+            .register_fn("data_object", Rhai::data_object::<rhai::INT>)
+            .register_fn("data_object", Rhai::data_object::<rhai::FLOAT>)
+            .register_fn("data_object", Rhai::data_object::<char>)
+            .register_fn("data_object", Rhai::data_object::<bool>)
+            .register_fn("data_object", Rhai::data_object::<()>)
+            .register_fn("data_object", Rhai::data_object::<Dynamic>)
+            .register_fn("data_object", Rhai::data_object::<instant::Instant>)
+            .register_fn("data_object", Rhai::data_object::<rhai::Array>)
+            .register_fn("data_object", Rhai::data_object::<rhai::Map>)
+            .register_fn("data_object", Rhai::data_object::<rhai::ImmutableString>)
+            .register_result_fn("unveil", Rhai::unveil)
+            .register_type_with_name::<Vec<Box<dyn DataObject>>>("Output")
+            .register_result_fn("output", Rhai::output);
+
         Self {
             engine: Arc::new(engine),
         }
@@ -111,9 +234,40 @@ impl EngineInfo for Rhai {
     }
 }
 
+#[derive(Clone)]
+pub struct Context(Arc<Mutex<rhai::Scope<'static>>>);
+
+impl EngineContext for Context {
+    fn clear(&mut self) -> &mut Self {
+        if let Ok(mut scope) = self.0.lock() {
+            scope.clear();
+        }
+        self
+    }
+
+    fn set(&mut self, name: &str, value: Box<dyn DataObject>) -> &mut Self {
+        if let Ok(mut scope) = self.0.lock() {
+            scope.push_dynamic(name.to_owned(), Dynamic::from(value));
+        }
+        self
+    }
+}
+
+impl EngineContextProvider for Rhai {
+    type Context = Context;
+
+    fn new_context(&self) -> Self::Context {
+        Context(Arc::new(Mutex::new(rhai::Scope::new())))
+    }
+}
+
 #[async_trait]
 impl Engine<FormalExpression> for Rhai {
-    async fn eval<T>(&self, expr: &FormalExpression) -> Result<T, EvaluationError>
+    async fn eval<T>(
+        &self,
+        expr: &FormalExpression,
+        context: &mut <Self as EngineContextProvider>::Context,
+    ) -> Result<T, EvaluationError>
     where
         T: Send + Sync + Clone + 'static,
     {
@@ -122,7 +276,11 @@ impl Engine<FormalExpression> for Rhai {
             Some(ref content) => {
                 let expr = content.to_owned();
                 let engine = self.clone();
-                Ok(task::spawn_blocking(move || engine.internal_eval_expression(&expr)).await??)
+                let context = context.clone();
+                Ok(
+                    task::spawn_blocking(move || engine.internal_eval_expression(&expr, context))
+                        .await??,
+                )
             }
         }
     }
@@ -130,7 +288,11 @@ impl Engine<FormalExpression> for Rhai {
 
 #[async_trait]
 impl Engine<ScriptTask> for Rhai {
-    async fn eval<T>(&self, expr: &ScriptTask) -> Result<T, EvaluationError>
+    async fn eval<T>(
+        &self,
+        expr: &ScriptTask,
+        context: &mut <Self as EngineContextProvider>::Context,
+    ) -> Result<T, EvaluationError>
     where
         T: Send + Sync + Clone + 'static,
     {
@@ -141,7 +303,8 @@ impl Engine<ScriptTask> for Rhai {
             }) => {
                 let expr = content.to_owned();
                 let engine = self.clone();
-                Ok(task::spawn_blocking(move || engine.internal_eval(&expr)).await??)
+                let context = context.clone();
+                Ok(task::spawn_blocking(move || engine.internal_eval(&expr, context)).await??)
             }
         }
     }
@@ -151,12 +314,13 @@ impl Engine<ScriptTask> for Rhai {
 mod tests {
     use super::*;
     use crate::language::*;
+    use ::rhai::Dynamic;
 
     #[tokio::test]
     async fn rhai_return_type_mismatch() {
         let e = Rhai::new();
         assert!(
-            matches!(e.eval::<bool>(&FormalExpression { content: Some("3".into()), ..Default::default() }).await.unwrap_err(),
+            matches!(e.eval::<bool>(&FormalExpression { content: Some("3".into()), ..Default::default() }, &mut e.new_context()).await.unwrap_err(),
                  EvaluationError::ResultTypeError { expected, got } if expected == "bool" && got == "i64")
         );
     }
@@ -165,7 +329,7 @@ mod tests {
     async fn rhai_not_expr() {
         let e = Rhai::new();
         assert!(matches!(
-                e.eval::<bool>(&FormalExpression { content: Some("a = true".into()), ..Default::default() })
+                e.eval::<bool>(&FormalExpression { content: Some("a = true".into()), ..Default::default() }, &mut e.new_context())
                 .await
                 .unwrap_err(),
             EvaluationError::EvaluationError { .. }
@@ -176,12 +340,15 @@ mod tests {
     async fn rhai_eval_program() {
         let e = Rhai::new();
         assert!(e
-            .eval::<bool>(&ScriptTask {
-                script: Some(Script {
-                    content: Some("let a = false; !a".into())
-                }),
-                ..Default::default()
-            })
+            .eval::<bool>(
+                &ScriptTask {
+                    script: Some(Script {
+                        content: Some("let a = false; !a".into())
+                    }),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
             .await
             .unwrap());
     }
@@ -191,12 +358,15 @@ mod tests {
         use num_bigint::BigInt;
         let e = Rhai::new();
         assert_eq!(
-            e.eval::<BigInt>(&ScriptTask {
-                script: Some(Script {
-                    content: Some("100".into())
-                }),
-                ..Default::default()
-            })
+            e.eval::<BigInt>(
+                &ScriptTask {
+                    script: Some(Script {
+                        content: Some("100".into())
+                    }),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
             .await
             .unwrap(),
             BigInt::from(100)
@@ -208,10 +378,13 @@ mod tests {
         use num_bigint::BigInt;
         let e = Rhai::new();
         assert_eq!(
-            e.eval::<BigInt>(&FormalExpression {
-                content: Some("100".into()),
-                ..Default::default()
-            })
+            e.eval::<BigInt>(
+                &FormalExpression {
+                    content: Some("100".into()),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
             .await
             .unwrap(),
             BigInt::from(100)
@@ -222,12 +395,15 @@ mod tests {
     async fn rhai_usize_support() {
         let e = Rhai::new();
         assert_eq!(
-            e.eval::<usize>(&ScriptTask {
-                script: Some(Script {
-                    content: Some("100".into())
-                }),
-                ..Default::default()
-            })
+            e.eval::<usize>(
+                &ScriptTask {
+                    script: Some(Script {
+                        content: Some("100".into())
+                    },),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
             .await
             .unwrap(),
             100
@@ -238,10 +414,133 @@ mod tests {
     async fn rhai_usize_support_expr() {
         let e = Rhai::new();
         assert_eq!(
-            e.eval::<usize>(&FormalExpression {
-                content: Some("100".into()),
-                ..Default::default()
-            })
+            e.eval::<usize>(
+                &FormalExpression {
+                    content: Some("100".into()),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
+            .await
+            .unwrap(),
+            100
+        );
+    }
+
+    #[tokio::test]
+    async fn rhai_data_object_type() {
+        let e = Rhai::new();
+        let mut context = e.new_context();
+        context.set("val", Box::new(crate::data_object::Container(100)));
+        assert_eq!(
+            e.eval::<String>(
+                &FormalExpression {
+                    content: Some("val.type_of()".into()),
+                    ..Default::default()
+                },
+                &mut context
+            )
+            .await
+            .unwrap(),
+            "DataObject".to_string()
+        );
+    }
+
+    #[tokio::test]
+    async fn rhai_unveil_primitive() {
+        let e = Rhai::new();
+        let mut context = e.new_context();
+        context.set("val", Box::new(crate::data_object::Container(100)));
+        assert_eq!(
+            e.eval::<i32>(
+                &FormalExpression {
+                    content: Some("val.unveil()".into()),
+                    ..Default::default()
+                },
+                &mut context
+            )
+            .await
+            .unwrap(),
+            100
+        );
+    }
+
+    #[tokio::test]
+    async fn rhai_unveil_empty() {
+        let e = Rhai::new();
+        let mut context = e.new_context();
+        context.set("val", Box::new(crate::data_object::Empty));
+        assert_eq!(
+            e.eval::<Dynamic>(
+                &FormalExpression {
+                    content: Some("val.unveil()".into()),
+                    ..Default::default()
+                },
+                &mut context
+            )
+            .await
+            .unwrap()
+            .type_name(),
+            "()"
+        );
+    }
+
+    #[tokio::test]
+    async fn rhai_unveil_collection() {
+        let e = Rhai::new();
+        let mut context = e.new_context();
+        context.set(
+            "val",
+            Box::new(crate::data_object::Collection(vec![Box::new(
+                crate::data_object::Container(100),
+            )])),
+        );
+        assert_eq!(
+            e.eval::<i32>(
+                &FormalExpression {
+                    content: Some("val.unveil()[0]".into()),
+                    ..Default::default()
+                },
+                &mut context
+            )
+            .await
+            .unwrap(),
+            100
+        );
+    }
+
+    #[tokio::test]
+    async fn rhai_unveil_json() {
+        let e = Rhai::new();
+        let mut context = e.new_context();
+        context.set("val", Box::new(serde_json::Value::Bool(true)));
+        assert_eq!(
+            e.eval::<bool>(
+                &FormalExpression {
+                    content: Some("val.unveil()".into()),
+                    ..Default::default()
+                },
+                &mut context
+            )
+            .await
+            .unwrap(),
+            true
+        );
+    }
+
+    #[tokio::test]
+    async fn rhai_data_object() {
+        // TODO: this is not a full coverage of supported types
+        let e = Rhai::new();
+        let mut context = e.new_context();
+        assert_eq!(
+            e.eval::<i64>(
+                &FormalExpression {
+                    content: Some("data_object(100).unveil()".into()),
+                    ..Default::default()
+                },
+                &mut context
+            )
             .await
             .unwrap(),
             100

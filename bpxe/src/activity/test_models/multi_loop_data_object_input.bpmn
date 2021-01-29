@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0uhpiqz" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_04leo32</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_04leo32" sourceRef="start" targetRef="script" />
+    <bpmn:scriptTask id="script">
+      <bpmn:incoming>Flow_04leo32</bpmn:incoming>
+      <bpmn:ioSpecification>
+        <bpmn:dataInput id="instance_data" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>instance_data</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation>
+        <bpmn:sourceRef>loop_input</bpmn:sourceRef>
+        <bpmn:targetRef>instance_data</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+        <bpmn:loopDataInputRef>data_object</bpmn:loopDataInputRef>
+        <bpmn:inputDataItem id="loop_input" />
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:script>notify(input.unveil()[0]);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:dataObjectReference id="data_object" dataObjectRef="DataObject_08crhde" />
+    <bpmn:dataObject id="DataObject_08crhde" isCollection="true" />
+    <bpmn:textAnnotation id="TextAnnotation_1gxn1t1">
+      <bpmn:text>Testing passing loop input data</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_07pnk92" sourceRef="data_object" targetRef="TextAnnotation_1gxn1t1" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNEdge id="Flow_04leo32_di" bpmnElement="Flow_04leo32">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="270" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_131r2hz_di" bpmnElement="script">
+        <dc:Bounds x="270" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0f414bj_di" bpmnElement="data_object">
+        <dc:Bounds x="302" y="265" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1gxn1t1_di" bpmnElement="TextAnnotation_1gxn1t1">
+        <dc:Bounds x="410" y="250" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_07pnk92_di" bpmnElement="Association_07pnk92">
+        <di:waypoint x="338" y="287" />
+        <di:waypoint x="410" y="274" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

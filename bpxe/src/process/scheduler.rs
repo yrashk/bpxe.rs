@@ -4,12 +4,12 @@
 use super::{DataObjectContainer, DataObjectError, Handle, Log, Request, StartError};
 use crate::bpmn::schema::{
     self, DocumentElementContainer, Element as E, Expr, FormalExpression, Process, ProcessType,
-    SequenceFlow,
+    SequenceFlow, SequenceFlowConditionExpression,
 };
 use crate::data_object::{self, DataObject};
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
-use crate::language::{Engine as _, MultiLanguageEngine};
+use crate::language::{Engine as _, EngineContextProvider, MultiLanguageEngine};
 use futures::future::FutureExt;
 use futures::stream::{FuturesUnordered, StreamExt, StreamFuture};
 use std::collections::HashMap;
@@ -118,15 +118,18 @@ impl Scheduler {
             .iter()
             .map(|e| e.clone().into_inner())
             .filter_map(|e| {
-                if let Ok(schema::DataObject { id: Some(id), .. }) =
-                    e.downcast::<schema::DataObject>().map(|e| *e)
+                if let Ok(schema::DataObject {
+                    id: Some(id),
+                    is_collection,
+                    ..
+                }) = e.downcast::<schema::DataObject>().map(|e| *e)
                 {
-                    Some((
-                        id,
-                        Arc::new(RwLock::new(
-                            Box::new(data_object::Empty) as Box<dyn DataObject>
-                        )),
-                    ))
+                    let data_object = if let Some(true) = is_collection {
+                        Box::new(data_object::Collection::new()) as Box<dyn DataObject>
+                    } else {
+                        Box::new(data_object::Empty) as Box<dyn DataObject>
+                    };
+                    Some((id, Arc::new(RwLock::new(data_object))))
                 } else {
                     None
                 }
@@ -210,11 +213,16 @@ impl Scheduler {
     }
 
     async fn probe_sequence_flow(&mut self, seq_flow: &SequenceFlow) -> bool {
-        if let Some(Expr::FormalExpression(ref expr @ FormalExpression { .. })) =
-            seq_flow.condition_expression
+        if let Some(SequenceFlowConditionExpression(Expr::FormalExpression(
+            ref expr @ FormalExpression { .. },
+        ))) = seq_flow.condition_expression
         {
             let expr = expr.clone();
-            match self.expression_evaluator.eval::<bool>(&expr).await {
+            match self
+                .expression_evaluator
+                .eval::<bool>(&expr, &mut self.expression_evaluator.new_context())
+                .await
+            {
                 Ok(result) => result,
                 Err(err) => {
                     let _ = self.log_broadcast.send(Log::ExpressionError {

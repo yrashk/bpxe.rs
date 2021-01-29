@@ -1,7 +1,8 @@
-//! # Language expressions
+//! # Language expressions;
 //!
 //! These are used for condition expressions and scripts
 use crate::bpmn::schema::{FormalExpression, ScriptTask};
+use crate::data_object::DataObject;
 use async_trait::async_trait;
 use thiserror::Error;
 use tokio::task;
@@ -9,6 +10,7 @@ use tokio::task;
 #[cfg(feature = "rhai")]
 pub mod rhai;
 
+/// Information about the engine
 pub trait EngineInfo {
     /// Returns language's namespace
     fn namespace(&self) -> Option<&str> {
@@ -19,11 +21,37 @@ pub trait EngineInfo {
         None
     }
 }
+
+/// Engine context provider
+pub trait EngineContextProvider {
+    /// Context type
+    type Context: EngineContext;
+
+    /// Returns a newly initialized context
+    fn new_context(&self) -> Self::Context;
+}
+
+/// Engine execution context
+pub trait EngineContext {
+    /// Clears the context
+    fn clear(&mut self) -> &mut Self;
+
+    /// Sets a value in the context
+    fn set(&mut self, name: &str, value: Box<dyn DataObject>) -> &mut Self;
+}
+
 /// Language for expressions and/or scripts
 #[async_trait]
-pub trait Engine<Expr>: EngineInfo + Send + Sync {
+pub trait Engine<Expr>: EngineInfo + EngineContextProvider + Send + Sync
+where
+    Expr: Send + Sync + Unpin + 'static,
+{
     /// Evaluates a program using an engine for a given language
-    async fn eval<T>(&self, code: &Expr) -> Result<T, EvaluationError>
+    async fn eval<T>(
+        &self,
+        code: &Expr,
+        context: &mut <Self as EngineContextProvider>::Context,
+    ) -> Result<T, EvaluationError>
     where
         T: Send + Sync + Clone + 'static;
 }
@@ -108,7 +136,11 @@ impl EngineInfo for MultiLanguageEngine {}
 
 #[async_trait]
 impl Engine<FormalExpression> for MultiLanguageEngine {
-    async fn eval<T>(&self, code: &FormalExpression) -> Result<T, EvaluationError>
+    async fn eval<T>(
+        &self,
+        code: &FormalExpression,
+        context: &mut <Self as EngineContextProvider>::Context,
+    ) -> Result<T, EvaluationError>
     where
         T: Send + Sync + Clone + 'static,
     {
@@ -122,7 +154,7 @@ impl Engine<FormalExpression> for MultiLanguageEngine {
                 #[cfg(feature = "rhai")]
                 if let Some(ns) = self.rhai.namespace() {
                     if ns == language {
-                        return self.rhai.eval(code).await;
+                        return self.rhai.eval(code, &mut context.rhai_context).await;
                     }
                 }
                 return Err(EvaluationError::UnsupportedLanguage {
@@ -135,7 +167,11 @@ impl Engine<FormalExpression> for MultiLanguageEngine {
 
 #[async_trait]
 impl Engine<ScriptTask> for MultiLanguageEngine {
-    async fn eval<T>(&self, code: &ScriptTask) -> Result<T, EvaluationError>
+    async fn eval<T>(
+        &self,
+        code: &ScriptTask,
+        context: &mut <Self as EngineContextProvider>::Context,
+    ) -> Result<T, EvaluationError>
     where
         T: Send + Sync + Clone + 'static,
     {
@@ -149,13 +185,44 @@ impl Engine<ScriptTask> for MultiLanguageEngine {
                 #[cfg(feature = "rhai")]
                 if let Some(t) = self.rhai.mime_type() {
                     if t == language {
-                        return self.rhai.eval(code).await;
+                        return self.rhai.eval(code, &mut context.rhai_context).await;
                     }
                 }
                 return Err(EvaluationError::UnsupportedLanguage {
                     language: Some(language.into()),
                 });
             }
+        }
+    }
+}
+
+pub struct MultiLanguageEngineContext {
+    #[cfg(feature = "rhai")]
+    rhai_context: rhai::Context,
+}
+
+impl EngineContext for MultiLanguageEngineContext {
+    fn clear(&mut self) -> &mut Self {
+        #[cfg(feature = "rhai")]
+        self.rhai_context.clear();
+        self
+    }
+
+    /// Sets a value in the context
+    fn set(&mut self, name: &str, value: Box<dyn DataObject>) -> &mut Self {
+        #[cfg(feature = "rhai")]
+        self.rhai_context.set(name, dyn_clone::clone_box(&*value));
+        self
+    }
+}
+
+impl EngineContextProvider for MultiLanguageEngine {
+    type Context = MultiLanguageEngineContext;
+
+    fn new_context(&self) -> Self::Context {
+        MultiLanguageEngineContext {
+            #[cfg(feature = "rhai")]
+            rhai_context: self.rhai.new_context(),
         }
     }
 }
@@ -176,11 +243,14 @@ mod tests {
     async fn dispatch_to_rhai_evaluation() {
         let e = MultiLanguageEngine::new();
         assert!(e
-            .eval::<bool>(&FormalExpression {
-                language: Some(RHAI_URI.to_string()),
-                content: Some("true".into()),
-                ..Default::default()
-            })
+            .eval::<bool>(
+                &FormalExpression {
+                    language: Some(RHAI_URI.to_string()),
+                    content: Some("true".into()),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
             .await
             .unwrap());
     }
