@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0tg7ycw" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_05bo8vg</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_05bo8vg" sourceRef="start" targetRef="Activity_0s9quw2" />
+    <bpmn:scriptTask id="Activity_0s9quw2">
+      <bpmn:incoming>Flow_05bo8vg</bpmn:incoming>
+      <bpmn:multiInstanceLoopCharacteristics>
+          <bpmn:loopDataInputRef>data_object</bpmn:loopDataInputRef>
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:script>notify();</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:dataObjectReference id="data_object" name="&#10;" dataObjectRef="DataObject_1lt20vp" />
+    <bpmn:dataObject id="DataObject_1lt20vp" isCollection="true" />
+    <bpmn:textAnnotation id="TextAnnotation_09cmk6f">
+      <bpmn:text>The collection in this data object will drive the instances</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1gon8rm" sourceRef="data_object" targetRef="TextAnnotation_09cmk6f" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNEdge id="Flow_05bo8vg_di" bpmnElement="Flow_05bo8vg">
+        <di:waypoint x="215" y="357" />
+        <di:waypoint x="270" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="339" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0y9uqu8_di" bpmnElement="Activity_0s9quw2">
+        <dc:Bounds x="270" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0uo00xf_di" bpmnElement="data_object">
+        <dc:Bounds x="302" y="165" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="311" y="222" width="20" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_09cmk6f_di" bpmnElement="TextAnnotation_09cmk6f">
+        <dc:Bounds x="340" y="80" width="210" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1gon8rm_di" bpmnElement="Association_1gon8rm">
+        <di:waypoint x="338" y="166" />
+        <di:waypoint x="364" y="130" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

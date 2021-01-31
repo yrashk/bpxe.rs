@@ -48,7 +48,7 @@ impl FlowNode for EndEvent {
         }
     }
 
-    fn get_state(&self) -> flow_node::State {
+    fn get_state(&mut self) -> flow_node::State {
         flow_node::State::EndEvent(self.state.clone())
     }
 

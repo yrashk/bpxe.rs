@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0uhpiqz" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_04leo32</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_04leo32" sourceRef="start" targetRef="script" />
+    <bpmn:scriptTask id="script">
+      <bpmn:incoming>Flow_04leo32</bpmn:incoming>
+      <bpmn:ioSpecification>
+        <bpmn:dataInput id="instance_data" />
+        <bpmn:dataOutput id="out" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>instance_data</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>out</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:dataInputAssociation>
+        <bpmn:sourceRef>loop_input</bpmn:sourceRef>
+        <bpmn:targetRef>instance_data</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation>
+        <bpmn:sourceRef>out</bpmn:sourceRef>
+        <bpmn:targetRef>loop_output</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation>
+        <bpmn:sourceRef>loop_output</bpmn:sourceRef>
+        <bpmn:targetRef>output</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+        <bpmn:loopDataInputRef>data_object</bpmn:loopDataInputRef>
+        <bpmn:inputDataItem id="loop_input" />
+        <bpmn:outputDataItem id="loop_output" />
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:script>notify(input.unveil()[0]);
+output([input.unveil()[0].to_int().data_object()])</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:dataObjectReference id="data_object" name="Input" dataObjectRef="DataObject_08crhde" />
+    <bpmn:dataObject id="DataObject_08crhde" isCollection="true" />
+    <bpmn:dataObjectReference id="output" name="Output" dataObjectRef="DataObject_0airzvd" />
+    <bpmn:dataObject id="DataObject_0airzvd" isCollection="true" />
+    <bpmn:textAnnotation id="TextAnnotation_1ngbx0a">
+      <bpmn:text>Testing multiple instance output</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1rd0m1u" sourceRef="output" targetRef="TextAnnotation_1ngbx0a" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNEdge id="Flow_04leo32_di" bpmnElement="Flow_04leo32">
+        <di:waypoint x="215" y="357" />
+        <di:waypoint x="270" y="357" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="339" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_131r2hz_di" bpmnElement="script">
+        <dc:Bounds x="270" y="317" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0f414bj_di" bpmnElement="data_object">
+        <dc:Bounds x="302" y="525" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="308" y="582" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0xf30zw_di" bpmnElement="output">
+        <dc:Bounds x="302" y="165" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="303" y="222" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1ngbx0a_di" bpmnElement="TextAnnotation_1ngbx0a">
+        <dc:Bounds x="340" y="80" width="170" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_1rd0m1u_di" bpmnElement="Association_1rd0m1u">
+        <di:waypoint x="338" y="166" />
+        <di:waypoint x="372" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

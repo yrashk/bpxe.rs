@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1ohnh3g" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="proc1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>Flow_1cta1at</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1cta1at" sourceRef="start" targetRef="activity" />
+    <bpmn:scriptTask id="activity">
+      <bpmn:incoming>Flow_1cta1at</bpmn:incoming>
+      <bpmn:ioSpecification>
+        <bpmn:dataInput id="instance_data" />
+        <bpmn:dataInput id="instance_data1" />
+        <bpmn:dataOutput id="out" />
+        <bpmn:inputSet>
+          <bpmn:dataInputRefs>instance_data</bpmn:dataInputRefs>
+          <bpmn:dataInputRefs>instance_data1</bpmn:dataInputRefs>
+        </bpmn:inputSet>
+        <bpmn:outputSet>
+          <bpmn:dataOutputRefs>out</bpmn:dataOutputRefs>
+        </bpmn:outputSet>
+      </bpmn:ioSpecification>
+      <bpmn:property id="prop1" name="prop1" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_0hdpw3j">
+        <bpmn:sourceRef>data_object</bpmn:sourceRef>
+        <bpmn:targetRef>prop1</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="DataInputAssociation_0hdpw3j_1">
+        <bpmn:sourceRef>data_object</bpmn:sourceRef>
+        <bpmn:targetRef>instance_data</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataInputAssociation id="DataInputAssociation_0hdpw3j_2">
+        <bpmn:sourceRef>prop1</bpmn:sourceRef>
+        <bpmn:targetRef>instance_data1</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0yw6l20">
+        <bpmn:sourceRef>out</bpmn:sourceRef>
+        <bpmn:targetRef>output</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:script>notify(input.unveil());
+output([1.data_object()])</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:dataObjectReference id="data_object" name="Data" dataObjectRef="DataObject_03con8p" />
+    <bpmn:dataObject id="DataObject_03con8p" />
+    <bpmn:dataObjectReference id="output" dataObjectRef="DataObject_1245y00" />
+    <bpmn:dataObject id="DataObject_1245y00" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="proc1">
+      <bpmndi:BPMNEdge id="Flow_1cta1at_di" bpmnElement="Flow_1cta1at">
+        <di:waypoint x="215" y="237" />
+        <di:waypoint x="270" y="237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="179" y="219" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nk9lsb_di" bpmnElement="activity">
+        <dc:Bounds x="270" y="197" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_1v57oss_di" bpmnElement="data_object">
+        <dc:Bounds x="302" y="335" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="309" y="392" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_164pksy_di" bpmnElement="output">
+        <dc:Bounds x="302" y="85" width="36" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0hdpw3j_di" bpmnElement="DataInputAssociation_0hdpw3j">
+        <di:waypoint x="320" y="335" />
+        <di:waypoint x="320" y="277" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0yw6l20_di" bpmnElement="DataOutputAssociation_0yw6l20">
+        <di:waypoint x="319" y="197" />
+        <di:waypoint x="318" y="135" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

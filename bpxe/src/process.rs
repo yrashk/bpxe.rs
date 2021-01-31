@@ -1,13 +1,11 @@
 //! # Process
 use crate::bpmn::schema::{FlowNodeType, Process as Element};
+use crate::data_object::DataObject;
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
-
 use crate::model;
-
 use std::sync::Arc;
-
-use tokio::sync::{broadcast, mpsc, oneshot};
+use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
 use tokio::task::{self, JoinHandle};
 
 use thiserror::Error;
@@ -42,10 +40,26 @@ pub struct Handle {
     event_broadcast: broadcast::Sender<Event>,
 }
 
+/// Data object container
+pub type DataObjectContainer = Arc<RwLock<Box<dyn DataObject>>>;
+
+/// Data object retrieval error
+#[derive(Error, Debug, PartialEq)]
+pub enum DataObjectError {
+    #[error("data object not found")]
+    NotFound,
+    #[error("response has not been received")]
+    NotReceived,
+}
+
 pub(crate) enum Request {
     JoinHandle(JoinHandle<()>),
     Terminate(oneshot::Sender<Option<JoinHandle<()>>>),
     Start(oneshot::Sender<Result<(), StartError>>),
+    DataObject(
+        String,
+        oneshot::Sender<Result<DataObjectContainer, DataObjectError>>,
+    ),
 }
 
 /// Process events
@@ -156,11 +170,26 @@ impl Handle {
     pub fn event_broadcast(&self) -> broadcast::Sender<Event> {
         self.event_broadcast.clone()
     }
+
+    /// Returns a data object container
+    pub async fn data_object(&self, id: &str) -> Result<DataObjectContainer, DataObjectError> {
+        let (sender, receiver) = oneshot::channel();
+        let _ = self
+            .sender
+            .send(Request::DataObject(id.to_owned(), sender))
+            .await;
+        if let Ok(result) = receiver.await {
+            result
+        } else {
+            Err(DataObjectError::NotReceived)
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::{Log, StartError};
+    use crate::bpmn::parse;
     use crate::bpmn::schema::*;
     use crate::model;
     use crate::test::*;
@@ -314,6 +343,41 @@ mod tests {
                     }
                 })
                 .await
+        );
+    }
+
+    #[tokio::test]
+    async fn data_object() {
+        use crate::data_object;
+        use serde_json::json;
+        let definitions = parse(include_str!("process/test_models/data_object.bpmn")).unwrap();
+        let model = model::Model::new(definitions).spawn().await;
+        let handle = model.processes().await.unwrap().pop().unwrap();
+        let data_object = handle.data_object("data_object").await.unwrap();
+        let read = data_object.read().await;
+        // It should be empty
+        assert!(read.downcast_ref::<data_object::Empty>().is_some());
+        drop(read);
+        let mut write = data_object.write().await;
+        // Write something into it
+        *write = Box::new(json!({"test": "passed"}));
+        drop(write);
+        // Get it again
+        let data_object = handle.data_object("data_object").await.unwrap();
+        let read = data_object.read().await;
+        // It should have the value
+        assert_eq!(
+            read.downcast_ref::<serde_json::Value>().unwrap(),
+            &json!({"test": "passed"})
+        );
+        // Since `data_object` is actual a data object reference to `DataObject`, let's check the
+        // actual object.
+        let data_object = handle.data_object("DataObject").await.unwrap();
+        let read = data_object.read().await;
+        // It should have the value
+        assert_eq!(
+            read.downcast_ref::<serde_json::Value>().unwrap(),
+            &json!({"test": "passed"})
         );
     }
 }

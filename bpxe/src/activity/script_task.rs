@@ -1,9 +1,12 @@
 //! # Script Task flow node
-use crate::activity::Activity;
+use crate::activity::{Activity, InputSet, OutputSet};
 use crate::bpmn::schema::{FlowNodeType, ScriptTask as Element};
 
+use crate::data_object::{self, DataObject};
 use crate::flow_node::{self, Action, FlowNode};
-use crate::language::{Engine as _, MultiLanguageEngine};
+use crate::language::{
+    Engine as _, EngineContext, EngineContextProvider, EvaluationError, MultiLanguageEngine,
+};
 use crate::process::Log;
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
@@ -22,11 +25,13 @@ pub struct Task {
     notifier: broadcast::Sender<Completion>,
     notifier_receiver: broadcast::Receiver<Completion>,
     log_broadcast: Option<broadcast::Sender<Log>>,
+    input_sets: Vec<InputSet>,
+    output_sets: Option<Vec<OutputSet>>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 enum Completion {
-    Success,
+    Success(Option<Vec<OutputSet>>),
     Error,
 }
 
@@ -42,6 +47,8 @@ impl Task {
             notifier,
             notifier_receiver,
             log_broadcast: None,
+            input_sets: vec![],
+            output_sets: None,
         }
     }
 
@@ -74,7 +81,7 @@ impl FlowNode for Task {
         }
     }
 
-    fn get_state(&self) -> flow_node::State {
+    fn get_state(&mut self) -> flow_node::State {
         flow_node::State::ScriptTask(self.state.clone())
     }
 
@@ -96,6 +103,14 @@ impl Activity for Task {
     fn execute(&mut self) {
         self.state = State::Execute;
         self.wake();
+    }
+
+    fn input_sets(&mut self, input_sets: Vec<InputSet>) {
+        self.input_sets = input_sets;
+    }
+
+    fn take_output_sets(&mut self) -> Option<Vec<OutputSet>> {
+        self.output_sets.take()
     }
 }
 
@@ -124,10 +139,29 @@ impl Stream for Task {
                 let element = self.element.as_ref().clone();
                 let notifier = self.notifier.clone();
                 let log_broadcast = self.log_broadcast.clone();
+                let mut context = engine.new_context();
+                // We only need input once, we can drain it
+                for (name, input_set) in
+                    std::mem::replace(&mut self.input_sets, Vec::new()).drain(..)
+                {
+                    if let Some(name) = name {
+                        context.set(&name, Box::new(data_object::Collection(input_set)));
+                    } else {
+                        context.set("input", Box::new(data_object::Collection(input_set)));
+                    }
+                }
+
                 task::spawn(async move {
-                    match engine.eval(&element).await {
-                        Ok(()) => {
-                            let _ = notifier.send(Completion::Success);
+                    match engine
+                        .eval::<Vec<Box<dyn DataObject>>>(&element, &mut context)
+                        .await
+                    {
+                        Ok(data_objects) => {
+                            let _ = notifier
+                                .send(Completion::Success(Some(vec![(None, data_objects)])));
+                        }
+                        Err(EvaluationError::ResultTypeError { got, .. }) if got == "()" => {
+                            let _ = notifier.send(Completion::Success(None));
                         }
                         Err(err) => {
                             let _ = notifier.send(Completion::Error);
@@ -143,7 +177,8 @@ impl Stream for Task {
                 Poll::Pending
             }
             State::Executing => match self.notifier_receiver.try_recv() {
-                Ok(Completion::Success) => {
+                Ok(Completion::Success(data_objects)) => {
+                    self.output_sets = data_objects;
                     self.waker.replace(cx.waker().clone());
                     self.state = State::Done;
                     Poll::Ready(Some(Action::Flow(
@@ -170,8 +205,7 @@ impl Stream for Task {
             }
             State::Done => {
                 self.state = State::Ready;
-                self.waker.replace(cx.waker().clone());
-                Poll::Pending
+                Poll::Ready(Some(Action::Complete))
             }
         }
     }

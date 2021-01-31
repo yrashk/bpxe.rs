@@ -71,7 +71,7 @@ impl FlowNode for Gateway {
         self.process = Some(process);
     }
 
-    fn get_state(&self) -> flow_node::State {
+    fn get_state(&mut self) -> flow_node::State {
         flow_node::State::InclusiveGateway(self.state.clone())
     }
 

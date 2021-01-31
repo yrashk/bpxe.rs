@@ -25,8 +25,9 @@
         <xsl:param name="word"/>
         <xsl:choose>
             <xsl:when test="ends-with($word, 'ss') or ends-with($word, 'x') or ends-with($word, 'ch') or ends-with($word, 'sh')"><xsl:value-of select="concat($word, 'es')"/></xsl:when>
+            <xsl:when test="ends-with($word, 's')"><xsl:value-of select="concat($word, 'es')"/></xsl:when>
             <xsl:when test="ends-with($word, 'ey') or ends-with($word, 'ay') or ends-with($word, 'oy')"><xsl:value-of select="concat($word, 's')"/></xsl:when>
-            <xsl:when test="ends-with($word, 'y')"><xsl:value-of select="concat(substring($word,0, string-length($word) - 1), 'ies')"/></xsl:when>
+            <xsl:when test="ends-with($word, 'y')"><xsl:value-of select="concat(substring($word,0, string-length($word)), 'ies')"/></xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat($word, 's')"/>
             </xsl:otherwise>
@@ -44,6 +45,16 @@
                     string-join(for $s in tokenize($string, '\W+')
                     return
                     concat(upper-case(substring($s, 1, 1)), substring($s, 2)), '')"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+    
+    <xsl:function name="local:rename-type">
+        <xsl:param name="type"/>
+        <xsl:choose>
+            <xsl:when test="$type = 'Expression'"><xsl:text>Expr</xsl:text></xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$type"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -105,17 +116,26 @@
             "/>
         <xsl:variable name="subType" select="if ($subType = '') then local:type($subType) else $subType"/>
         <xsl:variable name="subType" select="if ($subType = 'Expression') then 'Expr' else $subType"/>
+        <xsl:variable name="subType" select="if (exists($element/@name) and exists($element/@type) and 
+            not(contains($element/@type, ':')) and local:struct-case($element/@type) != 'BaseElement' and
+            local:struct-case($element/@name) != local:struct-case($element/@type))
+            then
+            concat(local:struct-case($element/ancestor::xs:complexType/@name),local:struct-case($element/@name))
+            else
+            $subType"/>
+
         <xsl:choose>
             <xsl:when test="$element/@minOccurs = 0 and (not($element/@maxOccurs) or $element/@maxOccurs = '1')"><xsl:text>Option&lt;</xsl:text></xsl:when>
             <xsl:when test="$element/@maxOccurs = 'unbounded'"><xsl:text>Vec&lt;</xsl:text></xsl:when>
         </xsl:choose>
-        
+
         <xsl:value-of select="$subType"/>
         
         <xsl:choose>
             <xsl:when test="$element/@minOccurs = 0 and (not($element/@maxOccurs) or $element/@maxOccurs = '1')"><xsl:text>&gt;</xsl:text></xsl:when>
             <xsl:when test="$element/@maxOccurs = 'unbounded'"><xsl:text>&gt;</xsl:text></xsl:when>
         </xsl:choose>
+
     </xsl:function>
     
     <xsl:function name="local:elementTypeTag">
@@ -158,11 +178,12 @@
         
         <xsl:text>
             // This file is generated from BPMN 2.0 schema using `codegen.sh` script
-            use strong_xml::XmlRead;
+            use strong_xml::{XmlRead, XmlReader, XmlResult};
             use serde::{Serialize, Deserialize};
             use std::fmt::Debug;
             use dyn_clone::DynClone;
             use tia::Tia;
+            use derive_more::*;
             use super::*;
         </xsl:text>
         
@@ -220,7 +241,7 @@
                     ///
                     /// (See codegen-rust.xsl)
                 </xsl:text>
-                <xsl:text >#[derive(Hash, XmlRead, Clone, PartialEq, Debug, Deserialize, Serialize)]</xsl:text>
+                <xsl:text>#[derive(Hash, From, XmlRead, Clone, PartialEq, Debug, Deserialize, Serialize)]</xsl:text>
                 <xsl:text>#[xml(tag = "bpmn:</xsl:text><xsl:value-of select="$name"/><xsl:text>")]</xsl:text>
                 <xsl:text>#[serde(tag = "type")]</xsl:text>
                 <xsl:text xml:space="preserve">pub enum </xsl:text>
@@ -234,19 +255,8 @@
                     <xsl:text></xsl:text>
                     <xsl:text>),</xsl:text>
                 </xsl:for-each>
-                
                 <xsl:text>}</xsl:text>
-                
-                <xsl:for-each select="$elements[@substitutionGroup = $name]">
-                    <xsl:text>impl From&lt;</xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text xml:space="preserve">&gt; for </xsl:text>
-                    <xsl:value-of select="local:struct-case($typeName)"/><xsl:text xml:space="preserve"> { 
-                        fn from(element: </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>) -> Self {
-                            Self::</xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>(element)
-                        }
-                    }    
-                    </xsl:text>
-                </xsl:for-each>
-                
+
                 <xsl:text xml:space="preserve">impl </xsl:text><xsl:value-of select="local:struct-case($typeName)"/><xsl:text> {</xsl:text>
                 <xsl:text >pub fn into_inner(self) -> Box&lt;dyn DocumentElement&gt; { 
                     match self {
@@ -444,6 +454,45 @@
                 
             </xsl:otherwise>
         </xsl:choose>
+
+        <!-- Generate newtypes for differently named instances of elements -->
+        <xsl:for-each select="$schema/xs:complexType">
+            <xsl:variable name="typePrefix" select="local:struct-case(./@name)"/>
+            <xsl:for-each select=".//xs:element[@type = $typeName and @name != $name and @type != 'tBaseElement']">
+                <xsl:variable name="ancestor" select="./ancestor::xs:complexType"/>
+                <xsl:text xml:space="preserve">
+                    /// Wrapper for </xsl:text><xsl:value-of select="$schema/xs:element[@type = $ancestor/@name]/@name"/><xsl:text>::</xsl:text><xsl:value-of select="./@name"/>
+                <xsl:text xml:space="preserve"> element</xsl:text>
+                <xsl:text>
+                    #[serde(transparent)]
+                    #[derive(Hash, Default, From, Clone, PartialEq, Debug, Serialize, Deserialize, Deref, DerefMut)]</xsl:text>
+                <xsl:text xml:space="preserve">pub struct </xsl:text><xsl:value-of select="$typePrefix"/><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>(pub </xsl:text>
+                <xsl:value-of select="local:rename-type(local:struct-case($typeName))"/>
+                <xsl:text>);</xsl:text>
+                
+                <xsl:text xml:space="preserve">
+                    impl&lt;'a&gt; XmlRead&lt;'a&gt; for </xsl:text><xsl:value-of select="$typePrefix"/><xsl:value-of select="local:struct-case(./@name)"/><xsl:text> {
+                        fn from_reader(reader: &amp;mut XmlReader&lt;'a&gt;) -&gt; XmlResult&lt;Self&gt; {
+                          Ok(</xsl:text><xsl:value-of select="$typePrefix"/><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>(</xsl:text>
+                             <xsl:value-of select="local:rename-type(local:struct-case($typeName))"/><xsl:text>::from_reader(&amp;mut XmlReader::new(&amp;reader.read_source_till_end("</xsl:text>
+                            <xsl:value-of select="./@name"/><xsl:text>","</xsl:text><xsl:value-of select="$name"/><xsl:text>")?))?))
+                        }
+                    }
+                </xsl:text>
+
+                <xsl:text xml:space="preserve">
+                    impl DocumentElementContainer for </xsl:text><xsl:value-of select="$typePrefix"/><xsl:value-of select="local:struct-case(./@name)"/><xsl:text> {
+                        #[allow(unreachable_patterns, clippy::match_single_binding, unused_variables)]
+                        fn find_by_id_mut(&amp;mut self, id: &amp;str) -> Option&lt;&amp;mut dyn DocumentElement&gt; {
+                           self.0.find_by_id_mut(id)
+                        }
+
+                        fn find_by_id(&amp;self, id: &amp;str) -> Option&lt;&amp;dyn DocumentElement&gt; {
+                           self.0.find_by_id(id)
+                        }
+                    }</xsl:text>
+            </xsl:for-each>
+        </xsl:for-each>
     </xsl:template>
     
     <xsl:template name="traits">

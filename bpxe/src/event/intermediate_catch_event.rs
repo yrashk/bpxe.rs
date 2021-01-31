@@ -68,7 +68,7 @@ impl FlowNode for IntermediateCatchEvent {
         }
     }
 
-    fn get_state(&self) -> flow_node::State {
+    fn get_state(&mut self) -> flow_node::State {
         flow_node::State::IntermediateCatchEvent(self.state.clone())
     }
 

@@ -98,6 +98,9 @@ pub use expr::*;
 mod script;
 pub use script::*;
 
+mod token;
+use token::*;
+
 #[derive(Error, Debug)]
 pub enum EstablishSequenceFlowError {
     #[error("source.id must be Some")]
@@ -141,7 +144,7 @@ impl Process {
             id: Some(id.to_string()),
             source_ref: source.to_string(),
             target_ref: target.to_string(),
-            condition_expression: condition_expression.map(|e| e.into()),
+            condition_expression: condition_expression.map(|e| e.into().into()),
             ..SequenceFlow::default()
         };
 
@@ -209,7 +212,8 @@ fn establishing_sequence_flow_in_process() {
 
     let expr = seq_flow.condition_expression().as_ref().unwrap();
     assert!(
-        matches!(expr, Expr::FormalExpression(FormalExpression { content, ..}) if content.as_ref().unwrap() == "condition")
+        matches!(expr, SequenceFlowConditionExpression(Expr::FormalExpression(FormalExpression { content, ..}))
+            if content.as_ref().unwrap() == "condition")
     );
 
     let start = Cast::<dyn FlowNodeType>::cast(process.find_by_id("start").unwrap()).unwrap();
@@ -280,7 +284,7 @@ where
     // it is safe now to unwrap ids
     sequence_flow.set_source_ref(source.id().as_ref().unwrap().into());
     sequence_flow.set_target_ref(target.id().as_ref().unwrap().into());
-    sequence_flow.set_condition_expression(condition_expression.map(|e| e.into()));
+    sequence_flow.set_condition_expression(condition_expression.map(|e| e.into().into()));
 
     let id = id_s.unwrap();
     source.outgoings_mut().push(id.clone());
@@ -313,7 +317,8 @@ fn establishing_sequence_flow() {
     assert_eq!(end.incomings(), &vec!["test".to_string()]);
     let expr = seq_flow.condition_expression().as_ref().unwrap();
     assert!(
-        matches!(expr, Expr::FormalExpression(FormalExpression { content, ..}) if content.as_ref().unwrap() == "condition")
+        matches!(expr, SequenceFlowConditionExpression(Expr::FormalExpression(FormalExpression { content, ..}))
+            if content.as_ref().unwrap() == "condition")
     );
 }
 
