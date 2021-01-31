@@ -10,20 +10,24 @@ use crate::data_object::{self, DataObject};
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
 use crate::language::{Engine as _, EngineContextProvider, MultiLanguageEngine};
-use futures::future::FutureExt;
-use futures::stream::{FuturesUnordered, StreamExt, StreamFuture};
+use derive_more::{Deref, DerefMut};
+use futures::stream::{Stream, StreamExt};
 use std::collections::HashMap;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll};
+use streamunordered::{StreamUnordered, StreamYield};
 use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
 use tokio::task::{self};
 
 pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,
     process: Handle,
-    flow_nodes: FuturesUnordered<FlowNode>,
+    flow_nodes: StreamUnordered<FlowNode>,
+    // sequence flow => (token, index)
+    flow_nodes_outgoing: HashMap<String, (usize, usize)>,
+    // sequence flow => (token, index)
+    flow_nodes_incoming: HashMap<String, (usize, usize)>,
     expression_evaluator: MultiLanguageEngine,
     element: Arc<Process>,
     log_broadcast: broadcast::Sender<Log>,
@@ -34,49 +38,26 @@ pub(crate) struct Scheduler {
 // in `FuturesUnordered` (`Scheduler.flow_nodes`). It's a linear search and is probably
 // fine when there's a small number of flow nodes, but should it become large, this approach
 // should probably be rethought.
+#[derive(Deref, DerefMut)]
+#[deref(forward)]
+#[deref_mut(forward)]
 struct FlowNode {
+    #[deref(ignore)]
+    #[deref_mut(ignore)]
     id: String,
-    future: StreamFuture<Box<dyn flow_node::FlowNode>>,
+    #[deref]
+    #[deref_mut]
+    node: Box<dyn flow_node::FlowNode>,
+    #[deref(ignore)]
+    #[deref_mut(ignore)]
     tokens: usize,
 }
 
-use std::ops::{Deref, DerefMut};
+impl Stream for FlowNode {
+    type Item = flow_node::Action;
 
-impl Deref for FlowNode {
-    type Target = Box<dyn flow_node::FlowNode>;
-
-    fn deref(&self) -> &Self::Target {
-        // FIXME: is there any better way to do this?
-        // I *think* it's reasonable to assume it won't panic in runtime
-        // because when it's used, scheduler is not doing anything with the future.
-        // However, I am not confident in this.
-        self.future.get_ref().unwrap()
-    }
-}
-
-impl DerefMut for FlowNode {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        // FIXME: see above in `Deref` implementation
-        self.future.get_mut().unwrap()
-    }
-}
-
-/// This encapsulates an item produced by flow node (as a Stream)
-struct Next {
-    id: String,
-    item: <StreamFuture<Box<dyn flow_node::FlowNode>> as Future>::Output,
-    tokens: usize,
-}
-
-impl Future for FlowNode {
-    type Output = Next;
-
-    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        self.future.poll_unpin(cx).map(|v| Next {
-            id: self.id.clone(),
-            item: v,
-            tokens: self.tokens,
-        })
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        self.node.poll_next_unpin(cx)
     }
 }
 
@@ -90,7 +71,11 @@ enum Control {
 
 impl Scheduler {
     pub(crate) fn new(receiver: mpsc::Receiver<Request>, process: Handle) -> Self {
-        let flow_nodes = process
+        let mut flow_nodes = StreamUnordered::new();
+        let mut flow_nodes_outgoing = HashMap::new();
+        let mut flow_nodes_incoming = HashMap::new();
+
+        for flow_node in process
             .element()
             .flow_elements()
             .iter()
@@ -105,12 +90,21 @@ impl Scheduler {
                         // them), but they can still be operational in a single flow node operation
                         // (even though this might be a degenerative case)
                         id: e.id().as_ref().unwrap_or(&"".to_string()).to_string(),
-                        future: flow_node.into_future(),
+                        node: flow_node,
                         tokens: 0,
                     }
                 })
             })
-            .collect();
+        {
+            let element = flow_node.element();
+            let token = flow_nodes.push(flow_node);
+            for (index, outgoing) in element.outgoings().iter().enumerate() {
+                flow_nodes_outgoing.insert(outgoing.to_owned(), (token, index));
+            }
+            for (index, incoming) in element.incomings().iter().enumerate() {
+                flow_nodes_incoming.insert(incoming.to_owned(), (token, index));
+            }
+        }
 
         let mut data_objects: HashMap<String, DataObjectContainer> = process
             .element()
@@ -175,6 +169,8 @@ impl Scheduler {
             receiver,
             process,
             flow_nodes,
+            flow_nodes_outgoing,
+            flow_nodes_incoming,
             expression_evaluator,
             element,
             log_broadcast,
@@ -206,7 +202,9 @@ impl Scheduler {
                    },
                // Flow node processing
                next = self.flow_nodes.next() => {
-                   self.process_flow_node_next(next).await;
+                   if let Some(next) = next {
+                           self.process_flow_node_next(next).await;
+                   }
                }
             }
         }
@@ -237,60 +235,58 @@ impl Scheduler {
     }
 
     /// Figure out what should be the next course of action
-    fn next_action(
-        &mut self,
-        action: Option<flow_node::Action>,
-        flow_node: &dyn flow_node::FlowNode,
-    ) -> Control {
-        flow_node.element().incomings().iter().fold(
-            Control::Proceed(action),
-            |control, incoming| {
-                match control {
-                    // once the action has been dropped, it's not checked against
-                    // any other incoming flows
-                    Control::Drop => control,
-                    Control::Proceed(action) => {
-                        let mut matching_predecessor = self.flow_nodes.iter_mut().find(|node| {
-                            node.element()
-                                .outgoings()
-                                .iter()
-                                .any(|outgoing| outgoing == incoming)
-                        });
-                        if let Some(ref mut node) = matching_predecessor {
-                            // it's ok to unwrap here because we already know such
-                            // predecessor exists
-                            let index = node
-                                .element()
-                                .outgoings()
-                                .iter()
-                                .enumerate()
-                                .find_map(|(i, name)| if name == incoming { Some(i) } else { None })
-                                .unwrap();
-                            match node.handle_outgoing_action(index, action) {
-                                None => Control::Drop,
-                                Some(action) => Control::Proceed(action),
+    fn next_action(&mut self, action: Option<flow_node::Action>, token: usize) -> Control {
+        if let Some(flow_node) = self.flow_nodes.get(token) {
+            flow_node.element().incomings().iter().fold(
+                Control::Proceed(action),
+                |control, incoming| {
+                    match control {
+                        // once the action has been dropped, it's not checked against
+                        // any other incoming flows
+                        Control::Drop => control,
+                        Control::Proceed(action) => {
+                            let matching_predecessor = self.flow_nodes_outgoing.get(incoming);
+                            if let Some((previous_token, index)) = matching_predecessor {
+                                if let Some(incoming_node) =
+                                    self.flow_nodes.get_mut(*previous_token)
+                                {
+                                    match incoming_node.handle_outgoing_action(*index, action) {
+                                        None => Control::Drop,
+                                        Some(action) => Control::Proceed(action),
+                                    }
+                                } else {
+                                    Control::Proceed(action)
+                                }
+                            } else {
+                                Control::Proceed(action)
                             }
-                        } else {
-                            Control::Proceed(action)
                         }
                     }
-                }
-            },
-        )
+                },
+            )
+        } else {
+            Control::Drop
+        }
     }
 
-    async fn process_flow_node_next(&mut self, next: Option<Next>) {
-        if let Some(Next {
-            id,
-            item: (action, mut flow_node),
-            tokens,
-        }) = next
-        {
-            let next_action = self.next_action(action, &*flow_node);
+    async fn process_flow_node_next(&mut self, (next, token): (StreamYield<FlowNode>, usize)) {
+        if self.flow_nodes.get(token).is_none() {
+            // this shouldn't happen, but... (do nothing)
+            // at least because of this check we can safely unwrap `flow_nodes.get*` below
+            return;
+        }
+        if let StreamYield::Item(action) = next {
+            let next_action = self.next_action(Some(action), token);
             match next_action {
                 // We're good to proceed with the following probing action
                 Control::Proceed(Some(flow_node::Action::ProbeOutgoingSequenceFlows(indices))) => {
-                    let outgoings = flow_node.element().outgoings().clone();
+                    let outgoings = self
+                        .flow_nodes
+                        .get(token)
+                        .unwrap()
+                        .element()
+                        .outgoings()
+                        .clone();
                     for index in indices {
                         let seq_flow = self
                             .element
@@ -299,13 +295,16 @@ impl Scheduler {
                             .cloned();
                         if let Some(seq_flow) = seq_flow {
                             let success = self.probe_sequence_flow(&seq_flow).await;
-                            flow_node.sequence_flow(index, &seq_flow, success);
+                            self.flow_nodes
+                                .get_mut(token)
+                                .unwrap()
+                                .sequence_flow(index, &seq_flow, success);
                         }
                     }
                 }
                 // We're good to proceed with the following flow action
                 Control::Proceed(Some(flow_node::Action::Flow(ref indices))) => {
-                    let el = flow_node.element();
+                    let el = self.flow_nodes.get(token).unwrap().element();
                     let outgoings = el.outgoings();
                     for index in indices {
                         let seq_flow = self
@@ -323,33 +322,22 @@ impl Scheduler {
                                 .iter_mut()
                                 .find(|next_node| next_node.id == seq_flow.target_ref)
                             {
-                                let target_node = &mut next_node.future;
-                                if let Some(node) = target_node.get_mut() {
-                                    // match target's node incoming index for this sequence flow
-                                    let index =
-                                        node.element().incomings().iter().enumerate().find_map(
-                                            |(index, incoming)| {
-                                                if incoming == seq_flow.id.as_ref().unwrap() {
-                                                    Some(index)
-                                                } else {
-                                                    None
-                                                }
-                                            },
-                                        );
-                                    // if there's one (and there better be!)
-                                    if let Some(index) = index {
-                                        // there's an incoming
-                                        let _ = self.log_broadcast.send(Log::FlowNodeIncoming {
-                                            node: node.element().clone(),
-                                            incoming_index: index,
-                                        });
-                                        // increase the number of tokens by a number of added flows
-                                        next_node.tokens += indices.len();
-                                        // report it to the target node
-                                        node.tokens(next_node.tokens);
-                                        // and report the incoming
-                                        node.incoming(index);
-                                    }
+                                let node = &mut next_node.node;
+                                // match target's node incoming index for this sequence flow
+                                if let Some((_, index)) =
+                                    self.flow_nodes_incoming.get(seq_flow.id.as_ref().unwrap())
+                                {
+                                    // there's an incoming
+                                    let _ = self.log_broadcast.send(Log::FlowNodeIncoming {
+                                        node: node.element().clone(),
+                                        incoming_index: *index,
+                                    });
+                                    // increase the number of tokens by a number of added flows
+                                    next_node.tokens += indices.len();
+                                    // report it to the target node
+                                    node.tokens(next_node.tokens);
+                                    // and report the incoming
+                                    node.incoming(*index);
                                 }
                             }
                         }
@@ -358,7 +346,7 @@ impl Scheduler {
                 // flow node completion
                 Control::Proceed(Some(flow_node::Action::Complete)) => {
                     let _ = self.log_broadcast.send(Log::FlowNodeCompleted {
-                        node: flow_node.element().clone(),
+                        node: self.flow_nodes.get(token).unwrap().element().clone(),
                     });
                 }
                 // nothing, don't reschedule this flow node anymore
@@ -366,17 +354,11 @@ impl Scheduler {
                     if self.flow_nodes.is_empty() {
                         let _ = self.log_broadcast.send(Log::Done);
                     }
-                    return;
+                    Pin::new(&mut self.flow_nodes).remove(token);
                 }
                 // no action to be taken
                 Control::Drop => {}
             }
-            // Reschedule the flow node
-            self.flow_nodes.push(FlowNode {
-                id,
-                future: flow_node.into_future(),
-                tokens,
-            });
         }
     }
 
