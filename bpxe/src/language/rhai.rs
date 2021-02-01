@@ -221,7 +221,7 @@ impl From<Box<rhai::EvalAltResult>> for EvaluationError {
     }
 }
 
-pub(crate) const RHAI_URI: &str = "https://rhaiscript.github.io/";
+pub(crate) const RHAI_URI: &str = "https://rhai.rs";
 pub(crate) const RHAI_MIME: &str = "text/x-rhai";
 
 impl EngineInfo for Rhai {
