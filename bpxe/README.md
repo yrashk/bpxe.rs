@@ -23,7 +23,7 @@ starting point would be to add this to your Cargo.toml:
 
 ```toml
 [dependencies]
-bpxe = "0.1.2"
+bpxe = "0.2.0"
 ```
 
 You can also check out [latest release API documentation](https://docs.rs/bpxe), as well as
