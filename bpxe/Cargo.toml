@@ -10,7 +10,7 @@ readme = "README.md"
 description = "Business Process eXecution Engine"
 
 [dependencies]
-bpxe-bpmn-schema = { path = "../bpxe-bpmn-schema", version = "0.2.0" }
+bpxe-bpmn-schema = { path = "../bpxe-bpmn-schema", version = "^0.2.1-dev"}
 # Used to parse BPMN to a typed schema
 strong-xml = "0.6.0"
 # Used to 'normalize' BPMN XML before parsing
