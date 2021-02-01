@@ -79,7 +79,7 @@ where
     process: Option<process::Handle>,
     properties: HashMap<String, Box<dyn DataObject>>,
     // Per-instance input data items:
-    // (index, input_data_item) => data_object
+    // (token, input_data_item) => data_object
     input_data_items: HashMap<(usize, Option<String>), Box<dyn DataObject>>,
 }
 
@@ -336,80 +336,83 @@ where
 
     fn connect_inputs(&mut self, data: &NamedDataObjects) {
         let input_associations = self.element.data_input_associations();
-        for (index, flow_node) in self.flow_nodes.iter_mut().enumerate() {
-            let io_spec = self.element.io_specification();
-            let mut data_inputs = match io_spec {
-                None => HashMap::new(),
-                Some(InputOutputSpecification { data_inputs, .. }) => data_inputs
-                    .iter()
-                    .filter_map(|data_input| data_input.id().as_ref())
-                    .map(|id| (id, Box::new(data_object::Empty) as Box<dyn DataObject>))
-                    .collect(),
-            };
+        for token in self.flow_node_tokens.iter() {
+            if let Some(flow_node) = self.flow_nodes.get_mut(*token) {
+                let io_spec = self.element.io_specification();
+                let mut data_inputs = match io_spec {
+                    None => HashMap::new(),
+                    Some(InputOutputSpecification { data_inputs, .. }) => data_inputs
+                        .iter()
+                        .filter_map(|data_input| data_input.id().as_ref())
+                        .map(|id| (id, Box::new(data_object::Empty) as Box<dyn DataObject>))
+                        .collect(),
+                };
 
-            for association in input_associations {
-                let sources = association.source_refs();
-                if !sources.is_empty() {
-                    // TODO: handle transformations (and more than one source)
-                    // (for now we just assume there could be only one)
-                    let source = &sources[0];
-                    // figure out the source
-                    let mut item = None;
-                    // Check input data items
-                    if let Some(item_) = self
-                        .input_data_items
-                        .get(&(index, Some(source.to_string())))
-                    {
-                        item.replace(dyn_clone::clone_box(&*item_));
-                    }
-                    // Check properties
-                    if let Some(item_) = self.properties.get(source) {
-                        item.replace(dyn_clone::clone_box(&*item_));
-                    }
-                    // Check data objects
-                    if let Some(item_) = data.get(association.target_ref()) {
-                        item.replace(dyn_clone::clone_box(&*item_));
-                    }
-                    // TODO: process properties
-
-                    if let Some(item) = item {
-                        // figure out the destination
-                        // is it a data input?
-                        if let Some(data_object) = data_inputs.get_mut(association.target_ref()) {
-                            *data_object = *item;
-                        } else if let Some(data_object) =
-                            self.properties.get_mut(association.target_ref())
+                for association in input_associations {
+                    let sources = association.source_refs();
+                    if !sources.is_empty() {
+                        // TODO: handle transformations (and more than one source)
+                        // (for now we just assume there could be only one)
+                        let source = &sources[0];
+                        // figure out the source
+                        let mut item = None;
+                        // Check input data items
+                        if let Some(item_) = self
+                            .input_data_items
+                            .get(&(*token, Some(source.to_string())))
                         {
-                            // is it a property?
-                            *data_object = *item;
+                            item.replace(dyn_clone::clone_box(&*item_));
+                        }
+                        // Check properties
+                        if let Some(item_) = self.properties.get(source) {
+                            item.replace(dyn_clone::clone_box(&*item_));
+                        }
+                        // Check data objects
+                        if let Some(item_) = data.get(association.target_ref()) {
+                            item.replace(dyn_clone::clone_box(&*item_));
+                        }
+                        // TODO: process properties
+
+                        if let Some(item) = item {
+                            // figure out the destination
+                            // is it a data input?
+                            if let Some(data_object) = data_inputs.get_mut(association.target_ref())
+                            {
+                                *data_object = *item;
+                            } else if let Some(data_object) =
+                                self.properties.get_mut(association.target_ref())
+                            {
+                                // is it a property?
+                                *data_object = *item;
+                            }
                         }
                     }
                 }
-            }
 
-            // Collect input sets
-            let input_sets = match io_spec {
-                None => vec![],
-                Some(InputOutputSpecification { input_sets, .. }) => input_sets
-                    .iter()
-                    .map(|input_set| {
-                        (
-                            input_set.id().clone(),
-                            input_set
-                                .data_input_refses()
-                                .iter()
-                                .filter_map(|name| {
-                                    if let Some(data_input) = data_inputs.remove(name) {
-                                        return Some(data_input);
-                                    }
-                                    None
-                                })
-                                .collect(),
-                        )
-                    })
-                    .collect(),
-            };
-            flow_node.input_sets(input_sets);
+                // Collect input sets
+                let input_sets = match io_spec {
+                    None => vec![],
+                    Some(InputOutputSpecification { input_sets, .. }) => input_sets
+                        .iter()
+                        .map(|input_set| {
+                            (
+                                input_set.id().clone(),
+                                input_set
+                                    .data_input_refses()
+                                    .iter()
+                                    .filter_map(|name| {
+                                        if let Some(data_input) = data_inputs.remove(name) {
+                                            return Some(data_input);
+                                        }
+                                        None
+                                    })
+                                    .collect(),
+                            )
+                        })
+                        .collect(),
+                };
+                flow_node.input_sets(input_sets);
+            }
         }
     }
 
@@ -976,27 +979,24 @@ where
             } => match activities.try_recv() {
                 Ok((index, mut activities)) => {
                     let me = self.get_mut();
-                    for (index, (data_object, mut activity)) in activities.drain(..).enumerate() {
+                    for (data_object, mut activity) in activities.drain(..) {
                         // Set up activity:
                         // 1. Process
                         if let Some(process) = me.process.clone() {
                             activity.set_process(process);
                         }
 
+                        let token = me.flow_nodes.push(activity);
+                        me.flow_node_tokens.push(token);
+
                         // 2. Save input data
                         if let Some((id, data_object)) = data_object {
-                            me.input_data_items.insert((index, id), data_object);
+                            me.input_data_items.insert((token, id), data_object);
                         }
 
                         // 3. TODO: figure out deterministic state recovery
                         // activity.set_state(...);
-
-                        me.flow_node_tokens.push(me.flow_nodes.push(activity));
                     }
-                    // StreamUnordered is managing streams in a linked list and inserts at head,
-                    // therefore if we want to preserve the order of execution, we have to reverse
-                    // the tokens.
-                    me.flow_node_tokens.reverse();
                     me.wake_when_ready(cx.waker().clone());
                     me.request_data(index);
                     Poll::Pending
