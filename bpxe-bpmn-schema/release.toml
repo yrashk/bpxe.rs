@@ -1,0 +1,3 @@
+pre-release-replacements = [
+  {file="Cargo.toml", search="bpxe-internal-macros = .*",replace="bpxe-internal-macros = { path = \"../bpxe-internal-macros\", version = \"{{version}}\" }"},
+]

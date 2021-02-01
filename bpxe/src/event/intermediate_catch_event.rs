@@ -5,13 +5,13 @@ use crate::bpmn::schema::{
 use crate::event::ProcessEvent;
 use crate::flow_node::{self, Action, FlowNode, IncomingIndex};
 use crate::process;
+use crate::sys::task;
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use tokio::sync::{broadcast, mpsc};
-use tokio::task;
 
 /// Intermediate Catch Event flow node
 pub struct IntermediateCatchEvent {
@@ -79,6 +79,7 @@ impl FlowNode for IntermediateCatchEvent {
                 let mut waker = None;
                 let mut need_to_wake = false;
                 loop {
+                    tokio::task::yield_now().await;
                     tokio::select! {
                         mut waker_ = waker_receiver.recv() => if need_to_wake
                         {
@@ -223,8 +224,9 @@ mod tests {
     use crate::model;
     use crate::process::Log;
     use crate::test::*;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn catch_none_event() {
         let definitions = parse(include_str!("test_models/catch_none_event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -246,9 +248,11 @@ mod tests {
                 .receive(|e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "signal"))
                 .await
         );
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn catch_signal_event() {
         let definitions = parse(include_str!("test_models/catch_signal_event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -272,5 +276,7 @@ mod tests {
                 .receive(|e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "report"))
                 .await
         );
+
+        model.terminate().await;
     }
 }

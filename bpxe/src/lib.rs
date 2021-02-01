@@ -21,6 +21,17 @@ pub mod gateway;
 pub mod language;
 pub mod model;
 pub mod process;
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;
+
+pub(crate) mod serde;
+pub(crate) mod sys;
+
+#[cfg(all(test, target_arch = "wasm32"))]
+wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[cfg(test)]
 mod test;
+
+#[allow(unused_imports)]
+pub(crate) use wasm_rs_dbg::dbg;

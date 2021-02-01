@@ -123,8 +123,9 @@ mod tests {
     use crate::event::ProcessEvent;
     use crate::model;
     use crate::test::Mailbox;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn throw_none_event() {
         let definitions = parse(include_str!("test_models/throw_none_event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -139,9 +140,11 @@ mod tests {
                 .receive(|e| matches!(e, ProcessEvent::NoneEvent))
                 .await
         );
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn throw_signal_event() {
         let definitions = parse(include_str!("test_models/throw_signal_event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -156,5 +159,7 @@ mod tests {
                 .receive(|e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "sig1"))
                 .await
         );
+
+        model.terminate().await;
     }
 }

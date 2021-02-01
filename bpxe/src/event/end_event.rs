@@ -104,8 +104,9 @@ mod tests {
     use crate::event::ProcessEvent;
     use crate::model;
     use crate::test::Mailbox;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn end_throws_event() {
         let definitions = parse(include_str!("test_models/start_flows.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -116,5 +117,7 @@ mod tests {
         assert!(handle.start().await.is_ok());
 
         assert!(mailbox.receive(|e| matches!(e, ProcessEvent::End)).await);
+
+        model.terminate().await;
     }
 }

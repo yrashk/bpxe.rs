@@ -131,10 +131,9 @@ mod tests {
     use crate::model;
     use crate::process::Log;
     use crate::test::*;
-    use std::time::Duration;
-    use tokio::time::timeout;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn event() {
         let definitions = parse(include_str!("test_models/event.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -186,10 +185,11 @@ mod tests {
 
         // should not throw f1report signal because the path was already chosen
         assert!(
-            timeout(Duration::from_millis(100),
-            mailbox
+            expects_timeout( mailbox
                 .receive(|e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "f1report")))
-            .await.is_err()
+            .await.is_ok()
         );
+
+        model.terminate().await;
     }
 }

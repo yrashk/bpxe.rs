@@ -3,9 +3,9 @@
 //! These are used for condition expressions and scripts
 use crate::bpmn::schema::{FormalExpression, ScriptTask};
 use crate::data_object::DataObject;
+use crate::sys::task;
 use async_trait::async_trait;
 use thiserror::Error;
-use tokio::task;
 
 #[cfg(feature = "rhai")]
 pub mod rhai;
@@ -85,6 +85,7 @@ pub enum ExecutionError {
     UnknownCause,
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl From<task::JoinError> for EvaluationError {
     fn from(err: task::JoinError) -> Self {
         if err.is_cancelled() {
@@ -93,6 +94,13 @@ impl From<task::JoinError> for EvaluationError {
         if err.is_panic() {
             return Self::ExecutionError(ExecutionError::Panicked);
         }
+        Self::ExecutionError(ExecutionError::UnknownCause)
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl From<task::JoinError> for EvaluationError {
+    fn from(_err: task::JoinError) -> Self {
         Self::ExecutionError(ExecutionError::UnknownCause)
     }
 }
@@ -236,10 +244,11 @@ impl Default for MultiLanguageEngine {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bpxe_internal_macros as bpxe_im;
 
     use crate::language::rhai::*;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn dispatch_to_rhai_evaluation() {
         let e = MultiLanguageEngine::new();
         assert!(e

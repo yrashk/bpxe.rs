@@ -1,5 +1,7 @@
 //! # BPMN Schema
 //!
+#[cfg(test)]
+use bpxe_internal_macros as bpxe_im;
 use thiserror::Error;
 
 /// Alias for URI
@@ -171,8 +173,11 @@ impl Process {
     }
 }
 
+#[cfg(all(test, target_arch = "wasm32"))]
+wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
 #[cfg(test)]
-#[test]
+#[bpxe_im::test]
 fn establishing_sequence_flow_in_process() {
     let mut process = Process {
         id: Some("proc1".to_string()),
@@ -224,7 +229,7 @@ fn establishing_sequence_flow_in_process() {
 }
 
 #[cfg(test)]
-#[test]
+#[bpxe_im::test]
 fn failing_to_establish_sequence_flow_in_process() {
     let mut process = Process {
         id: Some("proc1".to_string()),
@@ -294,7 +299,7 @@ where
 }
 
 #[cfg(test)]
-#[test]
+#[bpxe_im::test]
 fn establishing_sequence_flow() {
     let mut start = StartEvent::default();
     start.id = Some("start".into());
@@ -323,7 +328,7 @@ fn establishing_sequence_flow() {
 }
 
 #[cfg(test)]
-#[test]
+#[bpxe_im::test]
 fn failing_to_establish_sequence_flow() {
     let mut start = StartEvent::default();
     let mut end = EndEvent::default();
@@ -341,7 +346,7 @@ fn failing_to_establish_sequence_flow() {
 }
 
 #[cfg(test)]
-#[test]
+#[bpxe_im::test]
 fn find_by_id() {
     let mut proc: Process = Default::default();
     proc.id = Some("proc".into());
@@ -374,7 +379,7 @@ fn find_by_id() {
 }
 
 #[cfg(test)]
-#[test]
+#[bpxe_im::test]
 fn find_by_id_mut() {
     let mut proc: Process = Default::default();
     proc.id = Some("proc".into());

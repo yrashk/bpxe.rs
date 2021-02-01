@@ -10,6 +10,7 @@ use crate::data_object::{self, DataObject};
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
 use crate::language::{Engine as _, EngineContextProvider, MultiLanguageEngine};
+use crate::sys::task;
 use derive_more::{Deref, DerefMut};
 use futures::stream::{Stream, StreamExt};
 use std::collections::HashMap;
@@ -18,7 +19,6 @@ use std::sync::Arc;
 use std::task::{Context, Poll};
 use streamunordered::{StreamUnordered, StreamYield};
 use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
-use tokio::task::{self};
 
 pub(crate) struct Scheduler {
     receiver: mpsc::Receiver<Request>,

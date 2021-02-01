@@ -227,10 +227,9 @@ mod tests {
     use crate::model;
     use crate::process::Log;
     use crate::test::*;
-    use std::time::Duration;
-    use tokio::time::timeout;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     #[cfg(any(feature = "rhai"))]
     async fn fork() {
         let definitions = parse(include_str!("test_models/inclusive_fork.bpmn")).unwrap();
@@ -269,17 +268,18 @@ mod tests {
         );
 
         // but f3's should not
-        assert!(timeout(
-                Duration::from_millis(100),
+        assert!(expects_timeout(
                 mailbox.receive(
                     |e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "f3sig")
                 )
         )
             .await
-            .is_err());
+            .is_ok());
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     #[cfg(any(feature = "rhai"))]
     async fn default() {
         let definitions = parse(include_str!("test_models/inclusive_default.bpmn")).unwrap();
@@ -311,17 +311,18 @@ mod tests {
         );
 
         // but f1's or f2's should not
-        assert!(timeout(
-                Duration::from_millis(100),
+        assert!(expects_timeout(
                 mailbox.receive(
                     |e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "f1sig" || signal_ref.as_ref().unwrap() == "f2sig")
                 )
         )
             .await
-            .is_err());
+            .is_ok());
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     #[cfg(any(feature = "rhai"))]
     async fn no_default_path() {
         let definitions =
@@ -339,9 +340,11 @@ mod tests {
                 .receive(|e| matches!(e, Log::NoDefaultPath { .. }))
                 .await
         );
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     #[cfg(any(feature = "rhai"))]
     async fn join() {
         let definitions = parse(include_str!("test_models/inclusive_join.bpmn")).unwrap();
@@ -374,13 +377,14 @@ mod tests {
         );
 
         // but f1's should not (because it was false)
-        assert!(timeout(
-                Duration::from_millis(100),
+        assert!(expects_timeout(
                 mailbox.receive(
                     |e| matches!(e, ProcessEvent::SignalEvent { signal_ref } if signal_ref.as_ref().unwrap() == "f1sig")
                 )
         )
             .await
-            .is_err());
+            .is_ok());
+
+        model.terminate().await;
     }
 }

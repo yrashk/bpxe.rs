@@ -4,11 +4,11 @@ use crate::data_object::DataObject;
 use crate::event::ProcessEvent as Event;
 use crate::flow_node;
 use crate::model;
+use crate::sys::task::{self, JoinHandle};
+use serde::Serialize;
 use std::sync::Arc;
-use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
-use tokio::task::{self, JoinHandle};
-
 use thiserror::Error;
+use tokio::sync::{broadcast, mpsc, oneshot, RwLock};
 
 mod scheduler;
 use scheduler::Scheduler;
@@ -63,24 +63,33 @@ pub(crate) enum Request {
 }
 
 /// Process events
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
+#[serde(tag = "type")]
 #[non_exhaustive]
 pub enum Log {
     /// Flow node has received an incoming flow (activated for each incoming flow)
     FlowNodeIncoming {
+        #[serde(serialize_with = "crate::serde::serialize_flow_node")]
         node: Box<dyn FlowNodeType>,
         incoming_index: flow_node::IncomingIndex,
     },
     /// Flow node execution has been completed
-    FlowNodeCompleted { node: Box<dyn FlowNodeType> },
+    FlowNodeCompleted {
+        #[serde(serialize_with = "crate::serde::serialize_flow_node")]
+        node: Box<dyn FlowNodeType>,
+    },
     #[cfg(test)]
     /// Flow node report of tokens (for testing)
     FlowNodeTokens {
+        #[serde(serialize_with = "crate::serde::serialize_flow_node")]
         node: Box<dyn FlowNodeType>,
         count: usize,
     },
     /// No default path is available for a node
-    NoDefaultPath { node: Box<dyn FlowNodeType> },
+    NoDefaultPath {
+        #[serde(serialize_with = "crate::serde::serialize_flow_node")]
+        node: Box<dyn FlowNodeType>,
+    },
     /// Expression evaluation error
     ExpressionError { error: String },
     /// Script evaluation error
@@ -193,8 +202,9 @@ mod tests {
     use crate::bpmn::schema::*;
     use crate::model;
     use crate::test::*;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn no_start_event() {
         let definitions = Definitions {
             root_elements: vec![Process {
@@ -207,9 +217,11 @@ mod tests {
         let model = model::Model::new(definitions).spawn().await;
         let handle = model.processes().await.unwrap().pop().unwrap();
         assert_eq!(handle.start().await, Err::<(), _>(StartError::NoStartEvent));
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn single_start_event() {
         let definitions = Definitions {
             root_elements: vec![Process {
@@ -239,9 +251,11 @@ mod tests {
                 })
                 .await
         );
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multiple_start_events() {
         let definitions = Definitions {
             root_elements: vec![Process {
@@ -291,9 +305,11 @@ mod tests {
                 })
                 .await
         );
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn incoming_log() {
         let mut definitions = Definitions {
             root_elements: vec![Process {
@@ -344,9 +360,11 @@ mod tests {
                 })
                 .await
         );
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn data_object() {
         use crate::data_object;
         use serde_json::json;
@@ -379,5 +397,7 @@ mod tests {
             read.downcast_ref::<serde_json::Value>().unwrap(),
             &json!({"test": "passed"})
         );
+
+        model.terminate().await;
     }
 }

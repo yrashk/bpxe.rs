@@ -111,8 +111,9 @@ mod tests {
     use crate::model;
     use crate::process::Log;
     use crate::test::*;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn fork() {
         let definitions = parse(include_str!("test_models/parallel_fork.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -130,9 +131,11 @@ mod tests {
                     .await
             );
         }
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn join() {
         let definitions = parse(include_str!("test_models/parallel_join.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -150,9 +153,11 @@ mod tests {
                     .await
             );
         }
+
+        model.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn not_enough_to_join() {
         let definitions =
             parse(include_str!("test_models/parallel_not_enough_to_join.bpmn")).unwrap();
@@ -182,13 +187,12 @@ mod tests {
         );
 
         // but third NoneEvent should not happen as the join didn't occur
-        use std::time::Duration;
-        use tokio::time::timeout;
-        assert!(timeout(
-            Duration::from_millis(100),
-            mailbox.receive(|e| matches!(e, ProcessEvent::NoneEvent))
-        )
-        .await
-        .is_err());
+        assert!(
+            expects_timeout(mailbox.receive(|e| matches!(e, ProcessEvent::NoneEvent)))
+                .await
+                .is_ok()
+        );
+
+        model.terminate().await;
     }
 }

@@ -1,2 +1,2 @@
 [workspace]
-members = ["bpxe", "bpxe-bpmn-schema"]
+members = ["bpxe", "bpxe-bpmn-schema", "bpxe-internal-macros"]
