@@ -149,7 +149,7 @@ where
         let mut flow_node_tokens = vec![];
         let mut flow_nodes = StreamUnordered::new();
         for activity in activities.drain(..) {
-            flow_node_tokens.push(flow_nodes.push(activity));
+            flow_node_tokens.push(flow_nodes.insert(activity));
         }
 
         let properties = element
@@ -986,7 +986,7 @@ where
                             activity.set_process(process);
                         }
 
-                        let token = me.flow_nodes.push(activity);
+                        let token = me.flow_nodes.insert(activity);
                         me.flow_node_tokens.push(token);
 
                         // 2. Save input data

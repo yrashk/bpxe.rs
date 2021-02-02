@@ -97,7 +97,7 @@ impl Scheduler {
             })
         {
             let element = flow_node.element();
-            let token = flow_nodes.push(flow_node);
+            let token = flow_nodes.insert(flow_node);
             for (index, outgoing) in element.outgoings().iter().enumerate() {
                 flow_nodes_outgoing.insert(outgoing.to_owned(), (token, index));
             }
