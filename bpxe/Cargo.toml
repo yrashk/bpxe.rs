@@ -30,7 +30,7 @@ async-trait = "0.1"
 factory = "0.1.2"
 num-bigint = { version = "0.3.1", features = ["serde"] }
 serde_json = "1.0"
-streamunordered = "0.5.1"
+streamunordered = "^0.5.2"
 derive_more = "0.99.11"
 instant = "0.1.9"
 
