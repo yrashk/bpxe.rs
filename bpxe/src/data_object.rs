@@ -87,8 +87,9 @@ impl DataObject for serde_json::Value {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[test]
+    #[bpxe_im::test]
     fn send_to_empty_replaces() {
         let mut data_object: Box<dyn DataObject> = Box::new(Empty);
         data_object.send(Box::new(Container(1u8)));
@@ -98,7 +99,7 @@ mod tests {
         ));
     }
 
-    #[test]
+    #[bpxe_im::test]
     fn send_to_container_replaces() {
         let mut data_object: Box<dyn DataObject> = Box::new(Container(true));
         data_object.send(Box::new(Empty));
@@ -108,7 +109,7 @@ mod tests {
         ));
     }
 
-    #[test]
+    #[bpxe_im::test]
     fn send_to_collection_appends() {
         let mut data_object: Box<dyn DataObject> = Box::new(Collection::new());
         data_object.send(Box::new(Empty));

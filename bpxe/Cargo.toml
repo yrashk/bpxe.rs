@@ -9,8 +9,12 @@ repository = "https://github.com/bpxe/bpxe"
 readme = "README.md"
 description = "Business Process eXecution Engine"
 
+[lib]
+crate-type = ["cdylib","lib"]
+
 [dependencies]
 bpxe-bpmn-schema = { path = "../bpxe-bpmn-schema", version = "^0.2.1-dev"}
+bpxe-internal-macros = { path = "../bpxe-internal-macros", version = "^0.2.1-dev"}
 # Used to parse BPMN to a typed schema
 strong-xml = "0.6.0"
 # Used to 'normalize' BPMN XML before parsing
@@ -33,22 +37,30 @@ serde_json = "1.0"
 streamunordered = "^0.5.2"
 derive_more = "0.99.11"
 instant = "0.1.9"
+wasm-rs-dbg = "0.1.0"
+wasm-rs-async-executor = { version = "^0.4.1", features = ["debug"] }
 
 [dev-dependencies]
 serde_yaml = "0.8"
 toml = "0.5"
 ron = "0.6"
 rmp-serde = "0.15"
+pin-project = "1"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = "0.1.6"
+wasm-rs-shared-channel = "0.1.0"
+wasm-bindgen-futures = "0.4.20"
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["console", "DedicatedWorkerGlobalScope"] }
+tokio = { version = "1.1", features = ["macros", "time", "sync"] }
+data-url-encode-macro = "1.0.1"
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-wasm-bindgen-test = "0.2"
+wasm-bindgen-test = "0.3"
+console_error_panic_hook = "0.1.6"
 
 [features]
 default = ["rhai"]
-
-[lib]
-crate-type = ["cdylib","lib"]
-
-[target.'cfg(target_arch = "wasm32")'.dependencies.tokio]
-version = "1.1"
-features = ["macros","rt","time","sync"]
+wasm-executor = []

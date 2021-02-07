@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Added
+
+- Initial support for wasm32 (to enable running BPXE in the browser)
+
 ## [0.2.0] - 2021-01-31
 
 ### Added

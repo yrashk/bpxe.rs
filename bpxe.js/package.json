@@ -1,0 +1,23 @@
+{
+  "name": "bpxe",
+  "version": "0.2.1-dev",
+  "description": "BPXE for JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bpxe/bpxe.git"
+  },
+  "keywords": [
+    "bpmn",
+    "workflow"
+  ],
+  "author": "Yurii Rashkovskii",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/bpxe/bpxe/issues"
+  },
+  "homepage": "https://github.com/bpxe/bpxe#readme"
+}

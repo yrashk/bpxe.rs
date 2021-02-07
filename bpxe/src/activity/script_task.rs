@@ -8,13 +8,13 @@ use crate::language::{
     Engine as _, EngineContext, EngineContextProvider, EvaluationError, MultiLanguageEngine,
 };
 use crate::process::Log;
+use crate::sys::task;
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use tokio::sync::broadcast;
-use tokio::task;
 
 /// Script Task flow node
 pub struct Task {
@@ -218,10 +218,11 @@ mod tests {
     use crate::language::*;
     use crate::model;
     use crate::test::*;
+    use bpxe_internal_macros as bpxe_im;
     use tokio::sync::mpsc;
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn runs() {
         let definitions = parse(include_str!("test_models/task_script.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -246,5 +247,7 @@ mod tests {
         assert!(handle.start().await.is_ok());
 
         assert_eq!(receiver.recv().await, Some(()));
+
+        model.terminate().await;
     }
 }

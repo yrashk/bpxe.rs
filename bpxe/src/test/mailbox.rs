@@ -1,10 +1,9 @@
 //! # Mailbox testing harness
 //!
-
+use crate::test::*;
 use async_trait::async_trait;
-use std::time::Duration;
+use bpxe_internal_macros as bpxe_im;
 use tokio::sync::broadcast;
-use tokio::time;
 
 /// Message receiver
 #[async_trait]
@@ -76,6 +75,7 @@ where
             .collect();
         if !received {
             loop {
+                tokio::task::yield_now().await;
                 match self.receiver.recv().await {
                     Ok(message) => {
                         if predicate(&message) {
@@ -97,7 +97,7 @@ where
     }
 }
 
-#[tokio::test]
+#[bpxe_im::test]
 async fn assert_receive() {
     let (sender, receiver) = broadcast::channel(16);
     let mut mailbox = Mailbox::new(receiver);
@@ -113,9 +113,7 @@ async fn refute_receive() {
     let mut mailbox = Mailbox::new(receiver);
     sender.send(1u8).unwrap();
     sender.send(2u8).unwrap();
-    assert!(
-        time::timeout(Duration::from_millis(100), mailbox.receive(|m| *m == 3u8))
-            .await
-            .is_err()
-    );
+    assert!(expects_timeout(mailbox.receive(|m| *m == 3u8))
+        .await
+        .is_ok());
 }

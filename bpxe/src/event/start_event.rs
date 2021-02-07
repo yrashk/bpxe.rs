@@ -2,13 +2,13 @@
 use crate::bpmn::schema::{FlowNodeType, StartEvent as Element};
 use crate::event::ProcessEvent;
 use crate::flow_node::{self, Action, FlowNode};
+use crate::sys::task;
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use tokio::sync::{broadcast, mpsc};
-use tokio::task;
 
 /// Start Event flow node
 pub struct StartEvent {
@@ -79,6 +79,7 @@ impl FlowNode for StartEvent {
                 task::spawn(async move {
                     let mut waker = None;
                     loop {
+                        tokio::task::yield_now().await;
                         tokio::select! {
                             waker_ = waker_receiver.recv() => {
                                 waker = waker_;
@@ -163,8 +164,9 @@ mod tests {
     use crate::model;
     use crate::process::Log;
     use crate::test::Mailbox;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn start_flows() {
         let definitions = parse(include_str!("test_models/start_flows.bpmn")).unwrap();
         let model = model::Model::new(definitions).spawn().await;
@@ -195,5 +197,7 @@ mod tests {
                 })
                 .await
         );
+
+        model.terminate().await;
     }
 }

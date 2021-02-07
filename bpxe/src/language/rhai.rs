@@ -4,6 +4,7 @@
 use super::{Engine, EngineContext, EngineContextProvider, EngineInfo, EvaluationError};
 use crate::bpmn::schema::{FormalExpression, Script, ScriptTask};
 use crate::data_object::{self, DataObject};
+use crate::sys::task;
 use async_trait::async_trait;
 use num_bigint::BigInt;
 use rhai::{Dynamic, RegisterFn, RegisterResultFn};
@@ -11,7 +12,6 @@ use std::any::{Any, TypeId};
 use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 use thiserror::Error;
-use tokio::task;
 
 /// Rhai language engine
 #[derive(Clone)]
@@ -315,8 +315,9 @@ mod tests {
     use super::*;
     use crate::language::*;
     use ::rhai::Dynamic;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_return_type_mismatch() {
         let e = Rhai::new();
         assert!(
@@ -325,7 +326,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_not_expr() {
         let e = Rhai::new();
         assert!(matches!(
@@ -336,7 +337,7 @@ mod tests {
         ));
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_eval_program() {
         let e = Rhai::new();
         assert!(e
@@ -353,7 +354,7 @@ mod tests {
             .unwrap());
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_bigint_support() {
         use num_bigint::BigInt;
         let e = Rhai::new();
@@ -373,7 +374,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_bigint_support_expr() {
         use num_bigint::BigInt;
         let e = Rhai::new();
@@ -391,7 +392,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_usize_support() {
         let e = Rhai::new();
         assert_eq!(
@@ -410,7 +411,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_usize_support_expr() {
         let e = Rhai::new();
         assert_eq!(
@@ -427,7 +428,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_data_object_type() {
         let e = Rhai::new();
         let mut context = e.new_context();
@@ -446,7 +447,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_unveil_primitive() {
         let e = Rhai::new();
         let mut context = e.new_context();
@@ -465,7 +466,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_unveil_empty() {
         let e = Rhai::new();
         let mut context = e.new_context();
@@ -485,7 +486,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_unveil_collection() {
         let e = Rhai::new();
         let mut context = e.new_context();
@@ -509,7 +510,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_unveil_json() {
         let e = Rhai::new();
         let mut context = e.new_context();
@@ -528,7 +529,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn rhai_data_object() {
         // TODO: this is not a full coverage of supported types
         let e = Rhai::new();

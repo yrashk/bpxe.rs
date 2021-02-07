@@ -12,6 +12,7 @@ use crate::data_object::{self, DataObject, DataObjectExt};
 use crate::flow_node::{self, Action, FlowNode, IncomingIndex, OutgoingIndex, StateError};
 use crate::language::{Engine as _, EngineContextProvider, MultiLanguageEngine};
 use crate::process::{self, Log};
+use crate::sys::task;
 use factory::ParameterizedFactory;
 use futures::stream::{Stream, StreamExt};
 use num_bigint::BigInt;
@@ -22,7 +23,6 @@ use std::sync::Arc;
 use std::task::{Context, Poll, Waker};
 use streamunordered::{StreamUnordered, StreamYield};
 use tokio::sync::{broadcast, oneshot, watch};
-use tokio::task;
 
 pub mod script_task;
 
@@ -1114,12 +1114,14 @@ mod tests {
     use crate::model;
     use crate::process::Log;
     use crate::test::*;
+    use bpxe_internal_macros as bpxe_im;
     use std::sync::Arc;
     use std::sync::Mutex;
     use tokio::sync::{broadcast, mpsc};
 
+    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn standard_loop_after() {
         let definitions = parse(include_str!("test_models/standard_loop.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -1164,11 +1166,14 @@ mod tests {
         let _ = ctrl_sender.send(false);
 
         // It should stop when `should_run()` is false
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
+    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn standard_loop_test_before() {
         let definitions =
             parse(include_str!("test_models/standard_loop_test_before.bpmn")).unwrap();
@@ -1209,7 +1214,7 @@ mod tests {
         assert!(handle.start().await.is_ok());
 
         // Until we allow the activity to proceed, nothing should happen
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
 
         let _ = ctrl_sender.send(true);
         assert_eq!(timeout(receiver.recv()).await.unwrap(), Some(()));
@@ -1219,11 +1224,14 @@ mod tests {
         let _ = ctrl_sender.send(false);
 
         // It should stop when `should_run()` is false
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
+    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn standard_loop_max() {
         let definitions = parse(include_str!("test_models/standard_loop_max.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -1269,11 +1277,13 @@ mod tests {
 
         // It should stop when `should_run()` is false or maximum cap (2) has been reached
         // (and it has)
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multi_loop_cardinality() {
         let definitions = parse(include_str!("test_models/multi_loop_cardinality.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -1304,11 +1314,15 @@ mod tests {
         }
 
         // It should stop when cardinality is exhausted
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
+    // TODO: Barrier isn't available for wasm32
+    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multi_loop_cardinality_parallel() {
         let definitions = parse(include_str!(
             "test_models/multi_loop_cardinality_parallel.bpmn"
@@ -1343,11 +1357,13 @@ mod tests {
         }
 
         // It should stop when cardinality is exhausted
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multi_loop_data_object() {
         let definitions = parse(include_str!("test_models/multi_loop_data_object.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -1390,11 +1406,15 @@ mod tests {
         }
 
         // It should stop when cardinality is exhausted
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
+    // TODO: Barrier isn't available for wasm32
+    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multi_loop_data_object_parallel() {
         let definitions = parse(include_str!(
             "test_models/multi_loop_data_object_parallel.bpmn"
@@ -1441,11 +1461,13 @@ mod tests {
         }
 
         // It should stop when cardinality is exhausted
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multi_loop_data_object_input() {
         let definitions = parse(include_str!(
             "test_models/multi_loop_data_object_input.bpmn"
@@ -1489,11 +1511,13 @@ mod tests {
         assert_eq!(timeout(receiver.recv()).await.unwrap(), Some(3));
 
         // It should stop when cardinality is exhausted
-        assert!(timeout(receiver.recv()).await.is_err());
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn multi_loop_data_object_output() {
         let definitions = parse(include_str!(
             "test_models/multi_loop_data_object_output.bpmn"
@@ -1556,10 +1580,12 @@ mod tests {
             collection[2].downcast_ref::<data_object::Container<i64>>(),
             Some(data_object::Container(3))
         ));
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn input_data_object() {
         let definitions = parse(include_str!("test_models/activity_io.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -1598,10 +1624,12 @@ mod tests {
                 .cast::<u8>(),
             1
         );
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn input_property() {
         let definitions = parse(include_str!("test_models/activity_io.bpmn")).unwrap();
         let (sender, mut receiver) = mpsc::channel(10);
@@ -1640,10 +1668,12 @@ mod tests {
                 .cast::<u8>(),
             1
         );
+
+        model.terminate().await;
     }
 
     #[cfg(feature = "rhai")]
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn output_data_object() {
         let definitions = parse(include_str!("test_models/activity_io.bpmn")).unwrap();
         let model = model::Model::new(definitions).with_script_engine_factory(
@@ -1688,5 +1718,7 @@ mod tests {
                 .downcast_ref::<data_object::Container<i64>>(),
             Some(data_object::Container(1))
         ));
+
+        model.terminate().await;
     }
 }

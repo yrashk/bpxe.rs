@@ -1,0 +1,16 @@
+[package]
+name = "bpxe-internal-macros"
+version = "0.2.1-dev"
+authors = ["Yurii Rashkovskii <yrashk@gmail.com>"]
+edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/bpxe/bpxe"
+readme = "README.md"
+description = "Internal macros for BPXE"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.8"
+syn = { version = "1.0.60", features = ["full"] }

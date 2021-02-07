@@ -9,7 +9,11 @@ repository = "https://github.com/bpxe/bpxe"
 readme = "README.md"
 description = "Business Process eXecution Engine's BPMN schema"
 
+[lib]
+crate-type = ["cdylib","lib"]
+
 [dependencies]
+bpxe-internal-macros = { path = "../bpxe-internal-macros", version = "^0.2.1-dev"}
 thiserror = "1.0"
 # Used to parse BPMN to a typed schema
 strong-xml = "0.6.0"
@@ -22,8 +26,10 @@ syn = "1.0.60"
 serde = { version = "1.0.119", features = ["derive"] }
 derive_more = "0.99.11"
 
-[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-wasm-bindgen-test = "0.2"
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
 
-[lib]
-crate-type = ["cdylib","lib"]
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.3"
+web-sys = { version = "0.3", features = ["console"] }
+console_error_panic_hook = "0.1.6"

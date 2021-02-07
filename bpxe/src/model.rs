@@ -8,10 +8,10 @@ use crate::process;
 use factory::Factory;
 use futures::future::join_all;
 
+use crate::sys::task::{self, JoinHandle};
 use std::sync::Arc;
 use thiserror::Error;
 use tokio::sync::{broadcast, mpsc, oneshot};
-use tokio::task::{self, JoinHandle};
 
 /// Model error
 #[derive(Error, Debug)]
@@ -207,6 +207,9 @@ where
             match next {
                 Some(Request::JoinHandle(handle)) => join_handle = Some(handle),
                 Some(Request::Terminate(sender)) => {
+                    for process in self.processes.drain(..) {
+                        let _ = process.terminate().await;
+                    }
                     let _ = sender.send(join_handle.take());
                     return;
                 }
@@ -262,15 +265,16 @@ mod tests {
 
     use super::*;
     use crate::bpmn::schema::*;
+    use bpxe_internal_macros as bpxe_im;
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn spawn_and_terminate() {
         let model = Model::new(Default::default());
         let handle = model.spawn().await;
         handle.terminate().await;
     }
 
-    #[tokio::test]
+    #[bpxe_im::test]
     async fn list_processes() {
         let definitions = Definitions {
             root_elements: vec![
