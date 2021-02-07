@@ -7,7 +7,7 @@ wasm_bindgen("node_modules/bpxe/web/bpxe_bg.wasm").then(() => {
 onmessage = (msg) => {
 	let channel = self.module.Channel.from(msg.data);
 	while (true) {
-	  channel.run(self);
+	  channel.run();
 	  console.debug("worker: runner terminated, restarting");
 	}
 }

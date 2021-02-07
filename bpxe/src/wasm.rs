@@ -9,6 +9,12 @@ use tokio::sync::oneshot;
 use wasm_bindgen::prelude::*;
 use wasm_rs_shared_channel::spsc;
 
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_name = "self")]
+    static scope: web_sys::DedicatedWorkerGlobalScope;
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Request {
     id: u32,
@@ -53,7 +59,7 @@ impl Channel {
         self.receiver.as_ref().unwrap().0.clone().into()
     }
 
-    pub fn run(&mut self, scope: web_sys::DedicatedWorkerGlobalScope) -> Result<(), JsValue> {
+    pub fn run(&mut self) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
         let receiver = self.receiver.take().unwrap();
         let (sender, mut rcvr) = oneshot::channel();
