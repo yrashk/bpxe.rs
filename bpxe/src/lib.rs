@@ -1,7 +1,7 @@
 //! # BPXE
 //! ## Business Process eXecution Engine
 //!
-//! [BPMN 2.0](http://omg.org/spec/BPMN/2.0) based business process execution engine. PMN stands
+//! [BPMN 2.0](http://omg.org/spec/BPMN/2.0) based business process execution engine. BPMN stands
 //! for **Business Process Model and Notation**. BPMN's goal is to help stakeholders to have a
 //! shared understanding of processes.
 //!
