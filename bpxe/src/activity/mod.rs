@@ -745,8 +745,12 @@ where
     fn handle_flow_node(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Action>> {
         match self.element.loop_characteristics() {
             None => {
+                if self.state.counter > num_traits::Zero::zero() {
+                    self.wake_when_ready(cx.waker().clone());
+                    return Poll::Pending;
+                }
                 let token = self.flow_node_tokens[0];
-                if !matches!(self.variant, Variant::Executing) {
+                if let Variant::Ready { .. } = self.variant {
                     if let Some(flow_node) = self.flow_nodes.get_mut(token) {
                         flow_node.execute()
                     }
@@ -757,6 +761,7 @@ where
                     Poll::Ready(None) => Poll::Ready(None),
                     Poll::Ready(Some((StreamYield::Item(item), token))) => {
                         if let Action::Complete = item {
+                            self.state.counter += 1;
                             self.variant = Variant::Done;
                             Poll::Pending
                         } else {
@@ -1118,6 +1123,39 @@ mod tests {
     use std::sync::Arc;
     use std::sync::Mutex;
     use tokio::sync::{broadcast, mpsc};
+
+    #[cfg(feature = "rhai")]
+    #[bpxe_im::test]
+    async fn singular_runs_once() {
+        let definitions = parse(include_str!("test_models/task_script.bpmn")).unwrap();
+        let (sender, mut receiver) = mpsc::channel(10);
+        let sender_clone = sender.clone();
+        let model =
+            model::Model::new(definitions).with_script_engine_factory(
+                model::FnLanguageEngineFactory(move || {
+                    use ::rhai::RegisterFn;
+                    let mut engine = MultiLanguageEngine::new();
+                    let rhai_engine = engine.rhai.engine_mut().unwrap();
+                    let sender_clone = sender_clone.clone();
+                    rhai_engine.register_fn("notify", move || {
+                        while let Err(_) = sender_clone.try_send(()) {}
+                    });
+                    engine
+                }),
+            );
+
+        let model = model.spawn().await;
+
+        let handle = model.processes().await.unwrap().pop().unwrap();
+        assert!(handle.start().await.is_ok());
+
+        assert_eq!(receiver.recv().await, Some(()));
+
+        // Should not be called anymore
+        assert!(expects_timeout(receiver.recv()).await.is_ok());
+
+        model.terminate().await;
+    }
 
     #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
