@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial support for wasm32 (to enable running BPXE in the browser)
 
+### Fixed
+
+- Singular activities were executed more than once
+
 ## [0.2.0] - 2021-01-31
 
 ### Added
