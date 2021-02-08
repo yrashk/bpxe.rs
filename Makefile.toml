@@ -1,16 +1,11 @@
-[tasks.bpxe-js-wasm-web]
-command = "wasm-pack"
-args = ["build", "--release", "--target", "no-modules", "-d", "pkg/web", "bpxe"]
-
 [tasks.bpxe-js-wasm]
 command = "wasm-pack"
 args = ["build", "--release", "bpxe"]
 
 [tasks.bpxe-js]
-dependencies = ["bpxe-js-wasm", "bpxe-js-wasm-web"]
+dependencies = ["bpxe-js-wasm"]
 script = [
    "cp bpxe/pkg/bpxe_bg* bpxe/pkg/bpxe.js bpxe/pkg/bpxe.d.ts bpxe.js",
-   "cp -R bpxe/pkg/web bpxe.js"
 ]
 
 [tasks.js]

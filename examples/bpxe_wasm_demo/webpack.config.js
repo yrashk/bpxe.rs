@@ -9,10 +9,16 @@ module.exports = {
   },
   mode: "development",
   plugins: [
-    new CopyWebpackPlugin(['index.html'])
+    new CopyWebpackPlugin({
+	    patterns: [{from: './index.html'}]
+    })
   ],
   module: {
 	  rules: [
+		  {
+			  test: /worker\.js$/,
+			  use: { loader: "worker-loader" },
+		  },
 		  {
 			  test: /\.bpmn$/i,
 			  use: [
@@ -21,6 +27,13 @@ module.exports = {
 				  },
 			  ],
 		  }
+
 	  ],
   },
+  devServer: {
+    hot: true
+  },
+  experiments: {
+    asyncWebAssembly: true
+  }
 };
