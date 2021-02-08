@@ -1,13 +1,14 @@
-importScripts("node_modules/bpxe/web/bpxe.js");
-wasm_bindgen("node_modules/bpxe/web/bpxe_bg.wasm").then(() => {
-	self.module = wasm_bindgen;
-	postMessage("started")
+worker = self;
+import("bpxe/bpxe_bg.wasm")
+.then(wasm => {
+	import("bpxe/bpxe.js").then(module => {
+		postMessage("started");
+		worker.onmessage = (msg) => {
+			let channel = module.Channel.from(msg.data);
+			while (true) {
+				channel.run();
+				console.debug("worker: runner terminated, restarting");
+			}
+		}
+	})
 });
-
-onmessage = (msg) => {
-	let channel = self.module.Channel.from(msg.data);
-	while (true) {
-	  channel.run();
-	  console.debug("worker: runner terminated, restarting");
-	}
-}

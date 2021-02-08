@@ -1,8 +1,9 @@
 import * as bpxe from "bpxe";
 import demo from "./demo.bpmn";
+import Worker from "./worker.js";
 window.demo = demo;
 
-let worker = new Worker("worker.js");
+let worker = Worker();
 
 worker.onmessage = (e) => {
 	if (e.data == "started") {
