@@ -21,11 +21,9 @@ fn parse_formal_expr() {
         .unwrap()
         .downcast_ref::<SequenceFlow>()
         .unwrap();
-    assert!(
-        matches!(&flow.condition_expression,
+    assert!(matches!(&flow.condition_expression,
             Some(SequenceFlowConditionExpression(Expr::FormalExpression(FormalExpression{ content: Some(content), .. })))
-            if content == "a")
-    );
+            if content == "a"));
 }
 
 #[bpxe_im::test]

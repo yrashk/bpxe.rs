@@ -330,9 +330,15 @@ mod tests {
     async fn rhai_not_expr() {
         let e = Rhai::new();
         assert!(matches!(
-                e.eval::<bool>(&FormalExpression { content: Some("a = true".into()), ..Default::default() }, &mut e.new_context())
-                .await
-                .unwrap_err(),
+            e.eval::<bool>(
+                &FormalExpression {
+                    content: Some("a = true".into()),
+                    ..Default::default()
+                },
+                &mut e.new_context()
+            )
+            .await
+            .unwrap_err(),
             EvaluationError::EvaluationError { .. }
         ));
     }
