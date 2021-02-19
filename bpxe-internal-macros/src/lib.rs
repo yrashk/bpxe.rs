@@ -35,7 +35,7 @@ pub fn test(_attr: TokenStream, input: TokenStream) -> TokenStream {
 
         let wrapper: TokenStream = quote! {
             {
-               let result = wasm_rs_async_executor::single_threaded::run(Some(wasm_rs_async_executor::single_threaded::spawn(async { #(#stmts)* })));
+               let result = wasm_rs_async_executor::single_threaded::run(Some(wasm_rs_async_executor::single_threaded::spawn(async { #(#stmts)* }).task()));
                wasm_rs_async_executor::single_threaded::evict_all();
                result
             }
