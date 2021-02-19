@@ -66,20 +66,20 @@ impl Channel {
         let fut = async move {
             let mut model_id_counter = 0u32;
             let mut models = HashMap::new();
-            let mut previous_tokens = executor::queued_tokens();
+            let mut previous_tasks = executor::queued_tasks();
             loop {
                 crate::sys::task::yield_now().await;
-                let tokens = executor::queued_tokens();
+                let tasks = executor::queued_tasks();
                 // stasis detection
                 // current thesis is that if there's nothing queued or it's the same tokens
                 // as in the previous iteration of the loop, it means we need new input to
                 // resolve any of the futures
-                let timeout = if executor::queued_tasks() == 0 || tokens == previous_tokens {
+                let timeout = if executor::queued_tasks_count() == 0 || tasks == previous_tasks {
                     Some(std::time::Duration::from_secs(1))
                 } else {
                     None
                 };
-                previous_tokens = tokens;
+                previous_tasks = tasks;
                 match receiver.recv(timeout) {
                     Err(_) => {
                         let _ = sender.send(receiver);
@@ -274,7 +274,7 @@ impl Channel {
             }
         };
         use wasm_rs_async_executor::single_threaded as executor;
-        executor::run(Some(executor::spawn(fut)));
+        executor::run(Some(executor::spawn(fut).task()));
         self.receiver.replace(rcvr.try_recv().unwrap());
         Ok(())
     }
