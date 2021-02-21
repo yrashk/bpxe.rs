@@ -13,7 +13,7 @@ description = "Business Process eXecution Engine's BPMN schema"
 crate-type = ["cdylib","lib"]
 
 [dependencies]
-bpxe-internal-macros = { path = "../bpxe-internal-macros", version = "0.2.1" }
+bpxe-internal-macros = { path = "../bpxe-internal-macros", version = "0.2.2-dev" }
 thiserror = "1.0"
 # Used to parse BPMN to a typed schema
 strong-xml = "0.6.0"
