@@ -196,7 +196,7 @@
         <xsl:text>}</xsl:text>
         
         <xsl:text>
-            pub trait DocumentElement:
+            pub trait DocumentElement: DynClone +
         </xsl:text>
         <xsl:for-each select="$schema/xs:complexType">
             <xsl:text xml:space="preserve">Cast&lt;dyn </xsl:text><xsl:value-of select="local:struct-case(./@name)"/><xsl:text>Type&gt;</xsl:text>
