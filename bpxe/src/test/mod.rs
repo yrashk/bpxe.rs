@@ -4,7 +4,7 @@ mod mailbox;
 pub(crate) use mailbox::Mailbox;
 
 use crate::sys::task;
-#[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 use std::future::Future;
 use std::time::Duration;
 use thiserror::Error;
@@ -22,9 +22,9 @@ where
     task::spawn(async move {
         loop {
             if let Ok(message) = receiver.recv().await {
-                #[cfg(not(target_arch = "wasm32"))]
+                #[cfg(any(target_os = "wasi", not(target_arch = "wasm32")))]
                 println!("{}: {:#?}", &name, message);
-                #[cfg(target_arch = "wasm32")]
+                #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
                 web_sys::console::log_1(&format!("{}: {:#?}", &name, message).into());
             } else {
                 break;
@@ -43,7 +43,7 @@ pub enum Timeout {
 }
 
 /// Times out in 100ms or whatever `TIMEOUT` env var is set to
-#[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 pub async fn timeout<F, T>(f: F) -> Result<T, Timeout>
 where
     F: Future<Output = T>,
@@ -58,7 +58,7 @@ where
 }
 
 /// Returns `Ok(())` if the future times out in 100ms (or whatever `TIMEOUT` env var is set to)
-#[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 pub async fn expects_timeout<F, T>(f: F) -> Result<(), Timeout>
 where
     F: Future<Output = T>,
@@ -74,7 +74,7 @@ where
     }
 }
 
-#[cfg(any(feature = "wasm-executor", target_arch = "wasm32"))]
+#[cfg(target_arch = "wasm32")]
 mod wasm {
     use super::Timeout as Error;
     use instant::Instant;
@@ -154,5 +154,5 @@ mod wasm {
         }
     }
 }
-#[cfg(any(feature = "wasm-executor", target_arch = "wasm32"))]
+#[cfg(target_arch = "wasm32")]
 pub(crate) use wasm::*;

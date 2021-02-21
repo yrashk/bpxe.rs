@@ -13,12 +13,12 @@ pub fn test(_attr: TokenStream, input: TokenStream) -> TokenStream {
         parse_str(&format!(
             r#"
                 {{
-                  #[cfg(target_arch = "wasm32")]
+                  #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
                   console_error_panic_hook::set_once();
-
-                  #[cfg(target_arch = "wasm32")]
+                  
+                  #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
                   web_sys::console::debug_1(&format!("Running {{}}::{0}", module_path!()).into());
-                  #[cfg(not(target_arch = "wasm32"))]
+                  #[cfg(any(target_os = "wasi", not(target_arch = "wasm32")))]
                   eprintln!("Running {{}}::{0}", module_path!());
                 }}
                 "#,
@@ -44,19 +44,26 @@ pub fn test(_attr: TokenStream, input: TokenStream) -> TokenStream {
         wasm_input.block = Box::new(parse_macro_input!(wrapper as Block));
 
         quote! {
-            #[cfg(not(any(target_arch = "wasm32", feature = "wasm-executor")))]
+            #[cfg(not(target_arch = "wasm32"))]
             #[tokio::test]
             #input
 
-            #[cfg(any(feature = "wasm-executor", target_arch = "wasm32"))]
-            #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
-            #[cfg_attr(all(feature = "wasm-executor", not(target_arch = "wasm32")), test)]
+            #[cfg(target_os = "wasi")]
+            #[test]
+            #wasm_input
+
+            #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
+            #[wasm_bindgen_test::wasm_bindgen_test]
             #wasm_input
         }
     } else {
         quote! {
-            #[cfg_attr(not(target_arch = "wasm32"), test)]
-            #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
+            #[cfg(any(target_os = "wasi", not(target_arch = "wasm32")))]
+            #[test]
+            #input
+
+            #[cfg(all(target_arch = "wasm32", target_os = "unknown"))]
+            #[wasm_bindgen_test::wasm_bindgen_test]
             #input
         }
     };

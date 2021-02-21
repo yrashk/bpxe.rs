@@ -1,10 +1,10 @@
 //! # Task helpers
 //!
 
-#[cfg(not(any(target_arch = "wasm32", feature = "wasm-executor")))]
+#[cfg(not(target_arch = "wasm32"))]
 pub(crate) use tokio::task::*;
 
-#[cfg(any(target_arch = "wasm32", feature = "wasm-executor"))]
+#[cfg(target_arch = "wasm32")]
 mod wasm {
     use std::future::Future;
     use wasm_rs_async_executor::single_threaded as executor;
@@ -42,5 +42,5 @@ mod wasm {
     }
 }
 
-#[cfg(any(target_arch = "wasm32", feature = "wasm-executor"))]
+#[cfg(target_arch = "wasm32")]
 pub(crate) use wasm::*;

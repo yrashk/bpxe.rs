@@ -173,7 +173,7 @@ impl Process {
     }
 }
 
-#[cfg(all(test, target_arch = "wasm32"))]
+#[cfg(all(test, target_arch = "wasm32", target_os = "unknown"))]
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[cfg(test)]
