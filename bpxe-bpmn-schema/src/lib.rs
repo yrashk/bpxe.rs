@@ -410,3 +410,17 @@ fn find_by_id_mut() {
 
     assert!(definitions.find_by_id_mut("not_to_be_found").is_none());
 }
+
+#[cfg(test)]
+#[bpxe_im::test]
+fn document_element_clone() {
+    let mut proc: Process = Default::default();
+    proc.id = Some("proc".into());
+    let mut definitions: Definitions = Default::default();
+    definitions.root_elements.push(RootElement::Process(proc));
+    if let Some(proc_) = definitions.find_by_id("proc") {
+        dyn_clone::clone_box(proc_);
+    } else {
+        unreachable!();
+    }
+}
