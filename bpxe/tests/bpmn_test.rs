@@ -2,7 +2,7 @@ use bpxe;
 use bpxe::bpmn::schema::*;
 use bpxe_internal_macros as bpxe_im;
 
-#[cfg(all(test, target_arch = "wasm32"))]
+#[cfg(all(test, target_arch = "wasm32", target_os = "unknown"))]
 wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
 #[bpxe_im::test]
@@ -66,7 +66,7 @@ fn serialize_deserialize_serde_json() {
     assert_eq!(definitions_1, definitions);
 }
 
-#[cfg(not(target_arch = "wasm32"))] // ignore on wasm32 for now
+#[cfg(not(all(target_arch = "wasm32", target_os = "unknown")))] // ignore on wasm32-unknown for now
 #[bpxe_im::test]
 #[ignore] // FIXME: https://github.com/bpxe/bpxe.rs/issues/3
 fn serialize_deserialize_serde_toml() {

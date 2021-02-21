@@ -26,10 +26,10 @@ syn = "1.0.60"
 serde = { version = "1.0.119", features = ["derive"] }
 derive_more = "0.99.11"
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
+[target.wasm32-unknown-unknown.dependencies]
 wasm-bindgen = "0.2"
 
-[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+[target.wasm32-unknown-unknown.dev-dependencies]
 wasm-bindgen-test = "0.3"
 web-sys = { version = "0.3", features = ["console"] }
 console_error_panic_hook = "0.1.6"

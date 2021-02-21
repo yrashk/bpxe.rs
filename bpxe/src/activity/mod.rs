@@ -1157,7 +1157,6 @@ mod tests {
         model.terminate().await;
     }
 
-    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
     #[cfg(feature = "rhai")]
     #[bpxe_im::test]
     async fn standard_loop_after() {
@@ -1209,7 +1208,7 @@ mod tests {
         model.terminate().await;
     }
 
-    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "rhai")]
     #[bpxe_im::test]
     async fn standard_loop_test_before() {
@@ -1267,7 +1266,7 @@ mod tests {
         model.terminate().await;
     }
 
-    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "rhai")]
     #[bpxe_im::test]
     async fn standard_loop_max() {
@@ -1358,7 +1357,7 @@ mod tests {
     }
 
     // TODO: Barrier isn't available for wasm32
-    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "rhai")]
     #[bpxe_im::test]
     async fn multi_loop_cardinality_parallel() {
@@ -1450,7 +1449,7 @@ mod tests {
     }
 
     // TODO: Barrier isn't available for wasm32
-    #[cfg(not(any(feature = "wasm-executor", target_arch = "wasm32")))]
+    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(feature = "rhai")]
     #[bpxe_im::test]
     async fn multi_loop_data_object_parallel() {
