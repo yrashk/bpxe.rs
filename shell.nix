@@ -1,16 +1,11 @@
 let
-  moz_overlay = import (builtins.fetchTarball https://github.com/mozilla/nixpkgs-mozilla/archive/master.tar.gz);
-  pkgs = import <nixpkgs> { overlays = [ moz_overlay ]; };
-  rustChannel = (pkgs.rustChannelOf { channel = "stable";  });
-  rust = (rustChannel.rust.override {
-    targets = ["wasm32-unknown-unknown" "wasm32-wasi"];
-  });
+  pkgs = import <nixpkgs> {};
 in
 pkgs.stdenv.mkDerivation rec {
   name = "bpxe-shell";
 
   buildInputs = with pkgs; [ saxon-he
-                             rust
+                             rustup
                              chromedriver # for wasm-pack test --chrome
                              openssl.dev pkgconfig # for cargo-release
   ];
