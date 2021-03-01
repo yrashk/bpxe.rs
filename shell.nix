@@ -10,9 +10,4 @@ pkgs.stdenv.mkDerivation rec {
                              openssl.dev pkgconfig # for cargo-release
   ];
 
-  shellHook = ''
-    # Useful for ensuring cargo tools are available (like cargo-do, for example)
-    export PATH=$PATH:$HOME/.cargo/bin
-  '';
-
 }
